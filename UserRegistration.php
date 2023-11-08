@@ -1,5 +1,5 @@
 <?php 
-include('dbConnection.php');
+include('DBConnection.php');
 if(!empty($_POST)) {
     $valid = true;
     
@@ -19,7 +19,6 @@ if(!empty($_POST)) {
         $sql = "INSERT INTO employee (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address, Onboard_Date, OffBoard_Date, IC_Number, Password, Role_ID, Designation_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $query = $pdo->prepare($sql);
         $query->execute(array($Name, $Gender, $DOB, $PhoneNum, $Email, $Address, $OnboardDate, $OffboardDate, $ICNumber, $Password, 1, 1));
-        
     }
 }
 ?>
