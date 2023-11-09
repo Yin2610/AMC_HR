@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 08, 2023 at 11:39 AM
+-- Generation Time: Nov 09, 2023 at 12:58 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -119,12 +119,9 @@ CREATE TABLE `employee` (
   `Address` varchar(50) NOT NULL,
   `Onboard_Date` date NOT NULL,
   `Offboard_Date` date NOT NULL,
-  `Bank_Account` int(15) NOT NULL,
-  `IC_Number` varchar(9) NOT NULL,
   `Profile_Pic` varchar(50) DEFAULT NULL,
   `Resume` varchar(50) DEFAULT NULL,
   `Contract` varchar(50) DEFAULT NULL,
-  `Password` varchar(50) NOT NULL,
   `Role_ID` int(11) NOT NULL,
   `Designation_ID` int(11) NOT NULL,
   `Bank_ID` int(11) NOT NULL
@@ -134,10 +131,10 @@ CREATE TABLE `employee` (
 -- Dumping data for table `employee`
 --
 
-INSERT INTO `employee` (`Employee_ID`, `Name`, `Gender`, `Date_Of_Birth`, `Phone_Num`, `Email`, `Address`, `Onboard_Date`, `Offboard_Date`, `Bank_Account`, `IC_Number`, `Profile_Pic`, `Resume`, `Contract`, `Password`, `Role_ID`, `Designation_ID`, `Bank_ID`) VALUES
-(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 2147483647, 'S9245251D', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', 'Employee_Info/Contract/Michael_contract.pdf', 'michael', 1, 8, 1),
-(2, 'Sofia', 'Female', '2000-11-05', '90238547', 'sofia@gmail.com', '828 Tampines Street 81 #01-228 Singapore, 520828', '2020-06-15', '0000-00-00', 2147483647, 'T0030938E', 'Employee_Info/Profile_Pics/Sofia_profile.jpg', 'Employee_Info/Resume/Sofia_resume.pdf', 'Employee_Info/Contract/Sofia_contract.pdf', 'sofia', 2, 4, 2),
-(3, 'Alyssa', 'Female', '2002-10-12', '45091209', 'alyssa@gmail.com', '16 Ayer Rajah Crescent #04-06A Singapore, 139965', '2021-04-23', '0000-00-00', 2147483647, 'T0276579E', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', 'Employee_Info/Resume/Alyssa_resume.pdf', 'Employee_Info/Contract/Alyssa_contract.pdf', 'alyssa', 3, 6, 2);
+INSERT INTO `employee` (`Employee_ID`, `Name`, `Gender`, `Date_Of_Birth`, `Phone_Num`, `Email`, `Address`, `Onboard_Date`, `Offboard_Date`, `Profile_Pic`, `Resume`, `Contract`, `Role_ID`, `Designation_ID`, `Bank_ID`) VALUES
+(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', 'Employee_Info/Contract/Michael_contract.pdf', 1, 8, 1),
+(2, 'Sofia', 'Female', '2000-11-05', '90238547', 'sofia@gmail.com', '828 Tampines Street 81 #01-228 Singapore, 520828', '2020-06-15', '0000-00-00', 'Employee_Info/Profile_Pics/Sofia_profile.jpg', 'Employee_Info/Resume/Sofia_resume.pdf', 'Employee_Info/Contract/Sofia_contract.pdf', 2, 4, 2),
+(3, 'Alyssa', 'Female', '2002-10-12', '45091209', 'alyssa@gmail.com', '16 Ayer Rajah Crescent #04-06A Singapore, 139965', '2021-04-23', '0000-00-00', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', 'Employee_Info/Resume/Alyssa_resume.pdf', 'Employee_Info/Contract/Alyssa_contract.pdf', 3, 6, 2);
 
 -- --------------------------------------------------------
 
@@ -192,6 +189,29 @@ INSERT INTO `role` (`Role_ID`, `Role_Name`) VALUES
 (1, 'Administrator'),
 (2, 'Department Head'),
 (3, 'Employee');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `sensitive_info`
+--
+
+CREATE TABLE `sensitive_info` (
+  `Sensitive_Info_ID` int(11) NOT NULL,
+  `Password` varchar(100) NOT NULL,
+  `Bank_Account` varchar(10) NOT NULL,
+  `IC_Number` varchar(9) NOT NULL,
+  `Employee_ID` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sensitive_info`
+--
+
+INSERT INTO `sensitive_info` (`Sensitive_Info_ID`, `Password`, `Bank_Account`, `IC_Number`, `Employee_ID`) VALUES
+(1, 'michael', '1530917846', 'S9238498E', 1),
+(2, 'sofia', '6598034012', 'T0032580A', 2),
+(3, 'alyssa', '7509340952', 'T0270022G', 3);
 
 --
 -- Indexes for dumped tables
@@ -256,6 +276,13 @@ ALTER TABLE `role`
   ADD PRIMARY KEY (`Role_ID`);
 
 --
+-- Indexes for table `sensitive_info`
+--
+ALTER TABLE `sensitive_info`
+  ADD PRIMARY KEY (`Sensitive_Info_ID`),
+  ADD KEY `Employee_ID` (`Employee_ID`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -308,6 +335,12 @@ ALTER TABLE `role`
   MODIFY `Role_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `sensitive_info`
+--
+ALTER TABLE `sensitive_info`
+  MODIFY `Sensitive_Info_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
 -- Constraints for dumped tables
 --
 
@@ -346,6 +379,12 @@ ALTER TABLE `payroll`
   ADD CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`),
   ADD CONSTRAINT `payroll_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`Designation_ID`),
   ADD CONSTRAINT `payroll_ibfk_3` FOREIGN KEY (`Designation_ID`) REFERENCES `designation` (`Designation_ID`);
+
+--
+-- Constraints for table `sensitive_info`
+--
+ALTER TABLE `sensitive_info`
+  ADD CONSTRAINT `sensitive_info_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
