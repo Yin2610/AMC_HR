@@ -1,10 +1,12 @@
- 
+<html>
+<head>
+<title>welcome</title>
+</head>
+<body>  
 <?php
 session_start();
-//to connect the db_conn file to here 
-include('DBConnection.php');
-$pdo = DBConnection::connectToDB();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//to connect the db_conn file to here
+include 'db_conn.php'; 
 
 if (isset($_POST['uname'])&& isset($_POST['password'])){
     function validate($data){
@@ -26,19 +28,14 @@ if (isset($_POST['uname'])&& isset($_POST['password'])){
         exit();
     }else {
         $sql = "SELECT * FROM employee where Name='$uname' AND Password='$pass'";
+        $result = mysqli_query($conn, $sql);
         
-        $query = $pdo->prepare($sql);
-        $query->execute();
-        $data = $query->fetch(PDO::FETCH_ASSOC);
-        
-//         $result = mysqli_query($conn, $sql);
-        
-        if (count($data)== 1) {
-//             $row = mysqli_fetch_assoc($result);
+        if (mysqli_num_rows($result)=== 1) {
+            $row = mysqli_fetch_assoc($result);
             //comparing the username and password is the same 
-            if ($data['Name'] == $uname && $data['Password'] == $pass) {
-              $_SESSION['Name'] =$data['Name'];
-              $_SESSION['Employee_ID'] =$data['Employee_ID'];
+            if ($row['Name'] === $uname && $row['Password'] === $pass) {
+              $_SESSION['Name'] =$row['Name'];
+              $_SESSION['Employee_ID'] =$row['Employee_ID'];
               header("Location: home.php");
               exit();
             }else {
@@ -57,26 +54,5 @@ if (isset($_POST['uname'])&& isset($_POST['password'])){
     exit();
 }
 ?>
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="ISO-8859-1">
-<title>Login</title>
-<link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-	<form action="Login.php" method="post">
-		<h2>Login</h2>
-		<?php if (isset($_GET['error'])){ ?>
-		    <p class="error"><?php echo $_GET['error'];?></p>
-		<?php }
-		    ?>
-		<label>User Name</label>
-		<input type="text" name="uname" placeholder="Username"><br>
-		<label>Password</label>
-		<input type="password" name="password" placeholder="Password"><br>
-		<button type="submit">Login</button>
-	</form>
 </body>
 </html>
