@@ -38,14 +38,16 @@ if(!empty($_POST)) {
     }
     
     $Password = $_POST['txtPassword'];
+    
+    $HashPassword = password_hash($Password, PASSWORD_BCRYPT);
+    
     $RoleID = $_POST['sRole'];
     $DesignationID = $_POST['sDesignation'];
     $BankID = $_POST['sBank'];
 
     if($valid) {
         try {
-            $pdo->beginTransaction();
-            $insertEmployeeSQL = "INSERT INTO employee VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertEmployeeSQL = "INSERT INTO employee (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address, Onboard_Date, Offboard_Date, Profile_Pic, Resume, Contract, Role_ID, Designation_ID, Bank_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertEmployeeStmt = $pdo->prepare($insertEmployeeSQL);
             $insertEmployeeStmt->execute(array($Name, $Gender, $DOB, $PhoneNum, $Email, $Address, $OnboardDate, $OffboardDate, $ProfilePicFolder, $ResumeFolder, $ContractFolder, $RoleID, $DesignationID, $BankID));
             
@@ -53,11 +55,10 @@ if(!empty($_POST)) {
             
             echo "<script>alert(".$lastInsertedEmployeeID.")</script>";
             
-            $insertSensitiveInfoSQL = "INSERT INTO sensitive_info VALUES (?, ?, ?, ?)";
+            $insertSensitiveInfoSQL = "INSERT INTO sensitive_info (Password, Bank_Account, IC_Number, Employee_ID) VALUES (?, ?, ?, ?)";
             $insertSensitiveInfoStmt = $pdo->prepare($insertSensitiveInfoSQL);
-            $insertSensitiveInfoStmt->execute(array($Password, $BankAcc, $ICNumber, $lastInsertedEmployeeID));
+            $insertSensitiveInfoStmt->execute(array($HashPassword, $BankAcc, $ICNumber, $lastInsertedEmployeeID));
             
-            $pdo->commit();
             echo "Employee registration successful";
         }
         catch (PDOException $e) {
@@ -72,23 +73,19 @@ if(!empty($_POST)) {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link   href="css/bootstrap.min.css" rel="stylesheet">
-    <script src="js/bootstrap.min.js"></script>
-    <style>
-        form 
-        {
-            display: flex;
-        }
-    </style>
+<!--     <link   href="css/bootstrap.min.css" rel="stylesheet"> -->
+<!--     <script src="js/bootstrap.min.js"></script> -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
-	<div>
+	<div class="w-full max-w-sm">
         <form action="UserRegistration.php" method="post" enctype="multipart/form-data">
-            <div class="form-row">
+            <div class="form-group">
             	<label for="txtName">Enter employee's name: </label>
-                <input name="txtName" type="text" placeholder="Name" required>
-                
+                <input name="txtName" class="shadow border rounded" type="text" required>
+            </div>
+                <div>
                 <br>
                 <label for="rdoGender">Select employee's gender: </label>
                 <input name="rdoGender" type="radio" id="rdoMale" value="Male" required>
@@ -113,7 +110,7 @@ if(!empty($_POST)) {
             </div>
             
             
-            <div class="form-row">
+            <div class="col-md-5">
                 <label for="dtOnBoard">Enter employee's onboarding date: </label>
                 <input name="dtOnBoard" type="date" placeholder="Onboard date" required>
                 
@@ -144,9 +141,7 @@ if(!empty($_POST)) {
                 <br>
                 <label for="txtPassword">Enter employee's password: </label>
                 <input name="txtPassword" type="password" placeholder="Password" required>
-            </div>
             
-            <div class="form-row">
             <label for="sRole">Select employee's user role: </label>
             <select name="sRole" required>
             <?php 
@@ -192,6 +187,6 @@ if(!empty($_POST)) {
 	            <button name="btnRegister" type="submit">Register</button>
             </div>
         </form>
-    </div>
+        </div>
 </body>
 </html>
