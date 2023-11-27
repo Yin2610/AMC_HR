@@ -18,43 +18,49 @@ if (isset($_POST['uname'])&& isset($_POST['password'])){
     $uname = validate($_POST['uname']);
     $pass = validate($_POST['password']);
     //if the username box is empty
-    if (empty($uname)) {
+     if (empty($uname)) {
         header("Location: index.php?error=User name is required");
         exit();
-    }elseif (empty($pass)){
-        header("Location: index.php?error=Password is required");
-        exit();
-    }else {
-        $sql = "SELECT * FROM employee where Name='$uname' AND Password='$pass'";
-        
+     }elseif (empty($pass)){
+         header("Location: index.php?error=Password is required");
+         exit();
+     //}else {
+     }else {
+       
+    //$sql = "SELECT employee.Employee_ID, employee.Name, sensitive_info.Password
+        //FROM employee
+       // INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Sensitive_Info_ID
+        //WHERE BINARY employee.Name = :uname AND BINARY sensitive_info.Password = :pass";
+         $sql = "SELECT employee.Employee_ID, employee.Name, sensitive_info.Password, employee.Profile_Pic
+                FROM employee
+                INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Sensitive_Info_ID
+                WHERE BINARY employee.Name = :uname";
         $query = $pdo->prepare($sql);
+        $query->bindParam(':uname', $uname, PDO::PARAM_STR);
+        //$query->bindParam(':pass', $pass, PDO::PARAM_STR);
         $query->execute();
         $data = $query->fetch(PDO::FETCH_ASSOC);
+       
+        //if ($data) {
+            //$_SESSION['Name'] = $data['Name'];
+            //$_SESSION['Employee_ID'] = $data['Employee_ID'];
+            //header("Location: home.php");
+            //exit();
         
-//         $result = mysqli_query($conn, $sql);
+        if ($data && password_verify($pass, $data['Password'])) {
+            
+             //Password is correct
+            $_SESSION['Name'] = $data['Name'];
+            $_SESSION['Employee_ID'] = $data['Employee_ID'];
+            //$_SESSION['Profile_pic'] = $data['Profile_pic'];
+            header("Location: home.php");
+            exit();
         
-        if (count($data)== 1) {
-//             $row = mysqli_fetch_assoc($result);
-            //comparing the username and password is the same 
-            if ($data['Name'] == $uname && $data['Password'] == $pass) {
-              $_SESSION['Name'] =$data['Name'];
-              $_SESSION['Employee_ID'] =$data['Employee_ID'];
-              header("Location: home.php");
-              exit();
-            }else {
-                header("Location: index.php?error=Incorrect User name or password");
-                exit();;
-            }
-        }else {
+        } else {
             header("Location: index.php?error=Incorrect User name or password");
-            exit();;
+            exit();
         }
-    }
-    
-    
-}else {
-    header("Location: index.php");
-    exit();
+}
 }
 ?>
 
@@ -63,20 +69,40 @@ if (isset($_POST['uname'])&& isset($_POST['password'])){
 <head>
 <meta charset="ISO-8859-1">
 <title>Login</title>
-<link rel="stylesheet" type="text/css" href="style.css">
+<!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
+
+
 </head>
-<body>
-	<form action="Login.php" method="post">
-		<h2>Login</h2>
+<body style="background-color: #DBF9FC; display: flex; justify-content: center; align-items: center;">
+
+	
+	<form action="index.php" method="post" style="width:500px;border:2px solid #ccc;padding: 30px;background: #fff;border-radius:15px;">
+	<?php
+	//$password = "alyssa";
+	//echo password_hash($password, PASSWORD_BCRYPT);
+	?>
+		 <h1 style="text-align:center;margin-bottom:40px;">Human Resource Management</h1>
+		  <h2 style="color:black;text-align:center;margin-bottom:40px;">Login</h2>
 		<?php if (isset($_GET['error'])){ ?>
-		    <p class="error"><?php echo $_GET['error'];?></p>
+		<div style="background-color: #F2DEDE">
+		    <p class="error" style="color:black;"><?php echo $_GET['error'];?></p></div>
 		<?php }
 		    ?>
+		    
+		    <label style="color:#888;font-size:18px;padding:10px">User Name</label>
+			<input type="text" name="uname" placeholder="Username" style="display: block; border:2px solid #ccc;width:95%;padding:10px;margin:10px auto;"><br>
+			<label style="color:#888;font-size:18px;padding:10px">Password</label>
+			<input type="password" name="password" placeholder="Password" style="display: block; border:2px solid #ccc;width:95%;padding:10px;margin:10px auto;"><br>
+			<button type="submit" style="float: right; background: #555;padding:10px 15px; color:#fff;border-radius:5px;margin-right:10px;">Login</button>
+		    
+		<!-- 
 		<label>User Name</label>
 		<input type="text" name="uname" placeholder="Username"><br>
 		<label>Password</label>
 		<input type="password" name="password" placeholder="Password"><br>
 		<button type="submit">Login</button>
+		 -->
 	</form>
+	
 </body>
 </html>
