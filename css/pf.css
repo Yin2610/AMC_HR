@@ -4,24 +4,19 @@ body{
 	background-color: lightblue;
 }
 
-#form{
-	background-color: white;
-	margin: auto;
-	max-width: 90%;
-}
-.form-label{
-	font-weight:bold;
+.pf{
 	font-size: 20px;
 }
+
 #pf{
 	border-radius: 50%;
 	border: 2px solid Black;
 	width: 300px;
 	height: 300px;
 }
-.help-inline{
-	color:red;
-	font-size: 15px;
+
+#profile{
+	background-color: white;
+	margin: auto;
+	max-width: 90%;
 }
-
-
