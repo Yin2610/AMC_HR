@@ -1,4 +1,7 @@
-
+<?php 
+session_start();
+$id = $_SESSION['Employee_ID']
+?>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -23,7 +26,7 @@
 <!--               	if normal user -->
 				<a href="Home.php" class="nav-menu text-dark" style="text-decoration: none; display: block;">Home</a>
 				<br>
-				<a href="UserProfile.php" class="nav-menu text-dark" style="text-decoration: none; display: block;">Profile</a>
+				<a href="profile.php?id=<?php echo $id?>" class="nav-menu text-dark" style="text-decoration: none; display: block;">Profile</a>
 				<br>
 				<a href="CreateLeave.php" class="nav-menu text-dark" style="text-decoration: none; display: block;">Request Leave</a>
 <!-- 				if admin  -->
