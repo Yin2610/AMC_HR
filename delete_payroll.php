@@ -1,5 +1,5 @@
 <?php
-include "dbConnection.php";
+include "DBConnection.php";
 $id = 0;
 if ( !empty($_GET['id'])) {
     $id = $_REQUEST['id'];
