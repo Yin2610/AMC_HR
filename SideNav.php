@@ -2,7 +2,7 @@
 
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
-//     header("Location: index.php");
+    header("Location: index.php");
 }
 else {
     $id = $_SESSION['Employee_ID'];
@@ -30,36 +30,45 @@ else {
           <div class="offcanvas-body">
             <div>
 			<?php 
+			
+			$homeLink = "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>";
+			$profileLink = "<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Profile</a>";
+			$createLeaveLink = "<a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>";
+			$retrieveEmployeeLink = "<a href='RetrieveEmployee.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Employees</a>";
+			$retrieveLeaveRequestLink = "<a href='RetrieveLeaveSupervisor.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Leave Requests</a>";
+			$retrievePayrollLink = "<a href='RetrievePayroll.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Payroll</a>";
+			
 			if($_SESSION['Role_Name'] == "Administrator") {
-			    echo "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>
-				<br>
-				<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Profile</a>
-				<br>
-                <a href='RetrieveEmployee.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Employees</a>
-                <br>
-				<a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>";
+			    echo "$homeLink
+    				<br>
+    				$profileLink
+    				<br>
+                    $createLeaveLink
+                    <br>
+                    $retrieveEmployeeLink
+                ";
 			}
 			
 			else if($_SESSION['Role_Name'] == "Department Head") {
-			    echo "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>
-				<br>
-				<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Profile</a>
-				<br>
-				<a href='RetrieveEmployee.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Employees</a>
+			    echo "$homeLink
 			    <br>
-			    <a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>
+				$profileLink
+				<br>
+			    $createLeaveLink
+			    <br>
+				$retrieveEmployeeLink
+			    <br>
+                $retrievePayrollLink
                 <br>
-                <a href='' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Leave Requests</a>
-                <br>
-                <a href='RetrievePayroll.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Payroll</a>";
+                $retrieveLeaveRequestLink";
 			}
 			
 			else if($_SESSION['Role_Name'] == "Employee"){
-			    echo "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>
+			    echo "$homeLink
 				<br>
-				<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Profile</a>
+				$profileLink
 				<br>
-				<a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>";
+				$createLeaveLink";
 			}
 			?>
 				

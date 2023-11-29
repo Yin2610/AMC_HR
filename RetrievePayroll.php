@@ -9,12 +9,17 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     header("Location: index.php");
 }
 else {
+    if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
+        echo "You don't have permission to view this page.";
+        exit();
+    }
+    
     $designation = $_SESSION['Designation'];
 }
 
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Name, p.Date, p.Payslip
+$selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Name, p.Payroll_ID, p.Date, p.Payslip
             FROM employee as e
             INNER JOIN payroll as p ON p.Employee_ID = e.Employee_ID
             INNER JOIN designation as ds ON ds.Designation_ID = p.Designation_ID
@@ -52,11 +57,12 @@ $data = $selectPayrollStmt->fetchAll();
 	<?php include('SideNav.php')?>	
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-5">
+          <ol class="breadcrumb mb-3">
             <li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
+            <li class="breadcrumb-item active" aria-current="page">View Payrolls</li>
           </ol>
         </nav>
+        <a href="CreatePayroll.php" style="text-decoration: none; float: right" class="text-dark btn btn-outline-info mb-5">Create Payroll</a>
 		<table id="payrollTable" class="display hover" style="width: 100%">
 			<thead>
 				<tr>
@@ -66,6 +72,7 @@ $data = $selectPayrollStmt->fetchAll();
         			<th>Designation</th>
         			<th>Salary</th>
         			<th>Payslip</th>
+        			<th>Actions</th>
     			</tr>
 			</thead>
 			<tbody>
@@ -77,7 +84,16 @@ $data = $selectPayrollStmt->fetchAll();
         			    echo "<td>".$row['Department_Name']."</td>";
         			    echo "<td>".$row['Designation']."</td>";
         			    echo "<td>".$row['Salary']."</td>";
-        			    echo "<td><button><a href='".$row['Payslip']."' download style='text-decoration: none' class='text-dark'>View payslip</a></button></td>";
+        			    if ($row['Payslip'] == null) {
+        			        echo "<td>No payslip</td>";
+        			    }
+        			    else {
+        			        echo "<td><button><a href='".$row['Payslip']."' download style='text-decoration: none' class='text-dark'>View payslip</a></button></td>";
+        			    }
+        			    echo "<td>
+                            <a class='btn btn-info' href='UpdatePayroll.php?id=". $row['Payroll_ID'] . "'>Edit</a>              
+                            <a class='btn btn-danger' href='DeletePayroll.php?id=". $row['Payroll_ID'] . "'>Delete</a>
+                            </td>";
         			    echo "</tr>";
         			}
     			?>

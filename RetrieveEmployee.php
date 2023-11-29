@@ -5,7 +5,12 @@ session_start();
 
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
-    //     header("Location: index.php");
+        header("Location: index.php");
+}
+
+if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
+    echo "You don't have permission to view this page.";
+    exit();
 }
 
 $pdo = DBConnection::connectToDB();
@@ -33,11 +38,16 @@ $data = $query->fetchAll();
     <?php include('SideNav.php')?>
     <div class="container-fluid mt-4">
         <nav aria-label="breadcrumb">
-    		<ol class="breadcrumb mb-5">
+    		<ol class="breadcrumb mb-4">
     			<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
     			<li class="breadcrumb-item active" aria-current="page">View Employees</li>
     		</ol>
     	</nav>
+    	<?php 
+    	if($_SESSION['Role_Name'] == 'Administrator') {
+    	    echo "<a href='CreateEmployee.php' style='text-decoration: none; float: right' class='text-dark btn btn-outline-info mb-5'>Create New Employee</a>";
+    	}
+    	?>
         <table id="employeeTable" class="display hover" style="width: 100%">
     		<thead>
     			<tr>
@@ -52,7 +62,7 @@ $data = $query->fetchAll();
                 <th>Profile Picture</th>
                 <th>Resume</th>
                 <th>Contract</th>
-                <th colspan="2">Actions</th>
+                <th>Actions</th>
             </tr>
             </thead>
         <tbody> 
@@ -70,8 +80,10 @@ $data = $query->fetchAll();
 	    echo "<td>".$row['Profile_Pic']."</td>";
 	    echo "<td><button><a href='".$row['Resume']."' download style='text-decoration: none' class='text-dark'>Download resume</a></button></td>";
 	    echo "<td><button><a href='".$row['Contract']."' download style='text-decoration: none' class='text-dark'>Download contract</a></button></td>";
-	    echo "<td colspan='2'><a class='btn btn-info' href='UpdateEmployee.php?id=". $row['Employee_ID'] . "'>Edit</a>";
-	    echo "<a class='btn btn-danger' href='DeleteEmployee.php?id=". $row['Employee_ID'] . "'>Delete</a></td></tr>";
+	    echo "<td>
+              <a class='btn btn-info' href='UpdateEmployee.php?id=". $row['Employee_ID'] . "'>Edit</a>
+              <a class='btn btn-danger' href='DeleteEmployee.php?id=". $row['Employee_ID'] . "'>Delete</a>
+</td></tr>";
 	}
 	
 	?>                

@@ -1,5 +1,18 @@
 <?php 
 include('DBConnection.php');
+
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+
+if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
+    echo "You don't have permission to view this page.";
+    exit();
+}
+
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

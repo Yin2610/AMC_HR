@@ -1,4 +1,5 @@
 <?php
+session_start();
 include ('DBConnection.php');
 global $pdo;
 $pdo = DBConnection::connectToDB();
@@ -32,7 +33,7 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
     $updateLeaveStmt->bindParam(':approval_date', $approval_date);
     if ($updateLeaveStmt->execute()) {
         echo "<script>alert('The leave status has been updated.')</script>";
-        echo "<script>window.location.assign('UpdateLeave.php?id=$leave_id')</script>";
+        echo "<script>window.location.assign('UpdateLeaveSupervisor.php?id=$leave_id')</script>";
     }
 }
 
@@ -52,14 +53,14 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
 </style>
 </head>
 
-<body>
+<body class="bg-light">
 	<?php include('SideNav.php')?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
 				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-				<li class="breadcrumb-item"><a href="RetrieveLeave.php">Leave</a></li>
-				<li class="breadcrumb-item active" aria-current="page">View Leave</li>
+				<li class="breadcrumb-item"><a href="RetrieveLeaveSupervisor.php">View Leave Requests</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Update Leave Status</li>
 			</ol>
 		</nav>
 		
@@ -70,7 +71,7 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
             $selectLeaveStmt->execute();
             $data = $selectLeaveStmt->fetchAll();
             foreach ($data as $row) {
-                echo "<form action='UpdateLeave.php' method='POST'><div class='row'>
+                echo "<form action='UpdateLeaveSupervisor.php' method='POST'><div class='row'>
             <div class='col-md-1'></div>
 			<div class='col-md-10'>
 				<div class='row'>";

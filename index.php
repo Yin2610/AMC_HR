@@ -69,7 +69,6 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
 <meta charset="ISO-8859-1">
 <title>Login</title>
 
-
 </head>
 <body style="background-color: #DBF9FC; display: flex; justify-content: center; align-items: center;">
 
@@ -77,7 +76,7 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
 	<form action="index.php" method="post" style="width:500px;border:2px solid #ccc;padding: 30px;background: #fff;border-radius:15px;">
 	<?php
 	?>
-		 <h1 style="text-align:center;margin-bottom:40px;">Human Resource Management</h1>
+		 <h1 style="text-align:center;margin-bottom:20px;">Human Resource Management</h1>
 		  <h2 style="color:black;text-align:center;margin-bottom:40px;">Login</h2>
 		<?php if (isset($_GET['error'])){ ?>
 		<div style="background-color: #F2DEDE">
