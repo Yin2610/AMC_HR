@@ -1,0 +1,95 @@
+<?php
+
+include('DBConnection.php');
+
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    $designation = $_SESSION['Designation'];
+}
+
+$pdo = DBConnection::connectToDB();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Name, p.Date, p.Payslip
+            FROM employee as e
+            INNER JOIN payroll as p ON p.Employee_ID = e.Employee_ID
+            INNER JOIN designation as ds ON ds.Designation_ID = p.Designation_ID
+            INNER JOIN department as dp ON dp.Department_ID = ds.Department_ID";
+
+if($designation == "Purchasing director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'Purchasing Department'";
+}
+else if($designation == "Sales director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'Sales Department'";
+}
+else if($designation == "HR director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'HR Department'";
+}
+    
+$selectPayrollStmt = $pdo->prepare($selectPayrollSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+$selectPayrollStmt->execute();
+$data = $selectPayrollStmt->fetchAll();
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+    
+	<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+	<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	
+</head>
+<body class="bg-light">
+	<?php include('SideNav.php')?>	
+	<div class="container-fluid mt-4">
+		<nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-5">
+            <li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Payroll</li>
+          </ol>
+        </nav>
+		<table id="payrollTable" class="display hover" style="width: 100%">
+			<thead>
+				<tr>
+        			<th>Date</th>
+        			<th>Employee Name</th>
+        			<th>Department</th>
+        			<th>Designation</th>
+        			<th>Salary</th>
+        			<th>Payslip</th>
+    			</tr>
+			</thead>
+			<tbody>
+    			<?php 
+        			foreach ($data as $row) {
+        			    echo "<tr>";
+        			    echo "<td>".$row['Date']."</td>";
+        			    echo "<td>".$row['Name']."</td>";
+        			    echo "<td>".$row['Department_Name']."</td>";
+        			    echo "<td>".$row['Designation']."</td>";
+        			    echo "<td>".$row['Salary']."</td>";
+        			    echo "<td><button><a href='".$row['Payslip']."' download style='text-decoration: none' class='text-dark'>View payslip</a></button></td>";
+        			    echo "</tr>";
+        			}
+    			?>
+    		</tbody>
+		</table>
+	</div>
+	<script type="text/javascript">
+		$(document).ready(function () {
+            $('#payrollTable').DataTable({
+            	'scrollX': true
+            });
+        } );
+	</script>
+</body>
+</html>
