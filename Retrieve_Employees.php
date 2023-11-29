@@ -14,6 +14,18 @@ $data = $query->fetchAll();
     <title>View Page</title>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 </head>
+<body class='bg-light'>
+<?php include('sidenav.php')?>
+	<div class="container-fluid mt-4">
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-5">
+				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+				<li class="breadcrumb-item"><a href="#">View Employees</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Register Employee</li>
+			</ol>
+		</nav>
+	</div>
+</body>
 
 <body>
     <div class="container">
