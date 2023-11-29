@@ -1,8 +1,33 @@
 <?php
-include "dbConnection.php";
+include "DBConnection.php";
+session_start();
+
+IF(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+ELSE {
+    $designation = $_SESSION['Designation'];
+}
+
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = "SELECT e.Name, d.Department_Name, ds.Designation, l.Leave_Category, l.From_Date, l.Until_Date, l.Status FROM employee as e, department as d, designation as ds, `leave` as l  WHERE l.Submitted_By= e.Employee_ID AND ds.Designation=e.Designation_ID AND d.Department_ID=ds.Department_ID";
+
+$sql = "SELECT e.Name, d.Department_Name, ds.Designation, l.Leave_Category, l.From_Date, l.Until_Date, l.Status 
+FROM employee as e
+JOIN department as d ON d.Department_ID = ds.Department_ID            JOIN designation as ds ON ds.Designation_ID = e.Designation_ID
+JOIN `leave` as l ON l.Submitted_By = e.Employee_ID";
+
+IF($designation == "Purchasing director") {
+    $sql .= " WHERE d.Department_Name = 'Purchasing Department'";
+}
+ELSE IF($designation == "Sales director") {
+    $sql .= " WHERE d.Department_Name = 'Sales Department'";
+}
+ELSE IF($designation == "HR director") {
+    $sql .= " WHERE d.Department_Name = 'HR Department'";
+}
+
 $query = $pdo->prepare($sql);
 $query->execute();
 $data = $query->fetchAll();
@@ -16,7 +41,7 @@ $data = $query->fetchAll();
 	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 </head>
 <body class='bg-light'>
-<?php include('sidenav.php')?>
+<?php include('SideNav.php')?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
@@ -56,7 +81,7 @@ foreach ($data as $row) {
     echo "<td>" . $row['From_Date'] . "</td>";
     echo "<td>" . $row['Until_Date'] . "</td>";
     echo "<td>" . $row['Status'] . "</td>";
-    echo "<td><a class='btn btn-info' href='update.php?id=" . $row['Name'] . "'>Edit</a></td>";
+    echo "<td><a class='btn btn-info' href='updatepayroll.php?id=" . $row['Name'] . "'>Edit</a></td>";
 }
 
 ?>
