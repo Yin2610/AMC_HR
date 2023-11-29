@@ -3,11 +3,13 @@ include('DBConnection.php');
 
 session_start();
 
+// if session is not set, redirect to login page.
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
     header("Location: index.php");
 }
 
+// if employee role is not administrator, no permission to view
 if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
     echo "You don't have permission to view this page.";
     exit();
@@ -17,6 +19,7 @@ $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if(isset($_POST['btnRegister'])) {
+    
     $valid = true;
     
     $Name = $_POST['txtName'];
@@ -39,7 +42,7 @@ if(isset($_POST['btnRegister'])) {
         }
     }
     
-    if(isset($_FILES['fResume']['name'])) {
+    if(!empty($_FILES['fResume']['name'])) {
         $ResumeName = $_FILES['fResume']['name'];
         $TempResumeName = $_FILES['fResume']['tmp_name'];
         $ResumeFolder = "Employee_Info/Resumes/" . $ResumeName;
@@ -48,7 +51,7 @@ if(isset($_POST['btnRegister'])) {
         }
     }
     
-    if(isset($_FILES['fContract']['name'])) {
+    if(!empty($_FILES['fContract']['name'])) {
         $ContractName = $_FILES['fContract']['name'];
         $TempContractName = $_FILES['fContract']['tmp_name'];
         $ContractFolder = "Employee_Info/Contracts/" . $ContractName;
@@ -103,7 +106,6 @@ if(isset($_POST['btnRegister'])) {
     </style>
     <script>
 		$(document).ready(() => {
-		alert('x');
 			$("#fProfilePic").change(function() {
 			alert('y');
 				const file = this.files[0];
@@ -123,6 +125,8 @@ if(isset($_POST['btnRegister'])) {
 <body class='bg-light'>
 	<?php include('SideNav.php')?>
 	<div class="container-fluid mt-4">
+	
+<!-- 	breadcrumb for navigation  -->
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
 				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
@@ -130,10 +134,15 @@ if(isset($_POST['btnRegister'])) {
 				<li class="breadcrumb-item active" aria-current="page">Register Employee</li>
 			</ol>
 		</nav>
+		
+		
         <form action="CreateEmployee.php" method="post" enctype="multipart/form-data">
         	<div class="row">
         		<div class="col-md-1"></div>
+        		
         		<div class="col-md-5">
+        		
+<!--         		card for employee information input -->
         		<div class="card p-3" style="width:500px; height:530px">
         			<table>
         				<tr>
@@ -150,7 +159,7 @@ if(isset($_POST['btnRegister'])) {
                         <tr>
                         	<td><label for="rdoGender">Gender: </label></td>
                         	<td>
-                        		<input name="rdoGender" type="radio" id="rdoMale" value="Male" required>
+                        		<input name="rdoGender" type="radio" id="rdoMale" value="Male" checked="checked" required>
                         		<label for="rdoMale">Male</label>
                                 <input name="rdoGender" type="radio" id="rdoFemale" value="Female" required>
                                 <label for="rdoFemale">Female</label>
@@ -179,7 +188,10 @@ if(isset($_POST['btnRegister'])) {
                     </table>
                     </div>
             	</div>
+            	
             	<div class="col-md-5">
+            	
+<!--             	card for work-related information input -->
             	<div class="card p-3" style="width:500px; height:530px">
             		<table>
             			<tr>
@@ -193,6 +205,8 @@ if(isset($_POST['btnRegister'])) {
             			<tr>
             				<td><label for="sBank">Bank: </label></td>
             				<td><select name="sBank" class="form-control-sm border rounded" required>
+            				
+<!--             				select bank SQL to allow admin select a bank from registered banks in the database for the employee -->
                         		<?php 
                                     $selectBankSQL = "SELECT * FROM Bank";
                                     $query = $pdo->prepare($selectBankSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
@@ -210,11 +224,11 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="fResume">Resume: </label></td>
-                        	<td><input name="fResume" class="form-control-sm border rounded" type="file"></td>
+                        	<td><input name="fResume" id="fResume" class="form-control-sm border rounded" type="file"></td>
                         </tr>
                         <tr>
                         	<td><label for="fContract">Contract: </label></td>
-                        	<td><input name="fContract" class="form-control-sm border rounded" type="file"></td>
+                        	<td><input name="fContract" id="fContract" class="form-control-sm border rounded" type="file"></td>
                         </tr>
                         <tr>
                         	<td><label for="txtPassword">Password: </label></td>
@@ -224,6 +238,8 @@ if(isset($_POST['btnRegister'])) {
                         	<td><label for="sRole">User role: </label></td>
                         	<td>
                         		<select name="sRole" class="form-control-sm border rounded" required>
+                        		
+<!--                         	select role SQL to allow admin select a role from registered roles in the database for the employee -->
                                 <?php 
                                     $selectRoleSQL = "SELECT * from Role";
                                     $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
@@ -239,6 +255,8 @@ if(isset($_POST['btnRegister'])) {
                         <tr>
                         	<td><label for="sDesignation">Designation: </label></td>
                         	<td><select name="sDesignation" class="form-control-sm border rounded" required>
+                        	
+<!--                        select designation SQL to allow admin select a designation from registered designations in the database for the employee -->                        	
                             <?php 
                                 $selectDesignationSQL = "SELECT * FROM Designation";
                                 $query = $pdo->prepare($selectDesignationSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));

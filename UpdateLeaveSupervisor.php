@@ -1,5 +1,16 @@
 <?php
+
 session_start();
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+
+if($_SESSION['Role_Name'] != 'Department Head') {
+    echo "You don't have permission to view this page.";
+    exit();
+}
+
 include ('DBConnection.php');
 global $pdo;
 $pdo = DBConnection::connectToDB();
