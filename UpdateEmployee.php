@@ -2,6 +2,18 @@
 require 'DBConnection.php';
 $id = null;
 
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    $id = $_SESSION['Employee_ID'];
+    $name = $_SESSION['Name'];
+    $role_name = $_SESSION['Role_Name'];
+}
+
 if (! empty($_GET['id'])) {
     $id = $_REQUEST['id'];
 }
@@ -148,8 +160,12 @@ if (! empty($_POST)) {
         ));
 
         DBConnection::disconnect();
-
-        header("Location: employee.php");
+        if($role_name == "Administrator" || $role_name == "Department Head") {
+            header("Location: RetrieveEmployee.php");
+        }
+        else if ($role_name == "Employee") {
+            header("Location: Profile.php");
+        }
     }
 } 
 ?>
@@ -164,12 +180,20 @@ if (! empty($_POST)) {
 <link href="css/form.css" rel="css stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
-
-<body>
-	<div class="container" id="form">
+<body class="bg-light">
+    <?php include('SideNav.php')?>
+    <div class="container-fluid mt-4">
+        <nav aria-label="breadcrumb">
+    		<ol class="breadcrumb mb-5">
+    			<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+    			<li class="breadcrumb-item"><a href="RetrieveEmployee.php">View Employees</a></li>
+    			<li class="breadcrumb-item active" aria-current="page">Update Employee</li>
+    		</ol>
+    	</nav>
+	<div id="form">
 		<div class="text-center">
 			<h1>Update <?php echo !empty($name)?$name:'';?> Details</h1>
-			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
+			<img width="200px" height="200px" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
 		</div>
 		<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post"
 			enctype="multipart/form-data">
@@ -373,9 +397,17 @@ if (! empty($_POST)) {
 			<!-- Submit button -->
 			<div class="form-actions">
 				<button type="submit" class="btn btn-success">Update</button>
-				<a class="btn" href="employee.php">Back</a>
+				<?php 
+				if($role_name == "Administrator" || $role_name == "Department Head") {
+    				    echo "<a class='btn' href='RetrieveEmployee.php'>Back</a>";
+    				}
+    				else if($role_name == "Employee"){ 
+    				    echo "<a class='btn' href='Portfolio.php'>Back</a>";
+				    }
+				?>
 			</div>
 		</form>
+	</div>
 	</div>
 </body>
 </html>

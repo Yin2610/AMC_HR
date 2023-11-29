@@ -2,6 +2,17 @@
 require 'DBConnection.php';
 $id = null;
 
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    $id = $_SESSION['Employee_ID'];
+    $name = $_SESSION['Name'];
+}
+
 if (! empty($_GET['id'])) {
     $id = $_REQUEST['id'];
 }
@@ -65,14 +76,12 @@ DBConnection::disconnect();
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
 				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-				<li class="breadcrumb-item"><a href="#">View Employees</a></li>
-				<li class="breadcrumb-item active" aria-current="page">Register Employee</li>
+				<li class="breadcrumb-item active" aria-current="page">Profile</li>
 			</ol>
 		</nav>
 	</div>
 	
 	<div class="container row" id="profile">
-		<a href="employee.php">Back</a>
 		<div class="text-center col">
 			<h1>Profile</h1>
 			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">

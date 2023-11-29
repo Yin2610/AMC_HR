@@ -1,10 +1,35 @@
 <?php
 
-// if HR director or payroll manager
 include('DBConnection.php');
+
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    $designation = $_SESSION['Designation'];
+}
+
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$selectPayrollSQL = "SELECT p.Date, p.Payslip, e.Name, ds.Designation, ds.Salary, dp.Department_Name FROM payroll as p, employee as e, designation as ds, department as dp WHERE p.Employee_ID = e.Employee_ID AND p.Designation_ID = ds.Designation_ID AND ds.Department_ID = dp.Department_ID";
+$selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Name, p.Date, p.Payslip
+            FROM employee as e
+            INNER JOIN payroll as p ON p.Employee_ID = e.Employee_ID
+            INNER JOIN designation as ds ON ds.Designation_ID = p.Designation_ID
+            INNER JOIN department as dp ON dp.Department_ID = ds.Department_ID";
+
+if($designation == "Purchasing director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'Purchasing Department'";
+}
+else if($designation == "Sales director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'Sales Department'";
+}
+else if($designation == "HR director") {
+    $selectPayrollSQL .= " WHERE dp.Department_Name = 'HR Department'";
+}
+    
 $selectPayrollStmt = $pdo->prepare($selectPayrollSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
 $selectPayrollStmt->execute();
 $data = $selectPayrollStmt->fetchAll();

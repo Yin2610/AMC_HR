@@ -1,11 +1,16 @@
-<?php ?>
+<?php
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"> -->
-<!-- <script src="js/bootstrap.min.js"></script> -->
 <style>
     a.stretched-link {
         text-decoration: none;
@@ -15,7 +20,7 @@
 <body class="bg-light">
 <?php include('SideNav.php')?>
 <div class="container-fluid mt-5">
-	<h3 class="text-center">Welcome to AMC-HRM System.</h3>
+	<h3 class="text-center">Welcome to AMC-HRM System, <?php echo $_SESSION['Name']?>.</h3>
 	<p class="text-center mt-3">Here's a quick look at some of the things you can do in this system. Enjoy your day!</p>
 	<div class="row mt-5">
     	<div class="col-md-3"></div>
