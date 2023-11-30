@@ -10,79 +10,112 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 }
 
 // if employee role is not administrator, no permission to view
-if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
+if($_SESSION['Role_Name'] != 'Administrator') {
     echo "You don't have permission to view this page.";
     exit();
 }
 
+// connect to database
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if(isset($_POST['btnRegister'])) {
     
-    $valid = true;
+    // keep track of validation errors
+    $emailError = null;
+    $addressError = null;
+    $bankAccError = null;
+    $ICNumberError = null;
     
-    $Name = $_POST['txtName'];
-    $Gender = $_POST['rdoGender'];
-    $DOB = $_POST['dtDOB'];
-    $PhoneNum = $_POST['txtPhoneNum'];
-    $Email = $_POST['txtEmail'];
-    $Address = $_POST['txtAddress'];
-    $OnboardDate = $_POST['dtOnBoard'];
-    $OffboardDate = $_POST['dtOffBoard'];
-    $BankAcc = $_POST['txtBankAcc']; 
+    $name = $_POST['txtName'];
+    $gender = $_POST['rdoGender'];
+    $dob = $_POST['dtDOB'];
+    $phoneNum = $_POST['txtPhoneNum'];
+    $email = $_POST['txtEmail'];
+    $address = $_POST['txtAddress'];
+    $onboardDate = $_POST['dtOnBoard'];
+    $offboardDate = $_POST['dtOffBoard'];
+    $bankAcc = $_POST['txtBankAcc'];
     $ICNumber = $_POST['txtICNumber'];
     
-    $ProfilePicPath = "Website_Images/Default_pp.png";
+    //validate all the inputs
+    $valid = true;
+    
+    if(!preg_match('/^[0-9]{8}$/', $phoneNum)) {
+        $phoneNumError = 'Phone number should be 8 numeric characters';
+        $valid = false;
+    }
+    
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) ) {
+        $emailError = 'Please enter a valid email address.';
+        $valid = false;
+    }
+    
+    if (! preg_match('/^\d{9,12}$/', $bankAcc)) {
+        $bankAccError = 'Bank Account Number should be between 9 to 12 digits.';
+        $valid = false;
+    }
+    
+    if(!preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $ICNumber)) {
+        $ICNumberError = 'Please enter a valid IC number.';
+        $valid = false;
+    }
+    
+    $profilePicPath = "Website_Images/Default_pp.png";
     
     if(isset($_FILES['fProfilePic']['name'])) {
-        $ProfilePicName = $_FILES['fProfilePic']['name'];
-        $TempProfilePicName = $_FILES['fProfilePic']['tmp_name'];
-        $ProfilePicPath = "Employee_Info/Profile_Pics/" . $ProfilePicName;
-        if(!move_uploaded_file($TempProfilePicName, $ProfilePicPath)) {
+        $profilePicName = $_FILES['fProfilePic']['name'];
+        $tempProfilePicName = $_FILES['fProfilePic']['tmp_name'];
+        $profilePicPath = "Employee_Info/Profile_Pics/" . $profilePicName;
+        if(!move_uploaded_file($tempProfilePicName, $profilePicPath)) {
             echo "<script>alert('Failed uploading profile pic.')</script>";
         }
     }
     
     if(!empty($_FILES['fResume']['name'])) {
-        $ResumeName = $_FILES['fResume']['name'];
-        $TempResumeName = $_FILES['fResume']['tmp_name'];
-        $ResumePath = "Employee_Info/Resumes/" . $ResumeName;
-        if(!move_uploaded_file($TempResumeName, $ResumePath)) {
+        $resumeName = $_FILES['fResume']['name'];
+        $tempResumeName = $_FILES['fResume']['tmp_name'];
+        $resumePath = "Employee_Info/Resumes/" . $resumeName;
+        if(!move_uploaded_file($tempResumeName, $resumePath)) {
             echo "<script>alert('Failed uploading resume.')</script>";
         }
     }
     
     if(!empty($_FILES['fContract']['name'])) {
-        $ContractName = $_FILES['fContract']['name'];
-        $TempContractName = $_FILES['fContract']['tmp_name'];
-        $ContractPath = "Employee_Info/Contracts/" . $ContractName;
+        $contractName = $_FILES['fContract']['name'];
+        $tempContractName = $_FILES['fContract']['tmp_name'];
+        $contractPath = "Employee_Info/Contracts/" . $contractName;
         
-        if(!move_uploaded_file($TempContractName, $ContractPath)) {
+        if(!move_uploaded_file($tempContractName, $contractPath)) {
             echo "<script>alert('Failed uploading contract.')</script>";
         }
     }
     
-    $Password = $_POST['txtPassword'];
+    $password = $_POST['txtPassword'];
+    if(!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/', $ICNumber)) {
+        $ICNumberError = 'Password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.';
+        $valid = false;
+    }
     
-    $HashPassword = password_hash($Password, PASSWORD_BCRYPT);
+    // hashing password with bcrypt algorithm
+    $hashPassword = password_hash($password, PASSWORD_BCRYPT);
     
-    $RoleID = $_POST['sRole'];
-    $DesignationID = $_POST['sDesignation'];
-    $BankID = $_POST['sBank'];
+    $roleID = $_POST['sRole'];
+    $designationID = $_POST['sDesignation'];
+    $bankID = $_POST['sBank'];
 
     // insert employee data
     if($valid) {
         try {
             $insertEmployeeSQL = "INSERT INTO employee (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address, Onboard_Date, Offboard_Date, Profile_Pic, Resume, Contract, Role_ID, Designation_ID, Bank_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertEmployeeStmt = $pdo->prepare($insertEmployeeSQL);
-            $insertEmployeeStmt->execute(array($Name, $Gender, $DOB, $PhoneNum, $Email, $Address, $OnboardDate, $OffboardDate, $ProfilePicPath, $ResumePath, $ContractPath, $RoleID, $DesignationID, $BankID));
+            $insertEmployeeStmt->execute(array($name, $gender, $dob, $phoneNum, $email, $address, $onboardDate, $offboardDate, $profilePicPath, $resumePath, $contractPath, $roleID, $designationID, $bankID));
             
             $lastInsertedEmployeeID = $pdo->lastInsertId();
             
             $insertSensitiveInfoSQL = "INSERT INTO sensitive_info (Password, Bank_Account, IC_Number, Employee_ID) VALUES (?, ?, ?, ?)";
             $insertSensitiveInfoStmt = $pdo->prepare($insertSensitiveInfoSQL);
-            $insertSensitiveInfoStmt->execute(array($HashPassword, $BankAcc, $ICNumber, $lastInsertedEmployeeID));
+            $insertSensitiveInfoStmt->execute(array($hashPassword, $bankAcc, $ICNumber, $lastInsertedEmployeeID));
             
             echo "<script>alert('Employee registration successful')</script>";
         }
@@ -105,8 +138,13 @@ if(isset($_POST['btnRegister'])) {
             padding-right: 20px;
             padding-top: 15px;
         }
+        .warning {
+            color: red;
+            font-size: 12px;
+        }
     </style>
     <script>
+    	// preview uploaded profile image
     	function readURL(fileInput) {
     		if(fileInput.files && fileInput.files[0]) {
     			let reader = new FileReader();
@@ -116,6 +154,50 @@ if(isset($_POST['btnRegister'])) {
                 }
                 
                 reader.readAsDataURL(fileInput.files[0]);
+    		}
+    	}
+    	
+    	//validating or showing error msg for when phone no input is not 8 digits
+    	function validatePhoneNo(txtPhoneNo) {
+    		let phoneNoRE = /^[0-9]{8}$/;
+    		if(txtPhoneNo.value.match(phoneNoRE)) {
+        		document.getElementById("phoneNoError").innerHTML = "";
+    		}
+    		else {
+    			document.getElementById("phoneNoError").innerHTML = "Phone number should be 8 digits.";
+    		}
+    	}
+    	
+    	//validating or showing error msg for when bank account no input is not between 9 and 12 digits
+    	function validateBankAccNo(txtBankAccNo) {
+    		let bankAccNoRE = /^[0-9]{9,12}$/;
+    		if(txtBankAccNo.value.match(bankAccNoRE)) {
+        		document.getElementById("bankAccNoError").innerHTML = "";
+    		}
+    		else {
+    			document.getElementById("bankAccNoError").innerHTML = "Bank account no should be between 9 and 12 digits.";
+    		}
+    	}
+    	
+    	//validating or showing error msg for when IC no input has 1 start alphabet, 7 middle digits and 1 end alphabet
+    	function validateICNo(txtICNumber) {
+    		let ICNoRE = /^[A-Z][0-9]{7}[A-Z]$/;
+    		if(txtICNumber.value.match(ICNoRE)) {
+        		document.getElementById("ICnumberError").innerHTML = "";
+    		}
+    		else {
+    			document.getElementById("ICnumberError").innerHTML = "IC number is not valid.";
+    		}
+    	}
+    	
+    	//showing error msg for enforcing password strength, password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.
+    	function strengthenPw(txtPassword) {
+    		let pwRE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/;
+    		if(txtPassword.value.match(pwRE)) {
+    			document.getElementById("pwError").innerHTML = "";
+    		}
+    		else {
+    			document.getElementById("pwError").innerHTML = "Password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.";
     		}
     	}
 	</script> 
@@ -142,7 +224,7 @@ if(isset($_POST['btnRegister'])) {
         		<div class="col-md-5">
         		
 <!--         		card for employee information input -->
-        		<div class="card p-3" style="width:500px; height:530px">
+        		<div class="card p-3" style="width:500px;">
         			<table>
         				<tr>
         					<td colspan="2" style="text-align:center"><img src="Website_Images/Default_pp.png" id="imgProfile" width="100px" height="100px" class="border rounded-circle"></td>
@@ -153,7 +235,9 @@ if(isset($_POST['btnRegister'])) {
         				</tr>
         				<tr>
         					<td><label for="txtName">Name: </label></td>
-                    		<td><input name="txtName" class="form-control-sm border rounded" type="text" required></td>
+                    		<td><input name="txtName" class="form-control-sm border rounded" type="text" required>
+                        		
+                    		</td>
                         </tr>
                         <tr>
                         	<td><label for="rdoGender">Gender: </label></td>
@@ -170,11 +254,15 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="txtPhoneNum">Phone number: </label></td>
-                        	<td><input name="txtPhoneNum" class="form-control-sm border rounded" type="text" required></td>
+                        	<td><input name="txtPhoneNum" class="form-control-sm border rounded" type="text" required onkeyup="validatePhoneNo(this);">
+                        	<br><span class="warning" id="phoneNoError"><?php (!empty($phoneNumError))? $phoneNumError: "" ?></span>
+                    		</td>
                         </tr>
                         <tr>
                         	<td><label for="txtEmail">Email: </label></td>
-                        	<td><input name="txtEmail" class="form-control-sm border rounded" type="email" required></td>
+                        	<td><input name="txtEmail" class="form-control-sm border rounded" type="email" required>
+                        		<br><span class="warning" id="emailError"><?php (!empty($emailError))? $emailError: "" ?></span>
+                    		</td>
                         </tr>
                         <tr>
                         	<td><label for="txtAddress">Address: </label></td>
@@ -182,7 +270,9 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="txtICNumber">IC number: </label></td>
-                        	<td><input name="txtICNumber" class="form-control-sm border rounded" type="text" required></td>
+                        	<td><input name="txtICNumber" class="form-control-sm border rounded" type="text" required onkeyup="validateICNo(this);">
+                        		<br><span class="warning" id="ICnumberError"><?php (!empty($ICNumberError))? $ICNumberError: "" ?></span> 
+                        	</td>
                         </tr>
                     </table>
                     </div>
@@ -191,7 +281,7 @@ if(isset($_POST['btnRegister'])) {
             	<div class="col-md-5">
             	
 <!--             	card for work-related information input -->
-            	<div class="card p-3" style="width:500px; height:530px">
+            	<div class="card p-3" style="width:500px;">
             		<table>
             			<tr>
                         	<td><label for="dtOnBoard">Onboarding date: </label></td>
@@ -219,7 +309,9 @@ if(isset($_POST['btnRegister'])) {
             			</tr>
             			<tr>
                         	<td><label for="txtBankAcc">Bank account number: </label></td>
-                        	<td><input name="txtBankAcc" class="form-control-sm border rounded" type="text" required></td>
+                        	<td><input name="txtBankAcc" class="form-control-sm border rounded" type="text" required onkeyup="validateBankAccNo(this)">
+                        		<br><span id="bankAccNoError" class="warning"><?php (!empty($bankAccError))? $bankAccError: "" ?></span>
+                        	</td>
                         </tr>
                         <tr>
                         	<td><label for="fResume">Resume: </label></td>
@@ -231,7 +323,9 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="txtPassword">Password: </label></td>
-                        	<td><input name="txtPassword" class="form-control-sm border rounded" type="password" placeholder="Password" required></td>
+                        	<td><input name="txtPassword" class="form-control-sm border rounded" type="password" placeholder="Password" required onkeyup="strengthenPw(this)">
+                        	<br><span class="warning" id="pwError"></span>
+                        	</td>
                         </tr>
                         <tr>
                         	<td><label for="sRole">User role: </label></td>
