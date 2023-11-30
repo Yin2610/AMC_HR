@@ -24,7 +24,7 @@ if (! empty($_POST)) {
 
     DBConnection::disconnect();
 
-    header("Location: employee.php");
+    header("Location: RetrieveEmployee.php");
 }
 
 ?>

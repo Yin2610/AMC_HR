@@ -48,7 +48,7 @@ if (! empty($_FILES)) {
         DBConnection::disconnect();
 
         // Direct user back to employee.php after they have successfully submitted the form
-        header("Location: employee.php");
+        header("Location: RetrieveEmployee.php");
     } else {
         $filetypeError = "Invalid file type. Please upload a PDF file!";
     }

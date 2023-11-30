@@ -42,7 +42,7 @@ if (! empty($_FILES)) {
 
         DBConnection::disconnect();
 
-        header("Location: employee.php");
+        header("Location: RetrieveEmployee.php");
     } else {
         $filetypeError = "Invalid file type. Please upload a PNG / JPEG file!";
     }

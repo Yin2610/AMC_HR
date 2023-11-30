@@ -23,15 +23,10 @@
 				<form action="DeleteContract.php?id=<?php echo $id?>" method="post"
 					enctype="multipart/form-data">
 					<div class="modal-header">
-						<h1 class="modal-title fs-5" id="dContractModalLabel">Delete
-							Contract</h1>
+						<h1 class="modal-title fs-5" id="dContractModalLabel">Delete Contract</h1>
 					</div>
-					<div class="modal-body">
-						<!-- Delete Contract -->
-
-
-
-
+					<div class="modal-body" style="text-align:left;">
+						<p>Are you sure you want to delete the contract?</p>
 						<input class="form-control" type="hidden" name="dcontract"
 							value="null">
 

@@ -20,7 +20,7 @@
 		aria-labelledby="uPwModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form action="updatepassword.php?id=<?php echo $id?>" method="post">
+				<form action="UpdatePassword.php?id=<?php echo $id?>" method="post">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="uPwModalLabel">Change Password</h1>
 					</div>

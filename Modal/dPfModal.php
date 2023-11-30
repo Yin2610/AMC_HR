@@ -27,7 +27,8 @@
 						<h1 class="modal-title fs-5" id="dPfModalLabel">Delete
 							Profile Image</h1>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" style="text-align:left;">
+					<p>Are you sure you want to delete the profile image?</p>
 						<!-- Delete Profile Image -->
 							<input type="hidden" name="dprofile_image" value="null">
 					
