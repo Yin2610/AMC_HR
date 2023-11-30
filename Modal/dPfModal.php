@@ -13,9 +13,7 @@
 <body>
 	
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dPfModal">
-  Delete Profile Image
-</button>
+<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#dPfModal"><i class="fa-solid fa-trash"></i></button>
 	
 	<!-- Modal -->
 	<div class="modal fade" id="dPfModal" tabindex="-1"

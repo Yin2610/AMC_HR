@@ -13,8 +13,8 @@
 <body>
 	
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dResumeModal">
-  Delete Resume
+<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#dResumeModal">
+<i class="fa-solid fa-trash"></i>
 </button>
 	<!-- Modal -->
 	<div class="modal fade" id="dResumeModal" tabindex="-1"

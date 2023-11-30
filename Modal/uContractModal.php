@@ -11,8 +11,8 @@
 </head>
 
 <body>
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#uContractModal">Update Contract</button>
+	<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#uContractModal"><i class="fa-solid fa-plus"></i></button>
 	<!-- Modal -->
 	<div class="modal fade" id="uContractModal" tabindex="-1"
 		aria-labelledby="uContractModalLabel" aria-hidden="true">

@@ -13,8 +13,8 @@
 <body>
 
 
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#dContractModal">Delete Contract</button>
+	<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#dContractModal"><i class="fa-solid fa-trash"></i></button>
 	<!-- Modal -->
 	<div class="modal fade" id="dContractModal" tabindex="-1"
 		aria-labelledby="dContractModalLabel" aria-hidden="true">

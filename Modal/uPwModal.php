@@ -13,9 +13,8 @@
 <body>
 	
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#uPwModal">
-  Change Password
-</button>
+<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#uPwModal" style="float: left;"><i class="fa-solid fa-key"></i> Change Password</button>
 	<!-- Modal -->
 	<div class="modal fade" id="uPwModal" tabindex="-1"
 		aria-labelledby="uPwModalLabel" aria-hidden="true">

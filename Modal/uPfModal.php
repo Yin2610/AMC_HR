@@ -13,8 +13,8 @@
 <body>
 
 
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#uPfModal">Update Profile Image</button>
+	<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#uPfModal"><i class="fa-solid fa-plus"></i></button>
 
 	<!-- Modal -->
 	<div class="modal fade" id="uPfModal" tabindex="-1"
