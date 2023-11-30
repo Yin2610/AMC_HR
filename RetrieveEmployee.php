@@ -77,13 +77,32 @@ $data = $query->fetchAll();
 	    echo "<td>".$row['Address']."</td>";
 	    echo "<td>".$row['Onboard_Date']."</td>";
 	    echo "<td>".$row['Offboard_Date']."</td>";
-	    echo "<td>".$row['Profile_Pic']."</td>";
-	    echo "<td><button><a href='".$row['Resume']."' download style='text-decoration: none' class='text-dark'>Download resume</a></button></td>";
-	    echo "<td><button><a href='".$row['Contract']."' download style='text-decoration: none' class='text-dark'>Download contract</a></button></td>";
-	    echo "<td>
-              <a class='btn btn-info' href='UpdateEmployee.php?id=". $row['Employee_ID'] . "'>Edit</a>
-              <a class='btn btn-danger' href='DeleteEmployee.php?id=". $row['Employee_ID'] . "'>Delete</a>
-</td></tr>";
+	    
+	    echo "<td>";
+	    echo "<div class='text-center' >";
+	    echo "<img style='width:70px;height:70px;border-radius: 50%;' src='".$row['Profile_Pic']."'>";
+	    echo "<br>";
+	    include "Modal\uPfModal.php";
+	    include "Modal\dPfModal.php";
+	    echo "</div>";
+	    echo "</td>";
+	    
+	    echo "<td>";
+	    echo "<a href='".$row['Resume']."'class='btn' target='_blank'><i class='fa-solid fa-download'></i></a>";
+	    include "Modal\uResumeModal.php";
+	    include "Modal\dResumeModal.php";
+	    echo "</td>";
+	    
+	    echo "<td>";
+	    echo "<a href='".$row['Contract']."'class='btn' target='_blank'><i class='fa-solid fa-download'></i></a>";
+	    include "Modal\uContractModal.php";
+	    include "Modal\dContractModal.php";
+	    echo "</td>";
+	    
+	    echo "<td colspan='2'><a class='btn' href='UpdateEmployee.php?id=". $row['Employee_ID'] . "'><i class='fa-solid fa-pen'></i> Edit</a><br>";
+	    echo "<a class='btn' href='DeleteEmployee.php?id=". $row['Employee_ID'] . "'><i class='fa-solid fa-trash'></i> Delete</a><br>";
+	    include "Modal\uPwModal.php";
+	    echo "</td></tr>";
 	}
 	
 	?>                
@@ -99,3 +118,4 @@ $data = $query->fetchAll();
 	</script>
 </body>
 </html>
+

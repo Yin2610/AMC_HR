@@ -13,8 +13,8 @@
 <body>
 	
 
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dResumeModal">
-  Delete Resume
+<button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#dResumeModal">
+<i class="fa-solid fa-trash"></i>
 </button>
 	<!-- Modal -->
 	<div class="modal fade" id="dResumeModal" tabindex="-1"
@@ -26,9 +26,10 @@
 				enctype="multipart/form-data">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="dContractModalLabel">Delete
-							Contract</h1>
+							Resume</h1>
 					</div>
-					<div class="modal-body">
+					<div class="modal-body" style="text-align:left;">
+					<p>Are you sure you want to delete the resume?</p>
 						<!-- Delete Resume -->
 							<input class="form-control" type="hidden" name="dresume" value="null">	
 					

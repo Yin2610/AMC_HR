@@ -13,8 +13,8 @@
 <body>
 
 
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#uResumeModal">Update Resume</button>
+	<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#uResumeModal"><i class="fa-solid fa-plus"></i></button>
 	<!-- Modal -->
 	<div class="modal fade" id="uResumeModal" tabindex="-1"
 		aria-labelledby="uResumeModalLabel" aria-hidden="true">

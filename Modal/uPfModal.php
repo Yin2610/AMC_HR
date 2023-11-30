@@ -13,15 +13,15 @@
 <body>
 
 
-	<button type="button" class="btn btn-primary" data-bs-toggle="modal"
-		data-bs-target="#uPfModal">Update Profile Image</button>
+	<button type="button" class="btn" data-bs-toggle="modal"
+		data-bs-target="#uPfModal"><i class="fa-solid fa-plus"></i></button>
 
 	<!-- Modal -->
 	<div class="modal fade" id="uPfModal" tabindex="-1"
 		aria-labelledby="uPfModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
-				<form action="updatepf.php?id=<?php echo $id?>" method="post"
+				<form action="UpdatePf.php?id=<?php echo $id?>" method="post"
 					enctype="multipart/form-data">
 					<div class="modal-header">
 						<h1 class="modal-title fs-5" id="uPfModalLabel">Update Profile
