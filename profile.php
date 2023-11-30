@@ -102,8 +102,17 @@ DBConnection::disconnect();
 			<p><strong class="pf">Onboard Date: </strong><?php echo !empty($ondate)?$ondate:'';?></p>
 			<p><strong class="pf">Offboard Date: </strong><?php echo !empty($offdate)?$offdate:'';?></p>
 			<p><strong class="pf">Salary: </strong>$<?php echo !empty($salary)?$salary:'';?></p>
-			<a href="<?php echo !empty($contract)?$contract:'';?>" target="_blank">Open Contract</a>
-			<a href="<?php echo !empty($resume)?$resume:'';?>" target="_blank">Open Resume</a>
+			<?php if (!empty($contract)): ?>
+    			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
+    		<?php else: ?>
+    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contact available</a>
+			<?php endif; ?>		
+			
+			<?php if (!empty($resume)): ?>
+    			<a href="<?php echo $resume; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Resume</a>
+    		<?php else: ?>
+    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No resume available</a>
+			<?php endif; ?>		
 		</div>
 	</div>
 </body>
