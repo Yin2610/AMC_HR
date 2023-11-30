@@ -1,11 +1,22 @@
-
-
 <?php
 require 'DBConnection.php';
 
+session_start();
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    if($_SESSION['Role_Name'] != 'Department Head') {
+        echo "You don't have permission to view this page.";
+        exit();
+    }
+}
+
 $filetypeError = null;
 
-if (! empty($_POST)) { // check if there's data uokoaded
+if (! empty($_POST)) { // check if there's data uploaded
 
     $employee = $_POST['pemployee'];
     $date = $_POST['pdate'];
@@ -53,7 +64,7 @@ if (! empty($_POST)) { // check if there's data uokoaded
         DBConnection::disconnect();
 
         // Direct user back to employee.php after they have successfully submitted the form
-        header("Location: employee.php");
+        header("Location: RetrievePayroll.php");
     }
 }
 
@@ -68,8 +79,17 @@ if (! empty($_POST)) { // check if there's data uokoaded
     	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
-<body>
-	<div class="container" id="form">
+<body class='bg-light'>
+	<?php include('SideNav.php')?>
+	<div class="container-fluid mt-4">
+		<nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-5">
+				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+				<li class="breadcrumb-item"><a href="RetrievePayroll.php">View Payrolls</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Insert New Payroll</li>
+			</ol>
+		</nav>
+	<div id="form">
 
 		<div class="text-center">
 				<h3>New Payroll</h3>
@@ -117,14 +137,14 @@ if (! empty($_POST)) { // check if there's data uokoaded
 				<!-- Submit button -->
 				<div class="form-actions">
 					<button type="submit" class="btn btn-success">Create</button>
-					<a class="btn" href="employee.php">Back</a>
+					<a class="btn" href="RetrievePayroll.php">Back</a>
 				</div>
 
 
 
 			</form>
 		</div>
-
+</div>
 
 	<!-- /container -->
 </body>

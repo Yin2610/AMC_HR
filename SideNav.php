@@ -1,6 +1,12 @@
 <?php 
-session_start();
-$id = $_SESSION['Employee_ID']
+
+if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
+    echo "<script>alert('Please login first.')</script>";
+    header("Location: index.php");
+}
+else {
+    $id = $_SESSION['Employee_ID'];
+}
 ?>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,18 +29,48 @@ $id = $_SESSION['Employee_ID']
           </div>
           <div class="offcanvas-body">
             <div>
-<!--               	if normal user -->
-				<a href="Home.php" class="nav-menu text-dark" style="text-decoration: none; display: block;">Home</a>
+			<?php 
+			
+			$homeLink = "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>";
+			$profileLink = "<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Profile</a>";
+			$createLeaveLink = "<a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>";
+			$retrieveEmployeeLink = "<a href='RetrieveEmployee.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Employees</a>";
+			$retrieveLeaveRequestLink = "<a href='RetrieveLeaveSupervisor.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Leave Requests</a>";
+			$retrievePayrollLink = "<a href='RetrievePayroll.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Payroll</a>";
+			
+			if($_SESSION['Role_Name'] == "Administrator") {
+			    echo "$homeLink
+    				<br>
+    				$profileLink
+    				<br>
+                    $createLeaveLink
+                    <br>
+                    $retrieveEmployeeLink
+                ";
+			}
+			
+			else if($_SESSION['Role_Name'] == "Department Head") {
+			    echo "$homeLink
+			    <br>
+				$profileLink
 				<br>
-				<a href="profile.php?id=<?php echo $id?>" class="nav-menu text-dark" style="text-decoration: none; display: block;">Profile</a>
+			    $createLeaveLink
+			    <br>
+				$retrieveEmployeeLink
+			    <br>
+                $retrievePayrollLink
+                <br>
+                $retrieveLeaveRequestLink";
+			}
+			
+			else if($_SESSION['Role_Name'] == "Employee"){
+			    echo "$homeLink
 				<br>
-				<a href="CreateLeave.php" class="nav-menu text-dark" style="text-decoration: none; display: block;">Request Leave</a>
-<!-- 				if admin  -->
-<!-- 				<a href="#">View Employees</a> -->
-<!-- 				<a href="#">Submit Payroll</a> -->
-				
-<!-- 				if supervisor -->
-<!-- 				<a href="#">View Employees</a> -->
+				$profileLink
+				<br>
+				$createLeaveLink";
+			}
+			?>
 				
             </div>
           </div>
