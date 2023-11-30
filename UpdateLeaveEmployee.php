@@ -33,53 +33,59 @@ if (isset($_GET["leave_id"])) {
     $q = $pdo->prepare($sql);
     $q->execute(array($leave_id));
     $row = $q->fetch(PDO::FETCH_ASSOC);
-}
 
-// Display the form with current leave details
-if (isset($row)) {
-    // Leave details found
+    // Display the form with current leave details
     ?>
     <!DOCTYPE html>
-<html lang="en">
+    <html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</head>
+    <head>
+        <meta charset="utf-8">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </head>
 
-<body class="bg-light">
-    <?php include('SideNav.php')?>
-    <div class="container-fluid mt-4">
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-5">
-                <li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">View Employees</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Register Employee</li>
-            </ol>
-        </nav>
+    <body class="bg-light">
+        <?php include('SideNav.php')?>
+        <div class="container-fluid mt-4">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-5">
+                    <li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+                    <li class="breadcrumb-item"><a href="#">View Employees</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Register Employee</li>
+                </ol>
+            </nav>
 
-        <div class="container" id="form">
-            <div class="text-center">
-                <h3>Update Leave</h3>
+            <div class="container" id="form">
+                <div class="text-center">
+                    <h3>Update Leave</h3>
+                </div>
+                <form action="update_leave_employee_view.php?leave_id=<?php echo $leave_id; ?>" method="post">
+                    <div class="mb-3">
+                        <label for="from_date" class="form-label">From Date</label>
+                        <input type="date" class="form-control" id="from_date" name="from_date" value="<?php echo $row['From_Date']; ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="until_date" class="form-label">Until Date</label>
+                        <input type="date" class="form-control" id="until_date" name="until_date" value="<?php echo $row['Until_Date']; ?>" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="notes" class="form-label">Notes</label>
+                        <textarea class="form-control" id="notes" name="notes" rows="3"><?php echo $row['Notes']; ?></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <button type="submit" class="btn btn-success">Update</button>
+                        <a class="btn btn-secondary" href="employee_view.php">Back</a>
+                    </div>
+                </form>
             </div>
-            <form action="update_leave_employee_view.php?leave_id=<?php echo $leave_id; ?>" method="post">
-                <div class="mb-3">
-                    <label for="from_date" class="form-label">From Date</label>
-                    <input type="date" class="form-control" id="from_date" name="from_date" value="<?php echo $row['From_Date']; ?>" required>
-                </div>
+        </div>
+    </body>
 
-                <div class="mb-3">
-                    <label for="until_date" class="form-label">Until Date</label>
-                    <input type="date" class="form-control" id="until_date" name="until_date" value="<?php echo $row['Until_Date']; ?>" required>
-                </div>
-
-                <div class="mb-3">
-                    <label for="notes" class="form-label">Notes</label>
-                    <textarea class="form-control" id="notes" name="notes" rows="3"><?php echo $row['Notes']; ?></textarea>
-                </div>
-
-                <div class="mb-3">
-                    <button type="submit" class="btn btn-success">Update</button>
-                    <a class="btn btn
- 
+    </html>
+    <?php
+}
+?>
