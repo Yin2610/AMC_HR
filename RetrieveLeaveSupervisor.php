@@ -13,7 +13,7 @@ else {
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-$sql = "SELECT e.Name, d.Department_Name, ds.Designation, l.Leave_ID, l.Leave_Category, l.From_Date, l.Until_Date, l.Status 
+$sql = "SELECT e.Name, d.Department_Name, ds.Designation, l.* 
 FROM employee as e
 JOIN designation as ds ON ds.Designation_ID = e.Designation_ID
 JOIN department as d ON d.Department_ID = ds.Department_ID 
@@ -62,6 +62,7 @@ $data = $query->fetchAll();
 					<th>Department</th>
 					<th>Designation</th>
 					<th>Leave Category</th>
+					<th>Submitted Date</th>
 					<th>From Date</th>
 					<th>Until Date</th>
 					<th>Status</th>
@@ -76,10 +77,10 @@ foreach ($data as $row) {
     echo "<td>" . $row['Department_Name'] . "</td>";
     echo "<td>" . $row['Designation'] . "</td>";
     echo "<td>" . $row['Leave_Category'] . "</td>";
+    echo "<td>" . $row['Submission_Date'] . "</td>";
     echo "<td>" . $row['From_Date'] . "</td>";
     echo "<td>" . $row['Until_Date'] . "</td>";
     echo "<td>" . $row['Status'] . "</td>";
-//     echo "<td>".$row['Leave_ID']."</td>";
     echo "<td><a class='btn btn-info' href='UpdateLeaveSupervisor.php?id=".$row['Leave_ID']."'>Edit</a></td></tr>";
 }
 

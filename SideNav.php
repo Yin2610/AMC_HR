@@ -78,6 +78,6 @@ else {
         <a class="text-dark" href="#" style="text-decoration: none; display: inline-block; font-size:20px">
         	<b>AMC-HRM System</b>
         </a>
-        <a class="text-dark mt-1" href="#" style="text-decoration: none; display: inline-block; float: right;">Logout</a>
+        <a class="text-dark mt-1" href="Logout.php" style="text-decoration: none; display: inline-block; float: right;">Logout</a>
 	</div>	
 </nav>

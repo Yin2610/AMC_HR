@@ -10,6 +10,9 @@ if($_SESSION['Role_Name'] != 'Department Head') {
     echo "You don't have permission to view this page.";
     exit();
 }
+else {
+    $employee_ID = $_SESSION['Employee_ID'];
+}
 
 include ('DBConnection.php');
 global $pdo;
@@ -32,19 +35,19 @@ if (isset($_POST['btnReject'])) {
 }
 
 if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
-    // update approved by in leave after getting session
     global $pdo;
     global $status;
     $leave_id = $_POST['txtLeaveID'];
     $approval_date = date("Y-m-d");
-    $updateLeaveSQL = "UPDATE `leave` SET Status=:status, Approval_Date=:approval_date WHERE Leave_ID=:leave_id";
+    $updateLeaveSQL = "UPDATE `leave` SET Status=:status, Approval_Date=:approval_date, Approved_By=:approved_by WHERE Leave_ID=:leave_id";
     $updateLeaveStmt = $pdo->prepare($updateLeaveSQL);
     $updateLeaveStmt->bindParam(':status', $status);
     $updateLeaveStmt->bindParam(':leave_id', $leave_id);
     $updateLeaveStmt->bindParam(':approval_date', $approval_date);
+    $updateLeaveStmt->bindParam(':approved_by', $employee_ID);
     if ($updateLeaveStmt->execute()) {
         echo "<script>alert('The leave status has been updated.')</script>";
-        echo "<script>window.location.assign('UpdateLeaveSupervisor.php?id=$leave_id')</script>";
+        echo "<script>window.location.assign('RetrieveLeaveSupervisor.php')</script>";
     }
 }
 

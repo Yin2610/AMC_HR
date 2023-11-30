@@ -33,11 +33,13 @@ if(isset($_POST['btnRegister'])) {
     $BankAcc = $_POST['txtBankAcc']; 
     $ICNumber = $_POST['txtICNumber'];
     
+    $ProfilePicPath = "Website_Images/Default_pp.png";
+    
     if(isset($_FILES['fProfilePic']['name'])) {
         $ProfilePicName = $_FILES['fProfilePic']['name'];
         $TempProfilePicName = $_FILES['fProfilePic']['tmp_name'];
-        $ProfilePicFolder = "Employee_Info/Profile_Pics/" . $ProfilePicName;
-        if(!move_uploaded_file($TempProfilePicName, $ProfilePicFolder)) {
+        $ProfilePicPath = "Employee_Info/Profile_Pics/" . $ProfilePicName;
+        if(!move_uploaded_file($TempProfilePicName, $ProfilePicPath)) {
             echo "<script>alert('Failed uploading profile pic.')</script>";
         }
     }
@@ -45,8 +47,8 @@ if(isset($_POST['btnRegister'])) {
     if(!empty($_FILES['fResume']['name'])) {
         $ResumeName = $_FILES['fResume']['name'];
         $TempResumeName = $_FILES['fResume']['tmp_name'];
-        $ResumeFolder = "Employee_Info/Resumes/" . $ResumeName;
-        if(!move_uploaded_file($TempResumeName, $ResumeFolder)) {
+        $ResumePath = "Employee_Info/Resumes/" . $ResumeName;
+        if(!move_uploaded_file($TempResumeName, $ResumePath)) {
             echo "<script>alert('Failed uploading resume.')</script>";
         }
     }
@@ -54,9 +56,9 @@ if(isset($_POST['btnRegister'])) {
     if(!empty($_FILES['fContract']['name'])) {
         $ContractName = $_FILES['fContract']['name'];
         $TempContractName = $_FILES['fContract']['tmp_name'];
-        $ContractFolder = "Employee_Info/Contracts/" . $ContractName;
+        $ContractPath = "Employee_Info/Contracts/" . $ContractName;
         
-        if(!move_uploaded_file($TempContractName, $ContractFolder)) {
+        if(!move_uploaded_file($TempContractName, $ContractPath)) {
             echo "<script>alert('Failed uploading contract.')</script>";
         }
     }
@@ -74,7 +76,7 @@ if(isset($_POST['btnRegister'])) {
         try {
             $insertEmployeeSQL = "INSERT INTO employee (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address, Onboard_Date, Offboard_Date, Profile_Pic, Resume, Contract, Role_ID, Designation_ID, Bank_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertEmployeeStmt = $pdo->prepare($insertEmployeeSQL);
-            $insertEmployeeStmt->execute(array($Name, $Gender, $DOB, $PhoneNum, $Email, $Address, $OnboardDate, $OffboardDate, $ProfilePicFolder, $ResumeFolder, $ContractFolder, $RoleID, $DesignationID, $BankID));
+            $insertEmployeeStmt->execute(array($Name, $Gender, $DOB, $PhoneNum, $Email, $Address, $OnboardDate, $OffboardDate, $ProfilePicPath, $ResumePath, $ContractPath, $RoleID, $DesignationID, $BankID));
             
             $lastInsertedEmployeeID = $pdo->lastInsertId();
             
@@ -105,20 +107,17 @@ if(isset($_POST['btnRegister'])) {
         }
     </style>
     <script>
-		$(document).ready(() => {
-			$("#fProfilePic").change(function() {
-			alert('y');
-				const file = this.files[0];
-                    if (file) {
-                        let reader = new FileReader();
-                        reader.onload = function (event) {
-                            $("#imgProfile")
-                              .attr("src", event.target.result);
-                        };
-                        reader.readAsDataURL(file);
-                    }
-			});
-		});
+    	function readURL(fileInput) {
+    		if(fileInput.files && fileInput.files[0]) {
+    			let reader = new FileReader();
+                reader.onload = function () {
+                	let imgProfile = document.getElementById("imgProfile");
+                	imgProfile.src = reader.result;
+                }
+                
+                reader.readAsDataURL(fileInput.files[0]);
+    		}
+    	}
 	</script> 
 </head>
 
@@ -146,11 +145,11 @@ if(isset($_POST['btnRegister'])) {
         		<div class="card p-3" style="width:500px; height:530px">
         			<table>
         				<tr>
-        					<td colspan="2" style="text-align:center"><img src="Website_Images/Default_pp.png" id="imgProfile" width="100px" height="100px"></td>
+        					<td colspan="2" style="text-align:center"><img src="Website_Images/Default_pp.png" id="imgProfile" width="100px" height="100px" class="border rounded-circle"></td>
         				</tr>
         				<tr>
         					<td><label for="fProfilePic">Profile picture:</label></td>
-        					<td><input name="fProfilePic" id="fProfilePic" class="form-control-sm border rounded" type="file" required></td>
+        					<td><input name="fProfilePic" id="fProfilePic" class="form-control-sm border rounded" type="file" onchange="readURL(this);" required></td>
         				</tr>
         				<tr>
         					<td><label for="txtName">Name: </label></td>
