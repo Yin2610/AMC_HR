@@ -15,28 +15,22 @@ else {
 }
 
 include ('DBConnection.php');
-global $pdo;
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 if (isset($_GET['id'])) {
-    global $leave_id;
     $leave_id = intval($_GET['id']);
 }
 
 if (isset($_POST['btnApprove'])) {
-    global $status;
     $status = "Approved";
 }
 
 if (isset($_POST['btnReject'])) {
-    global $status;
     $status = "Rejected";
 }
 
 if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
-    global $pdo;
-    global $status;
     $leave_id = $_POST['txtLeaveID'];
     $approval_date = date("Y-m-d");
     $updateLeaveSQL = "UPDATE `leave` SET Status=:status, Approval_Date=:approval_date, Approved_By=:approved_by WHERE Leave_ID=:leave_id";
