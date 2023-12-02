@@ -1,5 +1,7 @@
 <?php
 require 'DBConnection.php';
+
+// Verify if the user had login, if the user had login, get the Employee_ID of the selected employee
 $id = null;
 
 session_start();
@@ -9,22 +11,26 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     header("Location: index.php");
 }
 else {
-    $id = $_SESSION['Employee_ID'];
-    $name = $_SESSION['Name'];
-    $role_name = $_SESSION['Role_Name'];
+    if (! empty($_GET['id'])) {
+        $id = $_REQUEST['id'];
+    }
+    
+    if (null == $id) {
+        header("Location: RetrieveEmployee.php");
+    }
 }
 
-if (! empty($_GET['id'])) {
-    $id = $_REQUEST['id'];
-}
-
-if (null == $id) {
-    header("Location: employee.php");
-}
-
+//Retrieve user's information
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT *
+$sql = 'SELECT 
+        employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, employee.Address, employee.Onboard_Date, employee.Offboard_Date,
+        bank.Bank_Name, 
+        sensitive_info.Bank_Account, sensitive_info.IC_Number,
+        department.Department_Name,
+        designation.Designation, designation.Salary,
+        role.Role_Name
+        
             FROM employee
             INNER JOIN role ON employee.Role_ID = role.Role_ID
             INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
@@ -56,14 +62,24 @@ $salary = $data['Salary'];
 
 DBConnection::disconnect();
 
+//Check if user had submitted any data through the HTTP POST method
 if (! empty($_POST)) { 
-
+    
+    /*
+     * Initialise "Error Message". 
+     * If its empty, it means that there is no error, 
+     * else it means that some error occurred and it will prompt user on what is the error.
+     */
     $nameError = null;
     $nricError = null;
     $mobileError = null;
     $emailError = null;
     $addressError = null;
-    $bank_accError = null;
+    $bankaccError = null;
+    
+    /*
+     * Retrieve data submitted
+     */
 
     $name = trim($_POST['name']);
     $gender = $_POST['gender'];
@@ -78,9 +94,16 @@ if (! empty($_POST)) {
     $role = $_POST['role'];
     $ondate = $_POST['ondate'];
     $offdate = $_POST['offdate'];
+    
+    /*
+     * Initialise $valid.
+     * If $valid is true, it means all data submitted is correct, and will be updated to the database.
+     * else, it means there's error in the data submitted, either one or more. Hence, will prompt the user on what is the error and will not update the database
+     */
 
     $valid = true;
-
+    
+    //Ensure $name is not empty and including spaces, is 30 characters or less
     if (empty($name)) {
         $nameError = 'Please enter Name';
         $valid = false;
@@ -89,21 +112,39 @@ if (! empty($_POST)) {
         $valid = false;
     }
 
+    /*
+     * Ensure $nric is not empty and is in the correct format. 
+     * i.e.
+     * Must be 9 characters
+     * No spacing
+     * Capital Letters only
+     * First and Last character must be alphabet
+     * Rest of the character must be number
+     */
     if (! preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $nric)) {
         $nricError = 'NRIC format is invalid';
         $valid = false;
     }
-
+    
+    /*
+     * Ensure $mobile is not empty and is in the correct format.
+     * i.e.
+     * Must be 8 characters
+     * Numeber only
+     * No spacing
+     */
     if (! preg_match('/^[0-9]{8}$/', $mobile)) {
         $mobileError = 'Mobile Number should be 8 numeric characters';
         $valid = false;
     }
 
-    if (! filter_var($email, FILTER_VALIDATE_EMAIL)) { // check if email format is correct)
+    //Ensure $email is not empty and is in the correct format
+    if (! filter_var($email, FILTER_VALIDATE_EMAIL)) { 
         $emailError = 'Please enter a valid Email Address';
         $valid = false;
     }
-
+    
+    //Ensure $address is not empty and including spaces, is 50 characters or less
     if (empty($address)) {
         $addressError = 'Please enter Address';
         $valid = false;
@@ -112,11 +153,19 @@ if (! empty($_POST)) {
         $valid = false;
     }
 
-    if (! preg_match('/^\d{9,12}$/', $bankacc)) {
-        $bank_accError = 'Bank Account Number should be numeric and have 9 to 12 digits or less';
+    /* Ensure $bankacc is not empty and is in the correct format
+     * i.e.
+     * Only 9 to 12 characters
+     * Only have number
+     * No spacing
+     */
+    
+    if (!preg_match('/^\d{9,12}$/', $bankacc)) {
+        $bankaccError = 'Bank Account Number should be numeric and have 9 to 12 digits or less';
         $valid = false;
     }
-
+    
+    //if all data submitted is correct, update the database and redirect the user to RetrieveEmployee.php
     if ($valid) {
         $pdo = DBConnection::connectToDB();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -158,14 +207,10 @@ if (! empty($_POST)) {
             $nric,
             $id
         ));
-
+        
         DBConnection::disconnect();
-        if($role_name == "Administrator" || $role_name == "Department Head") {
-            header("Location: RetrieveEmployee.php");
-        }
-        else if ($role_name == "Employee") {
-            header("Location: Profile.php");
-        }
+        header("Location: RetrieveEmployee.php");
+        
     }
 } 
 ?>
@@ -174,15 +219,18 @@ if (! empty($_POST)) {
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="css/form.css" rel="css stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body class="bg-light">
+
+	<!-- Side Navigation Bar -->
     <?php include('SideNav.php')?>
+    
     <div class="container-fluid mt-4">
+    
+    	<!-- Breadcrumb -->
         <nav aria-label="breadcrumb">
     		<ol class="breadcrumb mb-5">
     			<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
@@ -190,107 +238,93 @@ if (! empty($_POST)) {
     			<li class="breadcrumb-item active" aria-current="page">Update Employee</li>
     		</ol>
     	</nav>
-	<div id="form">
-		<div class="text-center">
-			<h1>Update <?php echo !empty($name)?$name:'';?> Details</h1>
-			<img width="200px" height="200px" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
-		</div>
-		<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post"
-			enctype="multipart/form-data">
-
-			<!-- Name -->
-			<div class="mb-3">
-				<label class="form-label" for="name">Name</label> <input
-					class="form-control" name="name" id="name" type="text"
-					placeholder="Name" maxlength="30"
-					value="<?php echo !empty($name)?$name:'';?>" autocomplete="on"
-					required>
+    	
+    	<!-- Form -->
+		<div id="form">
+			<div class="text-center">
+				<h1>Update <?php echo !empty($name)?$name:'';?> Details</h1>
+				<img width="200px" height="200px" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
+			</div>
+			
+			<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post" enctype="multipart/form-data">
+			
+			     <!-- Name -->
+				<div class="mb-3">
+					<label class="form-label" for="name">Name</label> 
+					<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
 					<small class="form-text text-muted">30 characters or less(including spaces)</small>
 					<br>
                     <?php if (!empty($nameError)): ?>
                     	<span class="help-inline"><?php echo $nameError;?></span>
                     <?php endif; ?>
-			</div>
-
-			<div class="row mb-3">
-				<!-- Gender -->
-				<div class="col">
-					<label class="form-label" for="gender">Gender</label> <select
-						class="form-select" name="gender" id="gender">
-						<option value="male"
-							<?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
-						<option value="female"
-							<?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
-						<option value="other"
-							<?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
-					</select>
 				</div>
-				<!-- DOB -->
-				<div class="col">
-					<label class="form-label" for="dob">DOB</label> <input
-						class="form-control" name="dob" id="dob" type="date"
-						placeholder="DOB" required
-						value="<?php echo !empty($dob)?$dob:'';?>">
+				
+				<div class="row mb-3">
+				
+				    <!-- Gender -->
+					<div class="col">
+						<label class="form-label" for="gender">Gender</label> 
+						<select class="form-select" name="gender" id="gender">
+							<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
+							<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
+							<option value="Other" <?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
+						</select>
+					</div>
+					
+				    <!-- DOB -->
+					<div class="col">
+						<label class="form-label" for="dob">DOB</label> <input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
+					</div>
 				</div>
-			</div>
 
-			<!-- NRIC Number -->
-			<div class="mb-3">
-				<label class="form-label" for="nric">NRIC</label> <input
-					class="form-control" name="nric" id="nric" type="text"
-					placeholder="NRIC Number" required maxlength="9"
-					value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on"> 
+			    <!-- NRIC Number -->
+				<div class="mb-3">
+					<label class="form-label" for="nric">NRIC</label> 
+					<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on"> 
                     <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
 					<br>
 					<?php if (!empty($nricError)): ?>
                         <span class="help-inline"><?php echo $nricError;?></span>
                     <?php endif;?>
-			</div>
+				</div>
 
-			<!-- Mobile Number -->
-			<div class="mb-3">
-				<label class="form-label" for="mobile">Mobile Number</label> <input
-					class="form-control" name="mobile" id="mobile" type="text"
-					placeholder="Mobile Number" required maxlength="8"
-					value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
+			    <!-- Mobile Number -->
+				<div class="mb-3">
+					<label class="form-label" for="mobile">Mobile Number</label> 
+					<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
 					<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
 					<br>
                     <?php if (!empty($mobileError)): ?>
                     	<span class="help-inline"><?php echo $mobileError;?></span>
                     <?php endif;?>
-			</div>
+				</div>
 
-			<!-- Email -->
-			<div class="mb-3">
-				<label class="form-label" for="email">Email Address</label> <input
-					class="form-control" name="email" id="email" type="text"
-					placeholder="Email Address" required maxlength="254"
-					value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+			    <!-- Email -->
+				<div class="mb-3">
+					<label class="form-label" for="email">Email Address</label> 
+					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="254" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
                    	<?php if (!empty($emailError)): ?>
                     	<span class="help-inline"><?php echo $emailError;?></span>
                     <?php endif;?>
 				</div>
 
-			<!-- Address -->
-			<div class="mb-3">
-				<label class="form-label" for="address">Address</label> <input
-					class="form-control" name="address" id="address" type="text"
-					placeholder="Address" required maxlength="50"
-					value="<?php echo !empty($address)?$address:'';?>"
-					autocomplete="on">
+			     <!-- Address -->
+				<div class="mb-3">
+					<label class="form-label" for="address">Address</label> 
+					<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
                     <small class="form-text text-muted">50 characters or less(including spaces)</small>
                     <br>
                     <?php if (!empty($addressError)): ?>
                     	<span class="help-inline"><?php echo $addressError;?></span>
                     <?php endif;?>
-			</div>
+				</div>
 
-			<div class="row mb-3">
-				<!-- Bank Company -->
-				<div class="col">
-					<label class="form-label" for="bank">Bank Company</label> <select
-						class="form-select" name="bank" id="bank" required>
-    						<?php
+				<div class="row mb-3">
+				    <!-- Bank Company -->
+					<div class="col">
+					<label class="form-label" for="bank">Bank Company</label> 
+					<select class="form-select" name="bank" id="bank" required>
+        				<?php
                             $pdo = DBConnection::connectToDB();
                             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                             $selectBankSQL = "SELECT * FROM bank";
@@ -302,22 +336,19 @@ if (! empty($_POST)) {
                             foreach ($data as $row) {
                                 echo "<option value=" . $row['Bank_ID'] . ">" . $row['Bank_Name'] . "</option>";
                             }
-                            ?>
-            			</select>
+                        ?>
+            		</select>
 				</div>
 
 				<!-- Bank Account Number -->
 				<div class="col">
 					<label class="form-label" for="bankacc">Bank Account Number</label>
-					<input class="form-control" name="bankacc" id="bankacc" type="text"
-						maxlength="12" placeholder="Bank Account Number"
-						value="<?php echo !empty($bankacc)?$bankacc:'';?>"
-						autocomplete="on" required>
-                    	<small class="form-text text-muted">Number only!</small>
-                    	<br>
-                        <?php if (!empty($bank_accError)): ?>
-                        	<span class="help-inline"><?php echo $bank_accError;?></span>
-                        <?php endif;?>
+					<input class="form-control" name="bankacc" id="bankacc" type="text" maxlength="12" placeholder="Bank Account Number" value="<?php echo !empty($bankacc)?$bankacc:'';?>" autocomplete="on" required>
+                    <small class="form-text text-muted">Number only!</small>
+                    <br>
+                    <?php if (!empty($bankaccError)): ?>
+                    	<span class="help-inline"><?php echo $bankaccError;?></span>
+                    <?php endif;?>
 				</div>
 			</div>
 
@@ -325,39 +356,35 @@ if (! empty($_POST)) {
 
 				<!-- Designation -->
 				<div class="col">
-					<label class="form-label" for="designation">Designation</label> <select
-						class="form-select" name="designation" id="designation" required>
-                			<?php
-                $selectDesignationSQL = "SELECT * FROM Designation";
-                $query = $pdo->prepare($selectDesignationSQL, array(
-                    PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
-                ));
-                $query->execute();
-                $data = $query->fetchAll();
-                foreach ($data as $row) {
-                    echo "<option value=" . $row['Designation_ID'] . ">" . $row['Designation'] . "</option>";
-                }
-                ?>
-                		</select>
+    				<label class="form-label" for="designation">Designation</label> 
+    				<select class="form-select" name="designation" id="designation" required>
+                        <?php
+                            $selectDesignationSQL = "SELECT * FROM Designation";
+                            $query = $pdo->prepare($selectDesignationSQL, array(
+                                PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
+                            ));
+                            $query->execute();
+                            $data = $query->fetchAll();
+                            foreach ($data as $row) {
+                            echo "<option value=" . $row['Designation_ID'] . ">" . $row['Designation'] . "</option>";
+                            }
+                        ?>
+                    </select>
 				</div>
 
 				<!-- Department -->
 				<div class="col">
-					<label class="form-label" for="department">Department</label> <input
-						class="form-control" name="department" id="department" type="text"
-						placeholder="Department"
-						value="<?php echo !empty($department)?$department:'';?>" readonly>
+					<label class="form-label" for="department">Department</label> 
+					<input class="form-control" name="department" id="department" type="text" placeholder="Department" value="<?php echo !empty($department)?$department:'';?>" readonly>
 				</div>
 
-
-
-
 			</div>
+			
 			<!-- Role -->
 			<div class="mb-3">
 				<label class="form-label" for="role">Role</label> 
 				<select class="form-select" name="role" id="role" required>
-            			<?php
+            		<?php
                         $selectRoleSQL = "SELECT * FROM Role";
                         $query = $pdo->prepare($selectRoleSQL, array(
                             PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
@@ -365,9 +392,11 @@ if (! empty($_POST)) {
                         $query->execute();
                         $data = $query->fetchAll();
                         foreach ($data as $row) {
-                            echo "<option value=" . $row['Role_ID'] . ">" . $row['Role_Name'] . "</option>";
+                            $selected = ($row['Role_ID'] == $role) ? 'selected' : ''; 
+                            echo "<option value=" . $row['Role_ID'] . " $selected>" . $row['Role_Name'] . "</option>";
                         }
-                        ?>
+                        
+                    ?>
             	</select>
 			</div>
 
@@ -394,17 +423,10 @@ if (! empty($_POST)) {
 				</div>
 			</div>
 
-			<!-- Submit button -->
+			<!-- Submit and Back button -->
 			<div class="form-actions">
 				<button type="submit" class="btn btn-success">Update</button>
-				<?php 
-				if($role_name == "Administrator" || $role_name == "Department Head") {
-    				    echo "<a class='btn' href='RetrieveEmployee.php'>Back</a>";
-    				}
-    				else if($role_name == "Employee"){ 
-    				    echo "<a class='btn' href='Portfolio.php'>Back</a>";
-				    }
-				?>
+				<a class='btn' href='RetrieveEmployee.php'>Back</a>
 			</div>
 		</form>
 	</div>
