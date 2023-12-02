@@ -1,22 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-	rel="stylesheet">
-<link href="css/form.css" rel="css stylesheet">
-<script
-	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</head>
-
-<body>
-	
-
 <button type="button" class="btn" data-bs-toggle="modal"
-		data-bs-target="#uPwModal" style="text-align: left;"><i class="fa-solid fa-key"></i> Change Password</button>
+		data-bs-target="#uPwModal<?php echo $id?>" style="text-align: left;"><i class="fa-solid fa-key"></i> Change Password</button>
 	<!-- Modal -->
-	<div class="modal fade" id="uPwModal" tabindex="-1"
+	<div class="modal fade" id="uPwModal<?php echo $id?>" tabindex="-1"
 		aria-labelledby="uPwModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -59,5 +44,4 @@
 		</div>
 	</div>
 
-</body>
-</html>
+
