@@ -1,4 +1,6 @@
 <?php
+
+session_start();
     require 'DBConnection.php';
     $id = 0;
      
@@ -17,7 +19,7 @@
         $q = $pdo->prepare($sql);
         $q->execute(array($id));
         DBConnection::disconnect();
-        header("Location: index.php");
+//         header("Location: index.php");
          
     }
 ?>
@@ -49,7 +51,7 @@
                         <h3>Delete Employee</h3>
                     </div>
 
-                    <form class="form-horizontal" action="delete.php" method="post">
+                    <form class="form-horizontal" action="DeleteEmployee.php" method="post">
                         <input type="text" name="id" value="<?php echo $id; ?>"/>
                         <p class="alert alert-danger">Are you sure you want to delete this employee?</p>
                         <div class="form-actions">
