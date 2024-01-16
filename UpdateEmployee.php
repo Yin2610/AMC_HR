@@ -600,7 +600,7 @@ DBConnection::disconnect();
 			    <!-- Email -->
 				<div class="mb-3">
 					<label class="form-label" for="email">Email Address</label> 
-					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="254" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
                    	<?php if (!empty($emailError)): ?>
                     	<span class="help-inline"><?php echo $emailError;?></span>
                     <?php endif;?>
