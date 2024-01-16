@@ -1,5 +1,12 @@
 <?php
 require 'DBConnection.php';
+
+/*
+ * Verify if the user had login
+ * If the user had login and a session had been created,
+ * get the Employee_ID from the session token and assign it to the variable $id
+ * else, direct the user to idnex.php and ask them to login first.
+ */ 
 $id = null;
 
 session_start();
@@ -10,32 +17,37 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 }
 else {
     $id = $_SESSION['Employee_ID'];
-    $name = $_SESSION['Name'];
 }
 
-if (! empty($_GET['id'])) {
-    $id = $_REQUEST['id'];
-}
-
-if (null == $id) {
-    header("Location: index.php");
-}
-
+//establish connection to database
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT *
-            FROM employee
-            INNER JOIN role ON employee.Role_ID = role.Role_ID
-            INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
-            INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
-            INNER JOIN department ON designation.Department_ID = department.Department_ID
-            INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-            WHERE employee.Employee_ID = ?';
-$q = $pdo->prepare($sql);
-$q->execute(array(
-    $id
-));
-$data = $q->fetch(PDO::FETCH_ASSOC);
+//Retrieve employee's information from database
+try{
+    $sql = 'SELECT 
+            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, 
+            employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
+            bank.Bank_Name, 
+            sensitive_info.Bank_Account, sensitive_info.IC_Number,
+            department.Department_Name,
+            designation.Designation, designation.Salary,
+            role.Role_Name
+
+                FROM employee
+                INNER JOIN role ON employee.Role_ID = role.Role_ID
+                INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+                INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
+                INNER JOIN department ON designation.Department_ID = department.Department_ID
+                INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
+                WHERE employee.Employee_ID = ?';
+    $q = $pdo->prepare($sql);
+    $q->execute(array(
+        $id
+    ));
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+}catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
 $pf = $data['Profile_Pic'];
 $name = $data['Name'];
 $gender = $data['Gender'];
@@ -84,8 +96,10 @@ DBConnection::disconnect();
 	<div class="container row" id="profile">
 		<div class="text-center col">
 			<h1>Profile</h1>
+			<!-- Profile Image -->
 			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
 		</div>
+			<!-- Name, Gender, Date of Birth, DOB, NRIC, Mobile, Email, Address, Bank Company, Bank Account, Department, Designation, Role, Onboard Date, Offboard Date and Salary -->
 		<div class="col">
 			<p><strong class="pf">Name: </strong><?php echo !empty($name)?$name:'';?></p>
 			<p><strong class="pf">Gender: </strong><?php echo !empty($gender)?$gender:'';?></p>
@@ -102,10 +116,15 @@ DBConnection::disconnect();
 			<p><strong class="pf">Onboard Date: </strong><?php echo !empty($ondate)?$ondate:'';?></p>
 			<p><strong class="pf">Offboard Date: </strong><?php echo !empty($offdate)?$offdate:'';?></p>
 			<p><strong class="pf">Salary: </strong>$<?php echo !empty($salary)?$salary:'';?></p>
+			
+			<!-- Resume and Contract
+			If there's resume or contract available, there will be button which allows user to download it.
+			Else, it will display "No contract available" or "No resume available" 
+			-->
 			<?php if (!empty($contract)): ?>
     			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
     		<?php else: ?>
-    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contract available</a>
+    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contact available</a>
 			<?php endif; ?>		
 			
 			<?php if (!empty($resume)): ?>

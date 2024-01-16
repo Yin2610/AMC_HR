@@ -124,6 +124,7 @@ $data = $query->fetchAll();
 	    
 	    echo "<td colspan='2'><a class='btn' href='UpdateEmployee.php?id=". $row['Employee_ID'] . "'><i class='fa-solid fa-pen'></i> Edit</a><br>";
 	    echo "<a class='btn' href='DeleteEmployee.php?id=". $row['Employee_ID'] . "'><i class='fa-solid fa-trash'></i> Delete</a><br>";
+	    echo "<a class='btn' href='UpdatePassword.php?id=". $row['Employee_ID'] . "&name=" . $row['Name'] ."'><i class='fa-solid fa-key'></i> Change Password</a><br>";
 
 	    echo "</td></tr>";
 	}
