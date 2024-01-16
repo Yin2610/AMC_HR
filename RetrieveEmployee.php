@@ -7,6 +7,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
         header("Location: index.php");
 }
+ELSE {
+    $designation = $_SESSION['Designation'];
+}
 
 if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
     echo "You don't have permission to view this page.";
@@ -15,7 +18,24 @@ if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Depar
 
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = "SELECT * FROM employee";
+$sql = "SELECT e.*, d.Department_Name, ds.Designation, b.Bank_Name, r.Role_Name
+        FROM employee as e
+        JOIN designation as ds ON ds.Designation_ID = e.Designation_ID
+        JOIN department as d ON d.Department_ID = ds.Department_ID
+        JOIN bank as b ON b.Bank_ID = e.Bank_ID
+        JOIN role as r ON r.Role_ID = e.Role_ID
+        ";
+
+IF($designation == "Purchasing director") {
+    $sql .= " WHERE d.Department_Name = 'Purchasing Department'";
+}
+ELSE IF($designation == "Sales director") {
+    $sql .= " WHERE d.Department_Name = 'Sales Department'";
+}
+ELSE IF($designation == "HR director") {
+    $sql .= " WHERE d.Department_Name = 'HR Department'";
+}
+
 $query = $pdo->prepare($sql);
 $query->execute();
 $data = $query->fetchAll();
@@ -51,25 +71,36 @@ $data = $query->fetchAll();
         <table id="employeeTable" class="display hover" style="width: 100%">
     		<thead>
     			<tr>
-                <th>Name</th>
-                <th>Gender</th>
-                <th>Date of Birth</th>
-                <th>Phone Number</th>
-                <th>Email</th>
-                <th>Address</th>
-                <th>Onboard Date</th>
-                <th>Offboard Date</th>
-                <th>Profile Picture</th>
-                <th>Resume</th>
-                <th>Contract</th>
-                <th>Actions</th>
-            </tr>
+    				<th>Profile Picture</th>
+                    <th>Name</th>
+                    <th>Gender</th>
+                    <th>Date of Birth</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Onboard Date</th>
+                    <th>Offboard Date</th>
+                    <th>Department</th>
+                    <th>Designation</th>
+                    <th>Role</th>
+                    <th>Bank</th>
+                    <th>Resume</th>
+                    <th>Contract</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
         <tbody> 
 	
 	<?php 
 	foreach ($data as $row) {
-	    echo "<tr><td>".$row['Name']."</td>";
+	    echo "<tr><td>";
+	    echo "<div class='text-center' >";
+	    echo "<img style='width:70px;height:70px;border-radius: 50%;' src='".$row['Profile_Pic']."'>";
+	    echo "<br>";
+	    echo "</div>";
+	    echo "</td>";
+	    
+	    echo "<td>".$row['Name']."</td>";
 	    echo "<td>".$row['Gender']."</td>";
 	    echo "<td>".$row['Date_Of_Birth']."</td>";
 	    echo "<td>".$row['Phone_Num']."</td>";
@@ -77,14 +108,10 @@ $data = $query->fetchAll();
 	    echo "<td>".$row['Address']."</td>";
 	    echo "<td>".$row['Onboard_Date']."</td>";
 	    echo "<td>".$row['Offboard_Date']."</td>";
-	    
-	    echo "<td>";
-	    echo "<div class='text-center' >";
-	    echo "<img style='width:70px;height:70px;border-radius: 50%;' src='".$row['Profile_Pic']."'>";
-	    echo "<br>";
-	    echo "</div>";
-	    echo "</td>";
-	    
+	    echo "<td>".$row['Department_Name']."</td>";
+	    echo "<td>".$row['Designation']."</td>";
+	    echo "<td>".$row['Role_Name']."</td>";
+	    echo "<td>".$row['Bank_Name']."</td>";
 	    echo "<td>";
 	    echo "<a href='".$row['Resume']."'class='btn' target='_blank'><i class='fa-solid fa-download'></i></a>";
 
