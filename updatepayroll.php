@@ -1,4 +1,5 @@
 <?php
+session_start();
 /*
  * Establish database connection
  */
@@ -16,7 +17,7 @@ if (! empty($_GET['id'])) {
 }
 
 if (null == $id) {
-    header("Location: payroll.php");
+    header("Location: RetrievePayroll.php");
 }
 
 /*
@@ -26,7 +27,7 @@ if (null == $id) {
 // Retrieve data from database
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT payroll.Payroll_ID,payroll.Date,payroll.Payslip,employee.Name,designation.Designation FROM `payroll` 
+$sql = 'SELECT employee.Name, payroll.Payroll_ID,payroll.Date,payroll.Payslip,employee.Name,designation.Designation FROM `payroll` 
         INNER JOIN employee on payroll.Employee_ID = employee.Employee_ID 
         INNER Join designation on payroll.Designation_ID = designation.Designation_ID
         WHERE payroll.Payroll_ID = ?  ';
@@ -35,19 +36,13 @@ $q->execute(array(
     $id
 ));
 $data = $q->fetch(PDO::FETCH_ASSOC);
+$employee_name = $data['Name'];
 $date = $data['Date'];
 $payslip = $data['Payslip'];
 $designation = $data['Designation'];
 
 
 DBConnection::disconnect();
-
-//$pdo = DBConnection::connectToDB();
-//$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-//$designationQuery = 'SELECT Designation_ID, Designation FROM designation';
-//$designationResult = $pdo->query($designationQuery);
-//$designations = $designationResult->fetchAll(PDO::FETCH_ASSOC);
-//DBConnection::disconnect();
 
 if (! empty($_POST)) { // check if there's any data submitted in the html form
 
@@ -57,7 +52,6 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
     $designationError = null;
     
     $date = $_POST['date'];
-    $payslip = $_POST['payslip'];
    
     $designation = $_POST['designation'];
     
@@ -77,7 +71,16 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
         $valid = false;
     }
 
-    
+    // upload contract file
+    if(!empty($_FILES['payslip']['name'])) {
+        $payslip = $_FILES['payslip']['name'];
+        $temppayslip = $_FILES['payslip']['tmp_name'];
+        $payslipPath = "Employee_Info/Payslips/" . $payslip;
+        
+        if(!move_uploaded_file($temppayslip, $payslipPath)) {
+            echo "<script>alert('Failed uploading payslip.')</script>";
+        }
+    }
     
     
 
@@ -109,7 +112,7 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
         DBConnection::disconnect();
 
         // Direct user back to employee.php after they have successfully submitted the form
-        header("Location: payroll.php");
+        header("Location: RetrievePayroll.php");
     }
 } // If the user never click "Submit" button / When the form is first loaded
 ?>
@@ -124,6 +127,10 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 </head>
 
 <body>
+<?php
+
+include ('SideNav.php');
+?>
 	<div class="container">
 
 		<div class="span10 offset1">
@@ -135,6 +142,15 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 				action="updatepayroll.php?id=<?php echo $id?>" method="post"
 				enctype="multipart/form-data">
 
+				<!-- Employee name -->
+				<div class="control-group">
+					<label class="control-label">Employee name</label>
+					<div class="controls">
+						<input name="name" type="text"
+							value="<?php echo !empty($employee_name)?$employee_name:'';?>" disabled>
+                    </div>
+				</div>
+			
                 <!-- Date -->
 				<div class="control-group">
 					<label class="control-label">Date</label>
@@ -150,35 +166,10 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 				<div class="control-group">
 					<label class="control-label">Payslip</label>
 					<div class="controls">
-						<input name="payslip" type="text" placeholder="Payslip" 
-							value="<?php echo !empty($payslip)?$payslip:'';?>">
+						<input name="payslip" type="file" placeholder="Payslip">
                             <?php if (!empty($payslipError)): ?>
                                 <span class="help-inline"><?php echo $payslipError;?></span>
                             <?php endif; ?>
-					</div>
-				</div>
-        <div class="control-group">
-					<label for="sDesignation">Bank Company</label>
-					<div class="controls">
-
-						<select name="designation" required>
-						<?php
-                        $pdo = DBConnection::connectToDB();
-                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                        $selectDesignationSQL = "SELECT * FROM designation";
-                        $query = $pdo->prepare($selectDesignationSQL, array(
-                            PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
-                        ));
-                        $query->execute();
-                        $data = $query->fetchAll();
-                        foreach ($data as $row) {
-                            echo "<option value=" . $row['Designation_ID'] . ">" . $row['Designation'] . "</option>";
-                        }
-                        ?>
-            			</select>
-            			<?php if (!empty($designationError)): ?>
-            			<span class="help-inline"><?php echo $designationError; ?></span>
-        				<?php endif; ?>
 					</div>
 				</div>
 				
@@ -186,7 +177,7 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 				<!-- Submit button -->
 				<div class="form-actions">
 					<button type="submit" class="btn btn-success">Update</button>
-					<a class="btn" href="payroll.php">Back</a>
+					<a class="btn" href="RetrievePayroll.php">Back</a>
 				</div>
 
 

@@ -118,11 +118,11 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 
     // if the input data is correct, update the database
     if ($valid) {
-        $sql = "UPDATE `leave` SET From_Date = ?, Until_Date = ?, Notes =?, Supporting_Doc =?
+        $sql = "UPDATE `leave` SET Leave_Category = ?, From_Date = ?, Until_Date = ?, Notes =?, Supporting_Doc =?
                 WHERE Leave_ID = ?";
         $q = $pdo->prepare($sql);
         $q->execute(array(
-            
+            $Leave_Category,
             $From_Date,
             $Until_Date,
             $Notes,
@@ -152,7 +152,19 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 </head>
 
 <body>
-	<div class="container">
+
+<?php
+
+include ('SideNav.php');
+?>
+	<div class="container-fluid mt-4">
+	<nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-4">
+				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+				<li class="breadcrumb-item"><a href="RetrieveLeaveEmployee.php">View Own Leave Requests</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Update leave</li>
+			</ol>
+		</nav>
 
 		<div class="span10 offset1">
 			<div class="row">
@@ -165,8 +177,8 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 				
 				<label for="ddLeaveCatagory">Select Leave Catagory:</label>
   				<select id="ddLeaveCatagory" name="ddLeaveCatagory">
-    			<option value="MedicalAppointmenr">Medical appointment</option>
-    			<option value="FamilyMatter">Family Matter</option>
+    			<option value="Medical Appointment">Medical appointment</option>
+    			<option value="Family Matter">Family Matter</option>
     			<option value="Vacation">Vacation</option>
     			<option value="Others">Others</option>
   			</select>
@@ -213,7 +225,7 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 				<!-- Submit button -->
 				<div class="form-actions">
 					<button type="submit" class="btn btn-success">Update</button>
-					<a class="btn" href="payroll.php">Back</a>
+					<a class="btn" href="RetrieveLeaveEmployee.php">Back</a>
 				</div>
 
 

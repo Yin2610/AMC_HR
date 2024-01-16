@@ -574,7 +574,8 @@ if (! empty($_POST)) {
                             $query->execute();
                             $data = $query->fetchAll();
                             foreach ($data as $row) {
-                            echo "<option value=" . $row['Designation_ID'] . ">" . $row['Designation'] . "</option>";
+                                $selected = ($row['Designation'] == $designation) ? 'selected' : '';
+                                echo "<option value=" . $row['Designation_ID'] . " $selected>" . $row['Designation'] . "</option>";
                             }
                         ?>
                     </select>
@@ -600,7 +601,8 @@ if (! empty($_POST)) {
                         $query->execute();
                         $data = $query->fetchAll();
                         foreach ($data as $row) {
-                            $selected = ($row['Role_ID'] == $role) ? 'selected' : ''; 
+                            $selected = ($row['Role_Name'] == $role) ? 'selected' : ''; 
+                            
                             echo "<option value=" . $row['Role_ID'] . " $selected>" . $row['Role_Name'] . "</option>";
                         }
                         

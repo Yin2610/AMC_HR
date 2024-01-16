@@ -15,11 +15,12 @@ session_start();
         // delete data
         $pdo = DBConnection::connectToDB();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "DELETE FROM employee  WHERE Employee_ID = ?";
-        $q = $pdo->prepare($sql);
+        $sqlDeleteEmployee = "DELETE FROM employee WHERE Employee_ID = ?";
+        $q = $pdo->prepare($sqlDeleteEmployee);
         $q->execute(array($id));
+        
+        echo "<script>alert('Employee deleted!')</script>";
         DBConnection::disconnect();
-//         header("Location: index.php");
          
     }
 ?>
@@ -39,7 +40,7 @@ session_start();
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-5">
                 <li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">View Employees</a></li>
+                <li class="breadcrumb-item"><a href="RetrieveEmployee.php">View Employees</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Delete Employee</li>
             </ol>
         </nav>
@@ -52,11 +53,12 @@ session_start();
                     </div>
 
                     <form class="form-horizontal" action="DeleteEmployee.php" method="post">
+                    Employee ID:
                         <input type="text" name="id" value="<?php echo $id; ?>"/>
                         <p class="alert alert-danger">Are you sure you want to delete this employee?</p>
                         <div class="form-actions">
-                            <button type="submit" class="btn btn-danger">Yes</button>
-                            <a class="btn btn-secondary" href="index.php">No</a>
+                            <input type="submit" class="btn btn-danger" value="Yes"></input>
+                            <a class="btn btn-secondary" href="RetrieveEmployee.php">No</a>
                         </div>
                     </form>
                 </div>

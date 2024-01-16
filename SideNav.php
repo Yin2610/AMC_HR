@@ -29,7 +29,7 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 			<?php 
 			
 			$homeLink = "<a href='Home.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Home</a>";
-			$profileLink = "<a href='Profile.php?id=".$id."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Profile</a>";
+			$profileLink = "<a href='Profile.php?id=".$_SESSION['Employee_ID']."' class='nav-menu text-dark' style='text-decoration: none; display: block;'>View Profile</a>";
 			$createLeaveLink = "<a href='CreateLeave.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Request Leave</a>";
 			$retrieveEmployeeLink = "<a href='RetrieveEmployee.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Employees</a>";
 			$retrieveLeaveRequestLink = "<a href='RetrieveLeaveSupervisor.php' class='nav-menu text-dark' style='text-decoration: none; display: block;'>Manage Leave Requests</a>";

@@ -11,7 +11,12 @@ if (! empty($_POST)) {
     $Fromdate = $_POST['dtFromDate'];
     $Untildate = $_POST['dtUntilDate'];
     $Note = $_POST['txtNote'];
-    $SupportingDoc = $_FILES['fSupportingDoc']['name'];
+    if($_FILES['fSupportingDoc']['name'] != null) {
+        $SupportingDoc = $_FILES['fSupportingDoc']['name'];
+    }
+    else {
+        $SupportingDoc = null;
+    }
     $Status = "Pending";
     $ApprovalDate = null;
     $ApprovedBy = null;
@@ -78,7 +83,7 @@ include ('SideNav.php');
 				enctype="multipart/form-data" class="col-md-5 mx-auto">
 				<label for="ddLeaveCatagory">Select Leave Catagory:</label> 
 				<select id="ddLeaveCatagory" name="ddLeaveCatagory" class="form-control">
-					<option value="Medical Appointmenr">Medical appointment</option>
+					<option value="Medical Appointment">Medical appointment</option>
 					<option value="Family Matter">Family Matter</option>
 					<option value="Vacation">Vacation</option>
 					<option value="Others">Others</option>
@@ -91,7 +96,7 @@ include ('SideNav.php');
 				<label for="txtNote">Enter notes for the leave: </label> <br>
 				<textarea name="txtNote" rows="4" placeholder="Notes" class="form-control" style="resize:none" required></textarea> <br>
 				<label for="fSupportingDoc">Submit supporting document: </label> <br>
-				<input name="fSupportingDoc" type="file" class="form-control" required>
+				<input name="fSupportingDoc" type="file" class="form-control">
 				<br>
 				<div class="text-center mb-3">
 					<button class="btn btn-outline-info" name="btnApply" type="submit">Submit</button>

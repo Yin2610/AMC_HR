@@ -105,7 +105,7 @@ DBConnection::disconnect();
 			<?php if (!empty($contract)): ?>
     			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
     		<?php else: ?>
-    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contact available</a>
+    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contract available</a>
 			<?php endif; ?>		
 			
 			<?php if (!empty($resume)): ?>

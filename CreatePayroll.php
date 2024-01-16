@@ -95,7 +95,7 @@ if (! empty($_POST)) { // check if there's data uploaded
 				<h3>New Payroll</h3>
 			</div>
 
-			<form action="AddPayroll.php" method="post"
+			<form action="CreatePayroll.php" method="post"
 				enctype="multipart/form-data">
 
 				<!-- Employee -->

@@ -1,11 +1,14 @@
 <?php
 
 session_start();
+
+// if there is no session, redirect to login page.
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
     header("Location: index.php");
 }
 
+// if the user is not department head, they shouldn't be able to update leave status.
 if($_SESSION['Role_Name'] != 'Department Head') {
     echo "You don't have permission to view this page.";
     exit();
@@ -22,6 +25,7 @@ if (isset($_GET['id'])) {
     $leave_id = intval($_GET['id']);
 }
 
+// setting status variable to update
 if (isset($_POST['btnApprove'])) {
     $status = "Approved";
 }
@@ -30,6 +34,7 @@ if (isset($_POST['btnReject'])) {
     $status = "Rejected";
 }
 
+// update leave status along with approval date, approved by
 if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
     $leave_id = $_POST['txtLeaveID'];
     $approval_date = date("Y-m-d");
@@ -73,8 +78,16 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
 		</nav>
 		
         	<?php
+        	
+        	//select relevant information about employee and his/her leave request to display on this page
         if (isset($_GET['id'])) {
-            $selectLeaveSQL = "SELECT e.Name, e.Profile_Pic, dp.Department_Name, ds.Designation, l.* FROM Employee as e, Department as dp, Designation as ds, `Leave` as l WHERE l.Leave_ID = $leave_id AND l.Submitted_By = e.Employee_ID AND e.Designation_ID = ds.Designation_ID AND ds.Department_ID = dp.Department_ID";
+            $selectLeaveSQL = "SELECT e.Name, e.Profile_Pic, 
+                                dp.Department_Name, ds.Designation, 
+                                l.* FROM Employee as e, Department as dp, Designation as ds, `Leave` as l
+                                WHERE l.Leave_ID = $leave_id 
+                                AND l.Submitted_By = e.Employee_ID 
+                                AND e.Designation_ID = ds.Designation_ID 
+                                AND ds.Department_ID = dp.Department_ID";
             $selectLeaveStmt = $pdo->prepare($selectLeaveSQL);
             $selectLeaveStmt->execute();
             $data = $selectLeaveStmt->fetchAll();

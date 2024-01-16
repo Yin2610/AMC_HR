@@ -4,12 +4,14 @@ include('DBConnection.php');
 
 session_start();
 
+// if there is no session, redirect to login page.
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
     header("Location: index.php");
 }
 else {
-    if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
+    // if the user is not department head, they shouldn't be able to view payroll.
+    if($_SESSION['Role_Name'] != 'Department Head') {
         echo "You don't have permission to view this page.";
         exit();
     }
@@ -19,6 +21,8 @@ else {
 
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// select relevant employee data and payroll data for specific department handled by the logged-in department head
 $selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Name, p.Payroll_ID, p.Date, p.Payslip
             FROM employee as e
             INNER JOIN payroll as p ON p.Employee_ID = e.Employee_ID
