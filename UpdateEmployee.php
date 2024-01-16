@@ -205,7 +205,7 @@ if (! empty($_POST)) {
             $rfiletypeError = "Invalid file type. Please upload a PDF file!";
             $valid = false;
         }else{
-            $uploadrDir = 'Employee_Info/Resumes/';
+            $uploadrDir = 'Employee_Info/Resume/';
             $rnew = $uploadrDir . basename($namernew);
             $rnew = substr($rnew, 0, 50);
             move_uploaded_file($tnamernew, $rnew);
