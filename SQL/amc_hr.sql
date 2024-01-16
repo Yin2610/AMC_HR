@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 09, 2023 at 12:58 PM
+-- Generation Time: Jan 16, 2024 at 01:27 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -20,20 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `amc_hr`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `attendance`
---
-
-CREATE TABLE `attendance` (
-  `Attendance_ID` int(11) NOT NULL,
-  `Date` date NOT NULL,
-  `Status` varchar(10) NOT NULL,
-  `Employee_ID` int(11) NOT NULL,
-  `Leave_ID` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -94,13 +80,13 @@ CREATE TABLE `designation` (
 --
 
 INSERT INTO `designation` (`Designation_ID`, `Designation`, `Salary`, `Department_ID`) VALUES
-(1, 'Purchasing Director', 20000, 1),
-(2, 'Purchasing Manager', 10000, 1),
-(3, 'Purchasing Assistant', 2000, 1),
-(4, 'Sales Director', 20000, 2),
-(5, 'Sales Representative', 3000, 2),
-(6, 'Sales Associate', 2300, 2),
-(7, 'HR Director', 20000, 3),
+(1, 'Purchasing director', 20000, 1),
+(2, 'Purchasing manager', 10000, 1),
+(3, 'Purchasing assistant', 2000, 1),
+(4, 'Sales director', 20000, 2),
+(5, 'Sales representative', 3000, 2),
+(6, 'Sales associate', 2300, 2),
+(7, 'HR director', 20000, 3),
 (8, 'Recruiter', 2800, 3);
 
 -- --------------------------------------------------------
@@ -132,9 +118,12 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`Employee_ID`, `Name`, `Gender`, `Date_Of_Birth`, `Phone_Num`, `Email`, `Address`, `Onboard_Date`, `Offboard_Date`, `Profile_Pic`, `Resume`, `Contract`, `Role_ID`, `Designation_ID`, `Bank_ID`) VALUES
-(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', 'Employee_Info/Contract/Michael_contract.pdf', 1, 8, 1),
-(2, 'Sofia', 'Female', '2000-11-05', '90238547', 'sofia@gmail.com', '828 Tampines Street 81 #01-228 Singapore, 520828', '2020-06-15', '0000-00-00', 'Employee_Info/Profile_Pics/Sofia_profile.jpg', 'Employee_Info/Resume/Sofia_resume.pdf', 'Employee_Info/Contract/Sofia_contract.pdf', 2, 4, 2),
-(3, 'Alyssa', 'Female', '2002-10-12', '45091209', 'alyssa@gmail.com', '16 Ayer Rajah Crescent #04-06A Singapore, 139965', '2021-04-23', '0000-00-00', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', 'Employee_Info/Resume/Alyssa_resume.pdf', 'Employee_Info/Contract/Alyssa_contract.pdf', 3, 6, 2);
+(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', '', 1, 7, 1),
+(2, 'Sofia', 'Female', '2000-11-05', '90238547', 'sofia@gmail.com', '828 Tampines Street 81 #01-228 Singapore, 520828', '2020-06-15', '0000-00-00', 'Employee_Info/Profile_Pics/Sofia_profile.jpg', 'Employee_Info/Resume/Sofia_resume.pdf', '', 2, 1, 1),
+(10, 'Amy', 'Female', '2000-02-01', '82340983', 'amy@gmail.com', '3026 Ubi Road 1 03-170 Singapore', '2023-12-06', '0000-00-00', 'Employee_Info/Profile_Pics/Amy.jpg', NULL, NULL, 2, 1, 1),
+(11, 'Alyssa', 'Female', '1996-06-01', '98452332', 'alyssa@gmail.com', '122 Middle Road, ,06-09 Midlink Plaza, Singapore', '2023-11-27', '0000-00-00', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', NULL, NULL, 3, 5, 3),
+(14, 'Simon', 'Male', '1984-10-31', '39587034', 'simon@gmail.com', 'Tuas Link', '2014-11-11', '0000-00-00', 'Employee_Info/Profile_Pics/Simon_Profile.jpg', NULL, NULL, 3, 6, 1),
+(16, 'Lily', 'Female', '1985-12-11', '84573950', 'lily@gmail.com', 'Tampines', '2023-12-05', '0000-00-00', 'Employee_Info/Profile_Pics/Lily_Profile.jpg', 'Employee_Info/Resumes/Lily_resume.pdf', 'Employee_Info/Contracts/Lily_contract.pdf', 3, 6, 1);
 
 -- --------------------------------------------------------
 
@@ -152,9 +141,18 @@ CREATE TABLE `leave` (
   `Supporting_Doc` varchar(50) DEFAULT NULL,
   `Status` varchar(30) NOT NULL,
   `Approval_Date` date DEFAULT NULL,
-  `Approved_By` int(11) NOT NULL,
+  `Approved_By` int(11) DEFAULT NULL,
   `Submitted_By` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `leave`
+--
+
+INSERT INTO `leave` (`Leave_ID`, `Leave_Category`, `Submission_Date`, `From_Date`, `Until_Date`, `Notes`, `Supporting_Doc`, `Status`, `Approval_Date`, `Approved_By`, `Submitted_By`) VALUES
+(1, 'Family Matter', '2023-12-01', '2023-12-02', '2023-12-02', 'I have to attend my grandma\'s funeral.', NULL, 'Approved', '2023-12-09', 2, 11),
+(6, 'Vacation', '2023-12-08', '2023-12-08', '2023-12-12', 'Vacation to Japan', NULL, 'Rejected', '2024-01-15', 2, 14),
+(7, 'FamilyMatter', '2024-01-15', '2024-01-18', '2024-01-18', 'sdfdfdsds', NULL, 'Pending', NULL, NULL, 2);
 
 -- --------------------------------------------------------
 
@@ -169,6 +167,15 @@ CREATE TABLE `payroll` (
   `Employee_ID` int(11) NOT NULL,
   `Designation_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `payroll`
+--
+
+INSERT INTO `payroll` (`Payroll_ID`, `Date`, `Payslip`, `Employee_ID`, `Designation_ID`) VALUES
+(4, '2023-11-15', 'Employee_Info/Payslips/alyssa_payslip.pdf', 11, 5),
+(5, '2023-09-28', 'Employee_Info/Payslips/sofia_payslip.pdf', 2, 4),
+(6, '2024-01-25', 'Employee_Info/Payslips/Lily_contract.pdf', 10, 1);
 
 -- --------------------------------------------------------
 
@@ -209,21 +216,16 @@ CREATE TABLE `sensitive_info` (
 --
 
 INSERT INTO `sensitive_info` (`Sensitive_Info_ID`, `Password`, `Bank_Account`, `IC_Number`, `Employee_ID`) VALUES
-(1, 'michael', '1530917846', 'S9238498E', 1),
-(2, 'sofia', '6598034012', 'T0032580A', 2),
-(3, 'alyssa', '7509340952', 'T0270022G', 3);
+(1, '$2y$10$ubjGNaGSKt57FYtuyuiPjOPdDjlv4oDbgyoYahroe0Momo2JRn7T.', '1530917846', 'S9238498E', 1),
+(2, '$2y$10$WBlyMIolK8pN2fxEUNrwr.rv.Y8WbUis1DblRzW1aj2aU6HpUr5ru', '6598034012', 'T0032580A', 2),
+(10, '$2y$10$qkIeF5XwRNU6D0K.N4nyEuoZezia6IaT/MVyD37k0ISMvGp00/gU2', '8309840320', 'S9026172Z', 10),
+(11, '$2y$10$m9/Dk2TCMNXKHoeT6xrfdOIUDeWiOOKLpbuYv/ENBSabXOhbGfr3W', '4892843240', 'S9681367H', 11),
+(14, '$2y$10$cH4kuoUvhnnndSRtz8J3N.NoGal/6hwK9IcOu.qWulwpx0lrf2kwK', '8543870583', 'I8457837B', 14),
+(16, '$2y$10$Hs8vRE3zWbK6hatVd9cXj.pyUIzXUlA175KxWpcWajzAkcF1yQpOC', '8475324083', 'T3432343I', 16);
 
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD PRIMARY KEY (`Attendance_ID`),
-  ADD KEY `Employee_ID` (`Employee_ID`),
-  ADD KEY `Leave_ID` (`Leave_ID`);
 
 --
 -- Indexes for table `bank`
@@ -287,12 +289,6 @@ ALTER TABLE `sensitive_info`
 --
 
 --
--- AUTO_INCREMENT for table `attendance`
---
-ALTER TABLE `attendance`
-  MODIFY `Attendance_ID` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `bank`
 --
 ALTER TABLE `bank`
@@ -308,25 +304,25 @@ ALTER TABLE `department`
 -- AUTO_INCREMENT for table `designation`
 --
 ALTER TABLE `designation`
-  MODIFY `Designation_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `Designation_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `employee`
 --
 ALTER TABLE `employee`
-  MODIFY `Employee_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Employee_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `leave`
 --
 ALTER TABLE `leave`
-  MODIFY `Leave_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Leave_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `payroll`
 --
 ALTER TABLE `payroll`
-  MODIFY `Payroll_ID` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `Payroll_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -338,18 +334,11 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `sensitive_info`
 --
 ALTER TABLE `sensitive_info`
-  MODIFY `Sensitive_Info_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `Sensitive_Info_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`),
-  ADD CONSTRAINT `attendance_ibfk_2` FOREIGN KEY (`Leave_ID`) REFERENCES `leave` (`Leave_ID`);
 
 --
 -- Constraints for table `designation`
@@ -384,7 +373,8 @@ ALTER TABLE `payroll`
 -- Constraints for table `sensitive_info`
 --
 ALTER TABLE `sensitive_info`
-  ADD CONSTRAINT `sensitive_info_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`);
+  ADD CONSTRAINT `sensitive_info_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`),
+  ADD CONSTRAINT `sensitive_info_ibfk_2` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`) ON DELETE CASCADE ON UPDATE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -126,12 +126,19 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 <script src="js/jquery-2.1.4.min.js"></script>
 </head>
 
-<body>
+<body class="bg-light">
 <?php
 
 include ('SideNav.php');
 ?>
-	<div class="container">
+	<div class="container mt-4">
+	 <nav aria-label="breadcrumb">
+    		<ol class="breadcrumb mb-4">
+    			<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+    			<li class="breadcrumb-item"><a href="RetrievePayroll.php">View Payroll</a></li>
+    			<li class="breadcrumb-item active" aria-current="page">Update Payroll</li>
+    		</ol>
+    	</nav>
 
 		<div class="span10 offset1">
 			<div class="row">
