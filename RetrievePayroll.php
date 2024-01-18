@@ -6,7 +6,7 @@ session_start();
 
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
-    header("Location: index.php");
+//     header("Location: index.php");
 }
 else {
     if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {

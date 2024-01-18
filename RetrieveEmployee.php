@@ -2,7 +2,7 @@
 include "dbConnection.php";
 
 session_start();
-
+//checks if the user is logged in or not. 
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
         header("Location: index.php");
@@ -10,14 +10,15 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 ELSE {
     $designation = $_SESSION['Designation'];
 }
-
+//checks if the user is allowed to view the page. 
 if($_SESSION['Role_Name'] != 'Administrator' && $_SESSION['Role_Name'] != 'Department Head') {
     echo "You don't have permission to view this page.";
     exit();
 }
-
+//establishes a connection to the DB and sets the error mode to exception handling
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+//Creates a query where it combinines specific columns from different tables into one using the join clause.
 $sql = "SELECT e.*, d.Department_Name, ds.Designation, b.Bank_Name, r.Role_Name
         FROM employee as e
         JOIN designation as ds ON ds.Designation_ID = e.Designation_ID
@@ -25,7 +26,7 @@ $sql = "SELECT e.*, d.Department_Name, ds.Designation, b.Bank_Name, r.Role_Name
         JOIN bank as b ON b.Bank_ID = e.Bank_ID
         JOIN role as r ON r.Role_ID = e.Role_ID
         ";
-
+//modifies the sql query based on the user's designation
 IF($designation == "Purchasing director") {
     $sql .= " WHERE d.Department_Name = 'Purchasing Department'";
 }
