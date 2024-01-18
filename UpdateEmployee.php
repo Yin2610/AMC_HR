@@ -40,7 +40,7 @@ else {
 //Retrieve employee's information from database
 try {
     $sqlRetrieve = 'SELECT 
-            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, 
+            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
             employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
             bank.Bank_Name, 
             sensitive_info.Bank_Account, sensitive_info.IC_Number,
@@ -363,9 +363,9 @@ if (! empty($_POST)) {
             
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
-        } 
+        }
     }
-} 
+}
 DBConnection::disconnect();
 ?>
 
@@ -376,6 +376,7 @@ DBConnection::disconnect();
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="css/form.css" rel="css stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<title>Update Employee</title>
 <script>
 		
 		//Preview uploaded file

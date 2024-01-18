@@ -6,7 +6,7 @@ require 'DBConnection.php';
  * If the user had login and a session had been created,
  * get the Employee_ID from the session token and assign it to the variable $id
  * else, direct the user to idnex.php and ask them to login first.
- */ 
+ */
 $id = null;
 
 session_start();
@@ -24,10 +24,10 @@ $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 //Retrieve employee's information from database
 try{
-    $sql = 'SELECT 
-            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, 
+    $sql = 'SELECT
+            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
             employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
-            bank.Bank_Name, 
+            bank.Bank_Name,
             sensitive_info.Bank_Account, sensitive_info.IC_Number,
             department.Department_Name,
             designation.Designation, designation.Salary,
@@ -96,10 +96,10 @@ DBConnection::disconnect();
 	<div class="container row" id="profile">
 		<div class="text-center col">
 			<h1>Profile</h1>
-			<!-- Profile Image -->
-			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
+			<!-- Display user's Profile Image -->
+			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>" alt="The user's profile image.">
 		</div>
-			<!-- Name, Gender, Date of Birth, DOB, NRIC, Mobile, Email, Address, Bank Company, Bank Account, Department, Designation, Role, Onboard Date, Offboard Date and Salary -->
+			<!-- Display user's details -->
 		<div class="col">
 			<p><strong class="pf">Name: </strong><?php echo !empty($name)?$name:'';?></p>
 			<p><strong class="pf">Gender: </strong><?php echo !empty($gender)?$gender:'';?></p>
@@ -119,19 +119,19 @@ DBConnection::disconnect();
 			
 			<!-- Resume and Contract
 			If there's resume or contract available, there will be button which allows user to download it.
-			Else, it will display "No contract available" or "No resume available" 
+			Else, it will display "No contract available" or "No resume available"
 			-->
 			<?php if (!empty($contract)): ?>
     			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
     		<?php else: ?>
     			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contact available</a>
-			<?php endif; ?>		
+			<?php endif; ?>
 			
 			<?php if (!empty($resume)): ?>
     			<a href="<?php echo $resume; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Resume</a>
     		<?php else: ?>
     			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No resume available</a>
-			<?php endif; ?>		
+			<?php endif; ?>
 		</div>
 	</div>
 </body>

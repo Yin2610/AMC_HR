@@ -6,10 +6,10 @@ $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 /*
  * If the user had not login, direct them to index.php and ask them to login first.
- * 
+ *
  * If the user had login but role is not "Department Head",
  * tell them that they does not have permission to view this page and exit the script.
- */ 
+ */
 
 session_start();
 
@@ -25,7 +25,7 @@ else {
 }
 
 //Check if user had submitted any data through the HTTP POST method
-if (! empty($_POST)) { 
+if (! empty($_POST)) {
     
     /*
      * Initialise "Error Message".
@@ -64,7 +64,7 @@ if (! empty($_POST)) {
     $tnamepayslipnew = $payslip['tmp_name'];
     $file_type = mime_content_type($tnamepayslipnew);
 
-    if (! ($file_type == 'application/pdf')) {
+    if ($file_type != 'application/pdf') {
         $filetypeError = "Invalid file type. Please upload a PDF file!";
     } else {
 
@@ -106,7 +106,7 @@ DBConnection::disconnect();
 </head>
 
 <body class='bg-light'>
-	<?php include('SideNav.php')?>
+	<?php include 'SideNav.php'?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
