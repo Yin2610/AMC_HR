@@ -1,7 +1,21 @@
 <?php
+//establish connection to database
 require 'DBConnection.php';
+$pdo = DBConnection::connectToDB();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-// Verify if the user had login, if the user had login, get the Employee_ID of the selected employee
+/*
+ * If the user had not login, direct them to index.php and ask them to login first.
+ * 
+ * If the user had login but role is neither "Department Head" nor "Administrator", 
+ * tell them that they does not have permission to view this page and exit the script.
+ * 
+ * If the user had login and role is "Department Head" or "Administrator", 
+ * get the Employee_ID of the selected employee and assign it to $id
+ * 
+ * If no Employee_ID available, direct the user to RetrieveEmployee.php
+ */ 
+
 $id = null;
 
 session_start();
@@ -11,38 +25,46 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     header("Location: index.php");
 }
 else {
+    if($_SESSION['Role_Name'] != 'Department Head' && $_SESSION['Role_Name'] != 'Administrator') {
+        echo "You don't have permission to view this page.";
+        exit();
+    }
     if (! empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
-    
     if (null == $id) {
         header("Location: RetrieveEmployee.php");
     }
 }
 
-//Retrieve user's information
-$pdo = DBConnection::connectToDB();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT 
-        employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
-        bank.Bank_Name, 
-        sensitive_info.Bank_Account, sensitive_info.IC_Number,
-        department.Department_Name,
-        designation.Designation, designation.Salary,
-        role.Role_Name
-        
-            FROM employee
-            INNER JOIN role ON employee.Role_ID = role.Role_ID
-            INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
-            INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
-            INNER JOIN department ON designation.Department_ID = department.Department_ID
-            INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-            WHERE employee.Employee_ID = ?';
-$q = $pdo->prepare($sql);
-$q->execute(array(
-    $id
-));
-$data = $q->fetch(PDO::FETCH_ASSOC);
+//Retrieve employee's information from database
+try {
+    $sqlRetrieve = 'SELECT 
+            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email, 
+            employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
+            bank.Bank_Name, 
+            sensitive_info.Bank_Account, sensitive_info.IC_Number,
+            department.Department_Name,
+            designation.Designation, designation.Salary,
+            role.Role_Name
+            
+                FROM employee
+                INNER JOIN role ON employee.Role_ID = role.Role_ID
+                INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+                INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
+                INNER JOIN department ON designation.Department_ID = department.Department_ID
+                INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
+                WHERE employee.Employee_ID = ?';
+    $q = $pdo->prepare($sqlRetrieve);
+    $q->execute(array(
+        $id
+    ));
+    $data = $q->fetch(PDO::FETCH_ASSOC);
+} catch (PDOException $e) {
+    echo "Error: " . $e->getMessage();
+}
+
+//assigning retrived data to variables
 $pf = $data['Profile_Pic'];
 $name = $data['Name'];
 $gender = $data['Gender'];
@@ -62,10 +84,15 @@ $ondate = $data['Onboard_Date'];
 $offdate = $data['Offboard_Date'];
 $salary = $data['Salary'];
 
-DBConnection::disconnect();
 
 //Check if user had submitted any data through the HTTP POST method
 if (! empty($_POST)) { 
+    
+    /*
+     * Initialise $valid.
+     * If $valid is true, it means all data submitted is correct, and will be updated to the database.
+     * else, it means there's error in the data submitted, either one or more. Hence, will prompt the user on what is the error and will not update the database
+     */
     $valid = true;
     
     /*
@@ -118,7 +145,15 @@ if (! empty($_POST)) {
         $pfnew = "Employee_Info/Profile_Pics/Default_Image.jpg";
     }
     
-    
+    /*
+     * If "ec" radio button is checked, set $cnew to original Contract.
+     * If "nc" radio button is checked, set $cnew to file uploaded.
+     *  Check if the file type of the uploaded file is pdf.
+     *      if incorrect filetype, prompt the user to upload file with correct file type.
+     *      else, move the uploaded file to "Employee_Info/Contracts/" 
+     *      and ensure the file path is 50 characters or less
+     * If "dc" radio button is checked, set $cnew to null. (I.e. delete contract)
+     */
     $cnew = null;
     $selectedCOption = $_POST['hiddenc'];
     
@@ -145,6 +180,15 @@ if (! empty($_POST)) {
         $cnew = null;
     }
     
+    /*
+     * If "er" radio button is checked, set $rnew to original Contract.
+     * If "nr" radio button is checked, set $rnew to file uploaded.
+     *  Check if the file type of the uploaded file is pdf.
+     *      if incorrect filetype, prompt the user to upload file with correct file type.
+     *      else, move the uploaded file to "Employee_Info/Resumes/" 
+     *      and ensure the file path is 50 characters or less
+     * If "dr" radio button is checked, set $rnew to null. (I.e. delete resume)
+     */
     $rnew = null;
     $selectedROption = $_POST['hiddenr'];
     
@@ -161,7 +205,7 @@ if (! empty($_POST)) {
             $rfiletypeError = "Invalid file type. Please upload a PDF file!";
             $valid = false;
         }else{
-            $uploadrDir = 'Employee_Info/Resumes/';
+            $uploadrDir = 'Employee_Info/Resume/';
             $rnew = $uploadrDir . basename($namernew);
             $rnew = substr($rnew, 0, 50);
             move_uploaded_file($tnamernew, $rnew);
@@ -188,16 +232,7 @@ if (! empty($_POST)) {
     $ondate = $_POST['ondate'];
     $offdate = $_POST['offdate'];
     
-    
-    /*
-     * Initialise $valid.
-     * If $valid is true, it means all data submitted is correct, and will be updated to the database.
-     * else, it means there's error in the data submitted, either one or more. Hence, will prompt the user on what is the error and will not update the database
-     */
 
-
-    
-    
     //Ensure $name is not empty and including spaces, is 30 characters or less
     if (empty($name)) {
         $nameError = 'Please enter Name';
@@ -216,7 +251,10 @@ if (! empty($_POST)) {
      * First and Last character must be alphabet
      * Rest of the character must be number
      */
-    if (! preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $nric)) {
+    if (empty($nric)){
+        $nricError = 'Please enter NRIC';
+        $valid = false;
+    }elseif(! preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $nric)) {
         $nricError = 'NRIC format is invalid';
         $valid = false;
     }
@@ -228,13 +266,19 @@ if (! empty($_POST)) {
      * Numeber only
      * No spacing
      */
-    if (! preg_match('/^[0-9]{8}$/', $mobile)) {
+    if (empty($mobile)){
+        $mobileError = 'Please enter Mobile Number';
+        $valid = false;
+    }elseif (! preg_match('/^[0-9]{8}$/', $mobile)) {
         $mobileError = 'Mobile Number should be 8 numeric characters';
         $valid = false;
     }
 
     //Ensure $email is not empty and is in the correct format
-    if (! filter_var($email, FILTER_VALIDATE_EMAIL)) { 
+    if (empty($email)){
+        $emailError = 'Please enter Email';
+        $valid = false;
+    }elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) { 
         $emailError = 'Please enter a valid Email Address';
         $valid = false;
     }
@@ -255,66 +299,74 @@ if (! empty($_POST)) {
      * No spacing
      */
     
-    if (!preg_match('/^\d{9,12}$/', $bankacc)) {
+    if (empty($bankacc)){
+        $bankaccError = 'Please enter Bank Account Number';
+        $valid = false;
+    }elseif (!preg_match('/^\d{9,12}$/', $bankacc)) {
         $bankaccError = 'Bank Account Number should be numeric and have 9 to 12 digits or less';
         $valid = false;
     }
     
     //if all data submitted is correct, update the database and redirect the user to RetrieveEmployee.php
     if ($valid) {
-        
-        $pdo = DBConnection::connectToDB();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "UPDATE employee
-         INNER JOIN role ON employee.Role_ID = role.Role_ID
-         INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
-         INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
-         INNER JOIN department ON designation.Department_ID = department.Department_ID
-         INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-         SET 
-         employee.Profile_Pic = ?,
-         employee.Name = ?,
-         employee.Gender = ?,
-         employee.Date_Of_Birth = ?,
-         employee.Phone_Num = ?,
-         employee.Email = ?,
-         employee.Address = ?,
-         employee.Onboard_Date = ?,
-         employee.Offboard_Date = ?,
-         employee.Role_ID = ?,
-         employee.Designation_ID = ?,
-         employee.Bank_ID = ?,
-         employee.Contract = ?,
-         employee.Resume = ?,
-         sensitive_info.Bank_Account = ?,
-         sensitive_info.IC_Number = ?
-         WHERE employee.Employee_ID = ?";
-        $q = $pdo->prepare($sql);
-        $q->execute(array(
-            $pfnew,
-            $name,
-            $gender,
-            $dob,
-            $mobile,
-            $email,
-            $address,
-            $ondate,
-            $offdate,
-            $role,
-            $designation,
-            $bank,
-            $cnew,
-            $rnew,
-            $bankacc,
-            $nric,
-            $id
-        ));
-        
-        DBConnection::disconnect();
-        header("Location: RetrieveEmployee.php");
-        
+
+        try{
+            $sqlUpdate = "UPDATE employee
+             INNER JOIN role ON employee.Role_ID = role.Role_ID
+             INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+             INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
+             INNER JOIN department ON designation.Department_ID = department.Department_ID
+             INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
+             SET 
+             employee.Profile_Pic = ?,
+             employee.Name = ?,
+             employee.Gender = ?,
+             employee.Date_Of_Birth = ?,
+             employee.Phone_Num = ?,
+             employee.Email = ?,
+             employee.Address = ?,
+             employee.Onboard_Date = ?,
+             employee.Offboard_Date = ?,
+             employee.Role_ID = ?,
+             employee.Designation_ID = ?,
+             employee.Bank_ID = ?,
+             employee.Contract = ?,
+             employee.Resume = ?,
+             sensitive_info.Bank_Account = ?,
+             sensitive_info.IC_Number = ?
+             WHERE employee.Employee_ID = ?";
+            $q = $pdo->prepare($sqlUpdate);
+            $q->execute(array(
+                $pfnew,
+                $name,
+                $gender,
+                $dob,
+                $mobile,
+                $email,
+                $address,
+                $ondate,
+                $offdate,
+                $role,
+                $designation,
+                $bank,
+                $cnew,
+                $rnew,
+                $bankacc,
+                $nric,
+                $id
+            ));
+            
+            echo "<script>
+                    alert('You have successfully updated the employee\\'s information!');
+                    window.location.href='RetrieveEmployee.php';
+                 </script>";
+            
+        } catch (PDOException $e) {
+            echo "Error: " . $e->getMessage();
+        } 
     }
-    } 
+} 
+DBConnection::disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -325,72 +377,111 @@ if (! empty($_POST)) {
 <link href="css/form.css" rel="css stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+		
+		//Preview uploaded file
+		var loadFile = function(input) {
+    		var output = document.getElementById('pf');
+    		output.src = URL.createObjectURL(input.target.files[0]);
+    		output.onload = function() {
+      			URL.revokeObjectURL(output.src); // free memory
+    		};
+    		
+    		uploadedFile = input.target.files[0];
+  		};
+		
+		/*
+		Show and hide upload button according to the radio button selected.
+		Set  for hiddenpf / hiddenc / hidden ddenr based on the radio button selected.
+		hiddenpf / hiddenc / hiddenr represents the id of the selected radio button.
+		Display existing image, uploaded file and default image accordinglu when respective radio button is selected.
+		*/
+		
+		//Profile Image Radio Button
         function togglePfButton() {
             var uploadPfButton = document.getElementById("uploadPfButton");
+            var profile_pic = document.getElementById("profile_pic");
             var epfRadio = document.getElementById("epf");
             var npfRadio = document.getElementById("npf");
             var dpfRadio = document.getElementById("dpf");
             var hiddenpf = document.getElementById("hiddenpf");
+            var outputpf = document.getElementById('pf');
 
             if (npfRadio.checked) {
-            	uploadPfButton.style.display = "block";}
+            	uploadPfButton.style.display = "block";
+            	profile_pic.setAttribute("required", "");
+            	hiddenpf.value = "npf";
+            	
+            	
+            	if (uploadedFile) {
+            		loadFile({ target: { files: [uploadedFile] } });
+        		}
+            }
         	else {
             	uploadPfButton.style.display = "none";
-        	}
-        	
-        	if (npfRadio.checked) {
-        		hiddenpf.value = "npf";}
-        	else if (epfRadio.checked){
-        		hiddenpf.value = "epf";
-        	}
-        	else {
-        		hiddenpf.value = "dpf";
+            	profile_pic.required = false;
+            	if (epfRadio.checked){
+        			hiddenpf.value = "epf";
+        			
+        			outputpf.src = "<?php echo !empty($pf)?$pf:'';?>";
+        			
+        		}
+        		else {
+        			hiddenpf.value = "dpf";
+        			
+        			outputpf.src = "Employee_Info/Profile_Pics/Default_Image.jpg";
+        		}
         	}
         }
         
+        //Contract Radio Button
         function toggleCButton() {
             var uploadCButton = document.getElementById("uploadCButton");
+            var contract = document.getElementById("contract");
             var ecRadio = document.getElementById("ec");
             var ncRadio = document.getElementById("nc");
             var dcRadio = document.getElementById("dc");
             var hiddenc = document.getElementById("hiddenc");
 
             if (ncRadio.checked) {
-            	uploadCButton.style.display = "block";}
+            	uploadCButton.style.display = "block";
+            	contract.setAttribute("required", "");
+            	hiddenc.value = "nc";
+            }
         	else {
             	uploadCButton.style.display = "none";
-        	}
-        	
-        	if (ncRadio.checked) {
-        		hiddenc.value = "nc";}
-        	else if (ecRadio.checked){
-        		hiddenc.value = "ec";
-        	}
-        	else {
-        		hiddenc.value = "dc";
+            	contract.required = false;
+            	if (ecRadio.checked){
+        			hiddenc.value = "ec";
+        		}
+        		else {
+        			hiddenc.value = "dc";
+        		}
         	}
         }
         
+        //Resume Radio Button
         function toggleRButton() {
             var uploadRButton = document.getElementById("uploadRButton");
+            var resume = document.getElementById("resume");
             var erRadio = document.getElementById("er");
             var nrRadio = document.getElementById("nr");
             var drRadio = document.getElementById("dr");
             var hiddenr = document.getElementById("hiddenr");
 
             if (nrRadio.checked) {
-            	uploadRButton.style.display = "block";}
+            	uploadRButton.style.display = "block";
+            	resume.setAttribute("required", "");
+            	hiddenr.value = "nr";
+            }
         	else {
             	uploadRButton.style.display = "none";
-        	}
-        	
-        	if (nrRadio.checked) {
-        		hiddenr.value = "nr";}
-        	else if (erRadio.checked){
-        		hiddenc.value = "er";
-        	}
-        	else {
-        		hiddenr.value = "dr";
+            	resume.required = false;
+            	if (erRadio.checked){
+        			hiddenc.value = "er";
+        		}
+        		else {
+        			hiddenr.value = "dr";
+        		}
         	}
         }
 </script>
@@ -441,6 +532,9 @@ if (! empty($_POST)) {
         				Default Profile Image
       				</label>
     			</div>
+                <?php if (!empty($pffiletypeError)): ?>
+                	<span class="help-inline"><?php echo $pffiletypeError;?></span>
+                <?php endif; ?>
     		</div>
     		
     		<!-- value changes according to the radio button checked -->
@@ -448,12 +542,8 @@ if (! empty($_POST)) {
     		
     		<!-- only display when "npf" radio button is checked -->
     		<div id="uploadPfButton" style="display: none;">
-				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*"> 
+				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)"> 
 				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
-				<br>
-                <?php if (!empty($pffiletypeError)): ?>
-                	<span class="help-inline"><?php echo $pffiletypeError;?></span>
-                <?php endif; ?>
 			</div>
 				
 			     <!-- Name -->
@@ -510,7 +600,7 @@ if (! empty($_POST)) {
 			    <!-- Email -->
 				<div class="mb-3">
 					<label class="form-label" for="email">Email Address</label> 
-					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="254" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
                    	<?php if (!empty($emailError)): ?>
                     	<span class="help-inline"><?php echo $emailError;?></span>
                     <?php endif;?>
@@ -542,7 +632,8 @@ if (! empty($_POST)) {
                             $query->execute();
                             $data = $query->fetchAll();
                             foreach ($data as $row) {
-                                echo "<option value=" . $row['Bank_ID'] . ">" . $row['Bank_Name'] . "</option>";
+                                $selected = (!empty($bank) && $bank == $row['Bank_Name']) ? 'selected' : '';
+                                echo "<option value=".$row['Bank_ID']." $selected>".$row['Bank_Name']."</option>";
                             }
                         ?>
             		</select>
@@ -574,7 +665,8 @@ if (! empty($_POST)) {
                             $query->execute();
                             $data = $query->fetchAll();
                             foreach ($data as $row) {
-                            echo "<option value=" . $row['Designation_ID'] . ">" . $row['Designation'] . "</option>";
+                                $selected = (!empty($designation) && $designation == $row['Designation']) ? 'selected' : '';
+                                echo "<option value=".$row['Designation_ID']." $selected>".$row['Designation']."</option>";
                             }
                         ?>
                     </select>
@@ -592,18 +684,15 @@ if (! empty($_POST)) {
 			<div class="mb-3">
 				<label class="form-label" for="role">Role</label> 
 				<select class="form-select" name="role" id="role" required>
-            		<?php
+            		<?php 
                         $selectRoleSQL = "SELECT * FROM Role";
-                        $query = $pdo->prepare($selectRoleSQL, array(
-                            PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
-                        ));
+                        $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
                         $query->execute();
                         $data = $query->fetchAll();
                         foreach ($data as $row) {
-                            $selected = ($row['Role_ID'] == $role) ? 'selected' : ''; 
-                            echo "<option value=" . $row['Role_ID'] . " $selected>" . $row['Role_Name'] . "</option>";
+                            $selected = (!empty($role) && $role == $row['Role_Name']) ? 'selected' : '';
+                            echo "<option value=".$row['Role_ID']." $selected>".$row['Role_Name']."</option>";
                         }
-                        
                     ?>
             	</select>
 			</div>
@@ -652,6 +741,9 @@ if (! empty($_POST)) {
         				Delete Contract
       				</label>
     			</div>
+                <?php if (!empty($cfiletypeError)): ?>
+                	<span class="help-inline"><?php echo $cfiletypeError;?></span>
+                <?php endif; ?>
     		</div>
     		
     		<!-- value changes according to the radio button checked -->
@@ -660,10 +752,7 @@ if (! empty($_POST)) {
     		<!-- only display when "nc" radio button is checked -->
     		<div id="uploadCButton" style="display: none;">
 				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf"> 
-				<small class="form-text text-muted">Please upload a PDF file.</small> <br>
-                <?php if (!empty($cfiletypeError)): ?>
-                	<span class="help-inline"><?php echo $cfiletypeError;?></span>
-                <?php endif; ?>
+				<small class="form-text text-muted">Please upload a PDF file.</small>
 			</div>
 			
 			
@@ -688,6 +777,9 @@ if (! empty($_POST)) {
         				Delete Resume
       				</label>
     			</div>
+    			<?php if (!empty($rfiletypeError)): ?>
+                	<span class="help-inline"><?php echo $rfiletypeError;?></span>
+                <?php endif; ?>
     		</div>
     		
     		<!-- value changes according to the radio button checked -->
@@ -696,10 +788,7 @@ if (! empty($_POST)) {
     		<!-- only display when "nr" radio button is checked -->
     		<div id="uploadRButton" style="display: none;">
 				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf"> 
-				<small class="form-text text-muted">Please upload a PDF file.</small> <br>
-                <?php if (!empty($rfiletypeError)): ?>
-                	<span class="help-inline"><?php echo $rfiletypeError;?></span>
-                <?php endif; ?>
+				<small class="form-text text-muted">Please upload a PDF file.</small>
 			</div>
 
 			<!-- Submit and Back button -->

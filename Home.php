@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+// if there is no session, redirect to login page.
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
     header("Location: index.php");
@@ -64,6 +65,14 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
                                </div>
                            </div>";
 	
+	$viewOwnLeave = "<div class='card w-100 h-100 p-3'>
+                        	   <div class='card-body text-center'>
+                        	       <h5 class='card-title'>View Own Leave Requests</h5>
+                                	<a class='card-text text-dark stretched-link' href='RetrieveLeaveEmployee.php'>
+                                    Click here to view your leave requests.</a>
+                               </div>
+                           </div>";
+	
 			if($_SESSION['Role_Name'] == "Administrator") {
 			    echo "<div class='row mt-5'>
                 	<div class='col-md-1'></div>
@@ -90,19 +99,22 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
                     		$createLeaveMenu
                 		</div>
                 		<div class='col-md-3 mx-auto'>
-                            $retrieveEmployeeMenu
-                        </div>
+                    		$viewOwnLeave
+                		</div>
                         <div class='col-md-1'></div>
                 	</div>";
 			    echo "<div class='row mt-5'>
-                        <div class='col-md-3'></div>
+                        <div class='col-md-1'></div>
+                        <div class='col-md-3 mx-auto'>
+                            $retrieveEmployeeMenu
+                        </div>
                     	<div class='col-md-3 mx-auto'>
                     		$retrievePayrollMenu
                     	</div>
                     	<div class='col-md-3 mx-auto'>
                     		$retrieveLeaveMenu
                 		</div>
-                        <div class='col-md-3'></div>
+                        <div class='col-md-1'></div>
                 	</div>";
 			}
 			

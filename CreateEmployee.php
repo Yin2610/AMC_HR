@@ -19,13 +19,14 @@ if($_SESSION['Role_Name'] != 'Administrator') {
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+// keep track of validation errors
+$phoneNumError = null;
+$emailError = null;
+$bankAccError = null;
+$ICNumberError = null;
+$pwError = null;
+
 if(isset($_POST['btnRegister'])) {
-    
-    // keep track of validation errors
-    $emailError = null;
-    $addressError = null;
-    $bankAccError = null;
-    $ICNumberError = null;
     
     $name = $_POST['txtName'];
     $gender = $_POST['rdoGender'];
@@ -41,28 +42,34 @@ if(isset($_POST['btnRegister'])) {
     //validate all the inputs
     $valid = true;
     
+    // validate phone number 8 digits
     if(!preg_match('/^[0-9]{8}$/', $phoneNum)) {
-        $phoneNumError = 'Phone number should be 8 numeric characters';
+        $phoneNumError = 'Phone number should be 8 digits.';
         $valid = false;
     }
     
+    // validate email address
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) ) {
         $emailError = 'Please enter a valid email address.';
         $valid = false;
     }
     
+    // validate bank account number 9 to 12 digits
     if (! preg_match('/^\d{9,12}$/', $bankAcc)) {
-        $bankAccError = 'Bank Account Number should be between 9 to 12 digits.';
+        $bankAccError = 'Bank account number should be between 9 to 12 digits.';
         $valid = false;
     }
     
+    // validate IC number capital starting alphabet, 7 digits in the middle and capital end alphabet
     if(!preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $ICNumber)) {
         $ICNumberError = 'Please enter a valid IC number.';
         $valid = false;
     }
     
+    // setting a default profile picture whether user submits profile or not
     $profilePicPath = "Website_Images/Default_pp.png";
     
+    // upload profile picture file
     if(isset($_FILES['fProfilePic']['name'])) {
         $profilePicName = $_FILES['fProfilePic']['name'];
         $tempProfilePicName = $_FILES['fProfilePic']['tmp_name'];
@@ -72,6 +79,7 @@ if(isset($_POST['btnRegister'])) {
         }
     }
     
+     // upload resume file
     if(!empty($_FILES['fResume']['name'])) {
         $resumeName = $_FILES['fResume']['name'];
         $tempResumeName = $_FILES['fResume']['tmp_name'];
@@ -80,7 +88,11 @@ if(isset($_POST['btnRegister'])) {
             echo "<script>alert('Failed uploading resume.')</script>";
         }
     }
+    else {
+        $resumePath = null;
+    }
     
+    // upload contract file
     if(!empty($_FILES['fContract']['name'])) {
         $contractName = $_FILES['fContract']['name'];
         $tempContractName = $_FILES['fContract']['tmp_name'];
@@ -90,10 +102,13 @@ if(isset($_POST['btnRegister'])) {
             echo "<script>alert('Failed uploading contract.')</script>";
         }
     }
+    else {
+        $contractPath = null;
+    }
     
     $password = $_POST['txtPassword'];
-    if(!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/', $ICNumber)) {
-        $ICNumberError = 'Password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.';
+    if(!preg_match('/^[a-zA-Z0-9@#$!%*#?&]{7,}$/', $password)) {
+        $pwError = 'Password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.';
         $valid = false;
     }
     
@@ -123,6 +138,10 @@ if(isset($_POST['btnRegister'])) {
             $pdo->rollBack();
             echo "Error:" .$e->getMessage();
         }
+    }
+    
+    else {
+        echo "<script>alert('Please check the error messages and enter correct and valid information.')</script>";
     }
 }
 ?>
@@ -175,7 +194,7 @@ if(isset($_POST['btnRegister'])) {
         		document.getElementById("bankAccNoError").innerHTML = "";
     		}
     		else {
-    			document.getElementById("bankAccNoError").innerHTML = "Bank account no should be between 9 and 12 digits.";
+    			document.getElementById("bankAccNoError").innerHTML = "Bank account number should be between 9 and 12 digits.";
     		}
     	}
     	
@@ -190,14 +209,14 @@ if(isset($_POST['btnRegister'])) {
     		}
     	}
     	
-    	//showing error msg for enforcing password strength, password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.
+    	//showing error msg to enforce password strength, password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.
     	function strengthenPw(txtPassword) {
-    		let pwRE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/;
+    		let pwRE = /^[a-zA-Z0-9@#$!%*#?&]{7,}$/;
     		if(txtPassword.value.match(pwRE)) {
     			document.getElementById("pwError").innerHTML = "";
     		}
     		else {
-    			document.getElementById("pwError").innerHTML = "Password minimum length is 12, with combination of uppercase, lowercase letters, numbers and symbols.";
+    			document.getElementById("pwError").innerHTML = "Password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.";
     		}
     	}
 	</script> 
@@ -254,14 +273,14 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="txtPhoneNum">Phone number: </label></td>
-                        	<td><input name="txtPhoneNum" class="form-control-sm border rounded" type="text" required onkeyup="validatePhoneNo(this);">
-                        	<br><span class="warning" id="phoneNoError"><?php (!empty($phoneNumError))? $phoneNumError: "" ?></span>
+                        	<td><input name="txtPhoneNum" class="form-control-sm border rounded" type="text" maxlength="8" required onkeyup="validatePhoneNo(this);">
+                        	<br><span class="warning" id="phoneNoError"><?php if($phoneNumError != null){echo $phoneNumError;} ?></span>
                     		</td>
                         </tr>
                         <tr>
                         	<td><label for="txtEmail">Email: </label></td>
                         	<td><input name="txtEmail" class="form-control-sm border rounded" type="email" required>
-                        		<br><span class="warning" id="emailError"><?php (!empty($emailError))? $emailError: "" ?></span>
+                         		<br><span class="warning" id="emailError"><?php if($emailError != null){echo $emailError;} ?></span>
                     		</td>
                         </tr>
                         <tr>
@@ -270,8 +289,8 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="txtICNumber">IC number: </label></td>
-                        	<td><input name="txtICNumber" class="form-control-sm border rounded" type="text" required onkeyup="validateICNo(this);">
-                        		<br><span class="warning" id="ICnumberError"><?php (!empty($ICNumberError))? $ICNumberError: "" ?></span> 
+                         	<td><input name="txtICNumber" class="form-control-sm border rounded" type="text" maxlength="9" required onkeyup="validateICNo(this);">
+                         		<br><span class="warning" id="ICnumberError"><?php if($ICNumberError != null){echo $ICNumberError;} ?></span> 
                         	</td>
                         </tr>
                     </table>
@@ -295,7 +314,7 @@ if(isset($_POST['btnRegister'])) {
             				<td><label for="sBank">Bank: </label></td>
             				<td><select name="sBank" class="form-control-sm border rounded" required>
             				
-<!--             				select bank SQL to allow admin select a bank from registered banks in the database for the employee -->
+<!--              				select bank SQL to allow admin select a bank from registered banks in the database for the employee --> 
                         		<?php 
                                     $selectBankSQL = "SELECT * FROM Bank";
                                     $query = $pdo->prepare($selectBankSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
@@ -304,13 +323,13 @@ if(isset($_POST['btnRegister'])) {
                                     foreach ($data as $row) {
                                         echo "<option value=".$row['Bank_ID'].">".$row['Bank_Name']."</option>";
                                     }
-                                ?>
-                                </select></td>
-            			</tr>
-            			<tr>
-                        	<td><label for="txtBankAcc">Bank account number: </label></td>
-                        	<td><input name="txtBankAcc" class="form-control-sm border rounded" type="text" required onkeyup="validateBankAccNo(this)">
-                        		<br><span id="bankAccNoError" class="warning"><?php (!empty($bankAccError))? $bankAccError: "" ?></span>
+                                 ?>
+                                 </select></td> 
+             			</tr> 
+             			<tr> 
+                         	<td><label for="txtBankAcc">Bank account number: </label></td> 
+                         	<td><input name="txtBankAcc" class="form-control-sm border rounded" type="text" maxlength="12" required onkeyup="validateBankAccNo(this)">
+                         		<br><span id="bankAccNoError" class="warning"><?php if($bankAccError != null){echo $bankAccError;} ?></span>
                         	</td>
                         </tr>
                         <tr>
@@ -318,13 +337,13 @@ if(isset($_POST['btnRegister'])) {
                         	<td><input name="fResume" id="fResume" class="form-control-sm border rounded" type="file"></td>
                         </tr>
                         <tr>
-                        	<td><label for="fContract">Contract: </label></td>
-                        	<td><input name="fContract" id="fContract" class="form-control-sm border rounded" type="file"></td>
-                        </tr>
-                        <tr>
-                        	<td><label for="txtPassword">Password: </label></td>
-                        	<td><input name="txtPassword" class="form-control-sm border rounded" type="password" placeholder="Password" required onkeyup="strengthenPw(this)">
-                        	<br><span class="warning" id="pwError"></span>
+                         	<td><label for="fContract">Contract: </label></td> 
+                         	<td><input name="fContract" id="fContract" class="form-control-sm border rounded" type="file"></td> 
+                         </tr>
+                         <tr> 
+                         	<td><label for="txtPassword">Password: </label></td> 
+                       	<td><input name="txtPassword" class="form-control-sm border rounded" type="password" placeholder="Password" required onkeyup="strengthenPw(this)">
+                         	<br><span class="warning" id="pwError"><?php if($pwError != null){echo $pwError;} ?></span> 
                         	</td>
                         </tr>
                         <tr>
@@ -341,7 +360,7 @@ if(isset($_POST['btnRegister'])) {
                                     foreach ($data as $row) {
                                         echo "<option value=".$row['Role_ID'].">".$row['Role_Name']."</option>";
                                     }
-                                 ?>
+                                  ?>
                                 </select>
                         	</td>
                         </tr>
@@ -358,7 +377,7 @@ if(isset($_POST['btnRegister'])) {
                                 foreach ($data as $row) {
                                     echo "<option value=".$row['Designation_ID'].">".$row['Designation']."</option>";
                                 }
-                            ?>
+                             ?>
                             </select></td>
                         </tr>
                         <tr>

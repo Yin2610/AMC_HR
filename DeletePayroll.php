@@ -12,7 +12,7 @@ if ( !empty($_GET['id'])) {
         $id = $_POST['id'];
         $pdo = DBConnection::connectToDB();
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        $sql = "DELETE FROM payroll  WHERE Payroll_ID = ?";
+        $sql = "DELETE FROM payroll WHERE Payroll_ID = ?";
         $q = $pdo->prepare($sql);
         $q->execute(array($id));
         DBConnection::disconnect();
