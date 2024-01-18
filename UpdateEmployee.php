@@ -43,8 +43,6 @@ else {
     }
 }
 
-
-
 //Retrieve employee's information from the database.
 try {
     $sqlRetrieve = 'SELECT 
@@ -67,13 +65,16 @@ try {
     $q->execute(array(
         $id
     ));
+    
     $data = $q->fetch(PDO::FETCH_ASSOC);
+    
     if (!$data && !is_array($data)){
         echo "<script>
                     alert('Invalid employee!');
                     window.location.href='RetrieveEmployee.php';
               </script>";
     }
+    
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
@@ -593,75 +594,75 @@ DBConnection::disconnect();
                 <?php endif; ?>
 			</div>
 				
-				<!-- Gender and DOB -->
-				<div class="row mb-3">
+			<!-- Gender and DOB -->
+			<div class="row mb-3">
 				
-				    <!-- Gender -->
-					<div class="col">
-						<label class="form-label" for="gender">Gender</label> 
-						<select class="form-select" name="gender" id="gender">
-							<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
-							<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
-							<option value="Other" <?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
-						</select>
-					</div>
+                <!-- Gender -->
+				<div class="col">
+					<label class="form-label" for="gender">Gender</label> 
+					<select class="form-select" name="gender" id="gender">
+						<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
+						<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
+						<option value="Other" <?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
+					</select>
+				</div>
 					
-				    <!-- DOB -->
-					<div class="col">
-						<label class="form-label" for="dob">DOB</label>
-						<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
-					</div>
+			    <!-- DOB -->
+				<div class="col">
+					<label class="form-label" for="dob">DOB</label>
+					<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
 				</div>
+			</div>
 
-			    <!-- NRIC Number -->
-				<div class="mb-3">
-					<label class="form-label" for="nric">NRIC</label> 
-					<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on"> 
-                    <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
-					<br>
-					<?php if (!empty($nricError)): ?>
-                        <span class="help-inline"><?php echo $nricError;?></span>
-                    <?php endif;?>
-				</div>
+			<!-- NRIC Number -->
+			<div class="mb-3">
+				<label class="form-label" for="nric">NRIC</label> 
+				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on"> 
+                <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
+				<br>
+				<?php if (!empty($nricError)): ?>
+                	<span class="help-inline"><?php echo $nricError;?></span>
+                <?php endif;?>
+			</div>
 
-			    <!-- Mobile Number -->
-				<div class="mb-3">
-					<label class="form-label" for="mobile">Mobile Number</label> 
-					<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
-					<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
-					<br>
-                    <?php if (!empty($mobileError)): ?>
-                    	<span class="help-inline"><?php echo $mobileError;?></span>
-                    <?php endif;?>
-				</div>
+			<!-- Mobile Number -->
+			<div class="mb-3">
+				<label class="form-label" for="mobile">Mobile Number</label> 
+				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
+				<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
+				<br>
+                <?php if (!empty($mobileError)): ?>
+                    <span class="help-inline"><?php echo $mobileError;?></span>
+                <?php endif;?>
+			</div>
 
-			    <!-- Email -->
-				<div class="mb-3">
-					<label class="form-label" for="email">Email Address</label> 
-					<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
-                   	<?php if (!empty($emailError)): ?>
-                    	<span class="help-inline"><?php echo $emailError;?></span>
-                    <?php endif;?>
-				</div>
+			<!-- Email -->
+			<div class="mb-3">
+				<label class="form-label" for="email">Email Address</label> 
+				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+                <?php if (!empty($emailError)): ?>
+                    <span class="help-inline"><?php echo $emailError;?></span>
+                <?php endif;?>
+			</div>
 
-			     <!-- Address -->
-				<div class="mb-3">
-					<label class="form-label" for="address">Address</label> 
-					<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
-                    <small class="form-text text-muted">50 characters or less(including spaces)</small>
-                    <br>
-                    <?php if (!empty($addressError)): ?>
-                    	<span class="help-inline"><?php echo $addressError;?></span>
-                    <?php endif;?>
-				</div>
+			<!-- Address -->
+			<div class="mb-3">
+				<label class="form-label" for="address">Address</label> 
+				<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
+                <small class="form-text text-muted">50 characters or less(including spaces)</small>
+                <br>
+                <?php if (!empty($addressError)): ?>
+                	<span class="help-inline"><?php echo $addressError;?></span>
+                <?php endif;?>
+			</div>
 				
-				<!-- Bank Company and Bank Account Number -->
-				<div class="row mb-3">
-				    <!-- Bank Company -->
-					<div class="col">
+			<!-- Bank Company and Bank Account Number -->
+			<div class="row mb-3">
+				<!-- Bank Company -->
+				<div class="col">
 					<label class="form-label" for="bank">Bank Company</label> 
 					<select class="form-select" name="bank" id="bank" required>
-        				<?php
+            			<?php
                             $pdo = DBConnection::connectToDB();
                             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                             $selectBankSQL = "SELECT * FROM bank";
@@ -674,7 +675,7 @@ DBConnection::disconnect();
                                 $selected = (!empty($bank) && $bank == $row['Bank_Name']) ? 'selected' : '';
                                 echo "<option value=".$row['Bank_ID']." $selected>".$row['Bank_Name']."</option>";
                             }
-                        ?>
+                         ?>
             		</select>
 				</div>
 
@@ -800,7 +801,7 @@ DBConnection::disconnect();
     		
     		<!-- Display only when the "nc" radio button is checked. -->
     		<div id="uploadCButton" style="display: none;">
-				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf"> 
+				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf">
 				<small class="form-text text-muted">Please upload a PDF file.</small>
 			</div>
 			
