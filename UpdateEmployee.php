@@ -9,7 +9,7 @@ $id = null;
 session_start();
 
 /*
- * Check if the user is logged in; 
+ * Check if the user is logged in;
  * if not, redirect to index.php and prompt them to log in first.
  */
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
@@ -45,10 +45,10 @@ else {
 
 //Retrieve employee's information from the database.
 try {
-    $sqlRetrieve = 'SELECT 
+    $sqlRetrieve = 'SELECT
             employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
             employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
-            bank.Bank_Name, 
+            bank.Bank_Name,
             sensitive_info.Bank_Account, sensitive_info.IC_Number,
             department.Department_Name,
             designation.Designation, designation.Salary,
@@ -148,7 +148,7 @@ if (! empty($_POST)) {
         if ($file_type === IMAGETYPE_PNG || $file_type === IMAGETYPE_JPEG) {
             
             /*
-             * Move the uploaded file to "Employee_Info/Profile_Pics/" 
+             * Move the uploaded file to "Employee_Info/Profile_Pics/"
              * and ensure the filepath is 50 characters or less.
              */
             $uploadpfDir = 'Employee_Info/Profile_Pics/';
@@ -269,7 +269,7 @@ if (! empty($_POST)) {
     }
 
     /*
-     * Ensure $nric is not empty and is in the correct format. 
+     * Ensure $nric is not empty and is in the correct format.
      * i.e.
      * Must be 9 characters
      * No spacing
@@ -304,7 +304,7 @@ if (! empty($_POST)) {
     if (empty($email)){
         $emailError = 'Please enter Email';
         $valid = false;
-    }elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) { 
+    }elseif (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $emailError = 'Please enter a valid Email Address';
         $valid = false;
     }
@@ -341,7 +341,7 @@ if (! empty($_POST)) {
              INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
              INNER JOIN department ON designation.Department_ID = department.Department_ID
              INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-             SET 
+             SET
              employee.Profile_Pic = ?,
              employee.Name = ?,
              employee.Gender = ?,
@@ -410,7 +410,7 @@ DBConnection::disconnect();
     		output.onload = function() {
     		
     			//Release the object URL to free up memory once the image has loaded.
-      			URL.revokeObjectURL(output.src); 
+      			URL.revokeObjectURL(output.src);
     		};
     		
     		//Store the uploaded file in the variable "uploadedFile".
@@ -420,7 +420,7 @@ DBConnection::disconnect();
 		/*
 		- Show and hide upload button based on the radio button selected.
 		- Set the value for hiddenpf, hiddenc, and hiddenr based on the radio button selected.
-		- Display existing image, uploaded file, and default image accordingly 
+		- Display existing image, uploaded file, and default image accordingly
 		when the respective radio button is selected.
 		*/
 		
@@ -579,13 +579,13 @@ DBConnection::disconnect();
     		
     		<!-- Display only when "npf" radio button is checked. -->
     		<div id="uploadPfButton" style="display: none;">
-				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)"> 
+				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)">
 				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
 			</div>
 				
 			<!-- Name -->
 			<div class="mb-3">
-				<label class="form-label" for="name">Name</label> 
+				<label class="form-label" for="name">Name</label>
 				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
 				<small class="form-text text-muted">30 characters or less(including spaces)</small>
 				<br>
@@ -599,7 +599,7 @@ DBConnection::disconnect();
 				
                 <!-- Gender -->
 				<div class="col">
-					<label class="form-label" for="gender">Gender</label> 
+					<label class="form-label" for="gender">Gender</label>
 					<select class="form-select" name="gender" id="gender">
 						<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
 						<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
@@ -616,8 +616,8 @@ DBConnection::disconnect();
 
 			<!-- NRIC Number -->
 			<div class="mb-3">
-				<label class="form-label" for="nric">NRIC</label> 
-				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on"> 
+				<label class="form-label" for="nric">NRIC</label>
+				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on">
                 <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
 				<br>
 				<?php if (!empty($nricError)): ?>
@@ -627,7 +627,7 @@ DBConnection::disconnect();
 
 			<!-- Mobile Number -->
 			<div class="mb-3">
-				<label class="form-label" for="mobile">Mobile Number</label> 
+				<label class="form-label" for="mobile">Mobile Number</label>
 				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
 				<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
 				<br>
@@ -638,7 +638,7 @@ DBConnection::disconnect();
 
 			<!-- Email -->
 			<div class="mb-3">
-				<label class="form-label" for="email">Email Address</label> 
+				<label class="form-label" for="email">Email Address</label>
 				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
                 <?php if (!empty($emailError)): ?>
                     <span class="help-inline"><?php echo $emailError;?></span>
@@ -647,7 +647,7 @@ DBConnection::disconnect();
 
 			<!-- Address -->
 			<div class="mb-3">
-				<label class="form-label" for="address">Address</label> 
+				<label class="form-label" for="address">Address</label>
 				<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
                 <small class="form-text text-muted">50 characters or less(including spaces)</small>
                 <br>
@@ -660,7 +660,7 @@ DBConnection::disconnect();
 			<div class="row mb-3">
 				<!-- Bank Company -->
 				<div class="col">
-					<label class="form-label" for="bank">Bank Company</label> 
+					<label class="form-label" for="bank">Bank Company</label>
 					<select class="form-select" name="bank" id="bank" required>
             			<?php
                             $pdo = DBConnection::connectToDB();
@@ -696,7 +696,7 @@ DBConnection::disconnect();
 
 				<!-- Designation -->
 				<div class="col">
-    				<label class="form-label" for="designation">Designation</label> 
+    				<label class="form-label" for="designation">Designation</label>
     				<select class="form-select" name="designation" id="designation" required>
                         <?php
                             $selectDesignationSQL = "SELECT * FROM Designation";
@@ -715,7 +715,7 @@ DBConnection::disconnect();
 
 				<!-- Department -->
 				<div class="col">
-					<label class="form-label" for="department">Department</label> 
+					<label class="form-label" for="department">Department</label>
 					<input class="form-control" name="department" id="department" type="text" placeholder="Department" value="<?php echo !empty($department)?$department:'';?>" readonly>
 				</div>
 
@@ -723,9 +723,9 @@ DBConnection::disconnect();
 			
 			<!-- Role -->
 			<div class="mb-3">
-				<label class="form-label" for="role">Role</label> 
+				<label class="form-label" for="role">Role</label>
 				<select class="form-select" name="role" id="role" required>
-            		<?php 
+            		<?php
                         $selectRoleSQL = "SELECT * FROM Role";
                         $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
                         $query->execute();
@@ -743,7 +743,7 @@ DBConnection::disconnect();
 
 				<!-- Onboard Date -->
 				<div class="col">
-					<label class="form-label" for="ondate">Onboard Date</label> 
+					<label class="form-label" for="ondate">Onboard Date</label>
 					<input class="form-control" name="ondate" id="ondate" type="date" placeholder="Onboard Date" value="<?php echo !empty($ondate)?$ondate:'';?>" required>
 				</div>
 
@@ -762,8 +762,8 @@ DBConnection::disconnect();
 				</div>
 			</div>
 			
-			<!-- Contract -->		
-			<div class="mb-3">	
+			<!-- Contract -->
+			<div class="mb-3">
 				<label class="form-label">Contract</label>
 				
 				<!-- Radio buttons for Contract selection -->
@@ -845,7 +845,7 @@ DBConnection::disconnect();
     		
     		<!-- Display only when the "nr" radio button is checked. -->
     		<div id="uploadRButton" style="display: none;">
-				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf"> 
+				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf">
 				<small class="form-text text-muted">Please upload a PDF file.</small>
 			</div>
 
