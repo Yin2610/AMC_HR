@@ -4,40 +4,48 @@ require 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-/*
- * If the user had not login, direct them to index.php and ask them to login first.
- * 
- * If the user had login but role is neither "Department Head" nor "Administrator", 
- * tell them that they does not have permission to view this page and exit the script.
- * 
- * If the user had login and role is "Department Head" or "Administrator", 
- * get the Employee_ID of the selected employee and assign it to $id
- * 
- * If no Employee_ID available, direct the user to RetrieveEmployee.php
- */ 
-
 $id = null;
 
 session_start();
 
+/*
+ * Check if the user is logged in; 
+ * if not, redirect to index.php and prompt them to log in first.
+ */
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
-    echo "<script>alert('Please login first.')</script>";
-    header("Location: index.php");
+    echo "<script>
+            alert('Please login first.');
+            window.location.href='Index.php';
+          </script>";
 }
 else {
+    
+    /*
+     * If the user is logged in but role is neither "Department Head" nor "Administrator",
+     * inform them that they does not have permission to view this page and exit the script.
+     */
     if($_SESSION['Role_Name'] != 'Department Head' && $_SESSION['Role_Name'] != 'Administrator') {
-        echo "You don't have permission to view this page.";
-        exit();
+        exit("You don't have permission to view this page.");
     }
+    
+    /*
+     * If the user is logged in and role is "Department Head" or "Administrator",
+     * attempt to retrieve the Employee_ID from the URL and assign it to $id.
+     */
     if (! empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
+    
+    
+    //If there is no Employee_ID in the URL, redirect the user to RetrieveEmployee.php.
     if (null == $id) {
         header("Location: RetrieveEmployee.php");
     }
 }
 
-//Retrieve employee's information from database
+
+
+//Retrieve employee's information from the database.
 try {
     $sqlRetrieve = 'SELECT 
             employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
@@ -60,11 +68,17 @@ try {
         $id
     ));
     $data = $q->fetch(PDO::FETCH_ASSOC);
+    if (!$data && !is_array($data)){
+        echo "<script>
+                    alert('Invalid employee!');
+                    window.location.href='RetrieveEmployee.php';
+              </script>";
+    }
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
 
-//assigning retrived data to variables
+//Assign retrieved data to variables
 $pf = $data['Profile_Pic'];
 $name = $data['Name'];
 $gender = $data['Gender'];
@@ -85,20 +99,20 @@ $offdate = $data['Offboard_Date'];
 $salary = $data['Salary'];
 
 
-//Check if user had submitted any data through the HTTP POST method
-if (! empty($_POST)) { 
+//Check if the user has submitted any data through the HTTP POST method
+if (! empty($_POST)) {
     
     /*
      * Initialise $valid.
      * If $valid is true, it means all data submitted is correct, and will be updated to the database.
-     * else, it means there's error in the data submitted, either one or more. Hence, will prompt the user on what is the error and will not update the database
+     * If false, it means there's an error in the data submitted, and the user will be prompted on what the error is.
      */
     $valid = true;
     
     /*
-     * Initialise "Error Message". 
-     * If its empty, it means that there is no error, 
-     * else it means that some error occurred and it will prompt user on what is the error.
+     * Initialise "Error Message".
+     * If empty, it means that there is no error,
+     * else it measns that there's an error, and the user will be prompted on what the error is.
      */
     $pffiletypeError = null;
     $cfiletypeError = null;
@@ -112,12 +126,10 @@ if (! empty($_POST)) {
     $bankaccError = null;
   
     /*
-     * If "epf" radio button is checked, set $pfnew to original Profile Image.
-     * If "npf" radio button is checked, set $pfnew to file uploaded.
-     *  Check if the file type of the uploaded file is PNG/JPEG.
-     *      if incorrect filetype, prompt the user to upload file with correct file type.
-     *      else, move the uploaded file to "Employee_Info/Profile_Pics/" and ensure the file path is 50 characters or less
-     * If "dpf" radio button is checked, set $pfnew to the default Profile Image.
+     * Determine the Profile Image based on the user's selection.
+     * - If "epf" radio button is checked, set $pfnew to original Profile Image.
+     * - If "npf" radio button is checked, validate and set $pfnew to the uploaded file.
+     * - If "dpf" radio button is checked, set $pfnew to the default Profile Image.
      */
     $pfnew = null;
     $selectedPfOption = $_POST['hiddenpf'];
@@ -130,7 +142,14 @@ if (! empty($_POST)) {
         $namepfnew = $pfnew['name'];
         $tnamepfnew = $pfnew['tmp_name'];
         $file_type = exif_imagetype($tnamepfnew);
+        
+        //Validate file type is PNG or JPEG.
         if ($file_type === IMAGETYPE_PNG || $file_type === IMAGETYPE_JPEG) {
+            
+            /*
+             * Move the uploaded file to "Employee_Info/Profile_Pics/" 
+             * and ensure the filepath is 50 characters or less.
+             */
             $uploadpfDir = 'Employee_Info/Profile_Pics/';
             $pfnew = $uploadpfDir . basename($namepfnew);
             $pfnew = substr($pfnew, 0, 50);
@@ -146,12 +165,9 @@ if (! empty($_POST)) {
     }
     
     /*
+     * Determine the Contract based on the user's selection.
      * If "ec" radio button is checked, set $cnew to original Contract.
-     * If "nc" radio button is checked, set $cnew to file uploaded.
-     *  Check if the file type of the uploaded file is pdf.
-     *      if incorrect filetype, prompt the user to upload file with correct file type.
-     *      else, move the uploaded file to "Employee_Info/Contracts/" 
-     *      and ensure the file path is 50 characters or less
+     * If "nc" radio button is checked, validate and set $cnew to file uploaded.
      * If "dc" radio button is checked, set $cnew to null. (I.e. delete contract)
      */
     $cnew = null;
@@ -166,10 +182,16 @@ if (! empty($_POST)) {
         $tnamecnew = $cnew['tmp_name'];
         $file_type = mime_content_type($tnamecnew);
         
+        //Validate file type is PDF.
         if ($file_type != 'application/pdf'){
             $cfiletypeError = "Invalid file type. Please upload a PDF file!";
             $valid = false;
         }else{
+            
+            /*
+             * Move the uploaded file to "Employee_Info/Contracts/"
+             * and ensure the filepath is 50 characters or less.
+             */
             $uploadcDir = 'Employee_Info/Contracts/';
             $cnew = $uploadcDir . basename($namecnew);
             $cnew = substr($cnew, 0, 50);
@@ -181,12 +203,9 @@ if (! empty($_POST)) {
     }
     
     /*
-     * If "er" radio button is checked, set $rnew to original Contract.
-     * If "nr" radio button is checked, set $rnew to file uploaded.
-     *  Check if the file type of the uploaded file is pdf.
-     *      if incorrect filetype, prompt the user to upload file with correct file type.
-     *      else, move the uploaded file to "Employee_Info/Resumes/" 
-     *      and ensure the file path is 50 characters or less
+     * Determine the Resume based on the user's selection.
+     * If "er" radio button is checked, set $rnew to original Resume.
+     * If "nr" radio button is checked, validate and set $rnew to file uploaded.
      * If "dr" radio button is checked, set $rnew to null. (I.e. delete resume)
      */
     $rnew = null;
@@ -201,10 +220,16 @@ if (! empty($_POST)) {
         $tnamernew = $rnew['tmp_name'];
         $file_type = mime_content_type($tnamernew);
         
+        //Validate file type is PDF.
         if ($file_type != 'application/pdf'){
             $rfiletypeError = "Invalid file type. Please upload a PDF file!";
             $valid = false;
         }else{
+            
+            /*
+             * Move the uploaded file to "Employee_Info/Resume/"
+             * and ensure the filepath is 50 characters or less.
+             */
             $uploadrDir = 'Employee_Info/Resume/';
             $rnew = $uploadrDir . basename($namernew);
             $rnew = substr($rnew, 0, 50);
@@ -217,7 +242,6 @@ if (! empty($_POST)) {
     
     
     //Retrieve data submitted in the form
-    
     $name = trim($_POST['name']);
     $gender = $_POST['gender'];
     $dob = $_POST['dob'];
@@ -232,6 +256,7 @@ if (! empty($_POST)) {
     $ondate = $_POST['ondate'];
     $offdate = $_POST['offdate'];
     
+    //Validate the data submitted in the form
 
     //Ensure $name is not empty and including spaces, is 30 characters or less
     if (empty($name)) {
@@ -298,7 +323,6 @@ if (! empty($_POST)) {
      * Only have number
      * No spacing
      */
-    
     if (empty($bankacc)){
         $bankaccError = 'Please enter Bank Account Number';
         $valid = false;
@@ -307,9 +331,8 @@ if (! empty($_POST)) {
         $valid = false;
     }
     
-    //if all data submitted is correct, update the database and redirect the user to RetrieveEmployee.php
+    //if all data submitted is correct, update the database and redirect the user to RetrieveEmployee.php.
     if ($valid) {
-
         try{
             $sqlUpdate = "UPDATE employee
              INNER JOIN role ON employee.Role_ID = role.Role_ID
@@ -384,17 +407,20 @@ DBConnection::disconnect();
     		var output = document.getElementById('pf');
     		output.src = URL.createObjectURL(input.target.files[0]);
     		output.onload = function() {
-      			URL.revokeObjectURL(output.src); // free memory
+    		
+    			//Release the object URL to free up memory once the image has loaded.
+      			URL.revokeObjectURL(output.src); 
     		};
     		
+    		//Store the uploaded file in the variable "uploadedFile".
     		uploadedFile = input.target.files[0];
   		};
 		
 		/*
-		Show and hide upload button according to the radio button selected.
-		Set  for hiddenpf / hiddenc / hidden ddenr based on the radio button selected.
-		hiddenpf / hiddenc / hiddenr represents the id of the selected radio button.
-		Display existing image, uploaded file and default image accordinglu when respective radio button is selected.
+		- Show and hide upload button based on the radio button selected.
+		- Set the value for hiddenpf, hiddenc, and hiddenr based on the radio button selected.
+		- Display existing image, uploaded file, and default image accordingly 
+		when the respective radio button is selected.
 		*/
 		
 		//Profile Image Radio Button
@@ -490,7 +516,7 @@ DBConnection::disconnect();
 <body class="bg-light">
 
 	<!-- Side Navigation Bar -->
-    <?php include('SideNav.php')?>
+    <?php include 'SideNav.php'?>
     
     <div class="container-fluid mt-4">
     
@@ -512,52 +538,62 @@ DBConnection::disconnect();
 			
 			<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post" enctype="multipart/form-data">
 				
-			<!-- Profile Image -->		
-			<div class="mb-3">	
+			<!-- Profile Image -->
+			<div class="mb-3">
 				<label class="form-label">Profile Image</label>
+				
+				<!-- Radio buttons for Profile Image selection -->
+				
+				<!-- Existing Profile Image -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="pf_radio" id="epf" onchange="togglePfButton()" checked>
       				<label class="form-check-label" for="epf">
         				Existing Profile Image
       				</label>
     			</div>
+    			
+    			<!-- New Profile Image -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="pf_radio" id="npf" onchange="togglePfButton()">
       				<label class="form-check-label" for="npf">
         				New Profile Image
       				</label>
     			</div>
+    			
+    			<!-- Default Profile Image -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="pf_radio" id="dpf" onchange="togglePfButton()">
       				<label class="form-check-label" for="dpf">
         				Default Profile Image
       				</label>
     			</div>
+    			
                 <?php if (!empty($pffiletypeError)): ?>
                 	<span class="help-inline"><?php echo $pffiletypeError;?></span>
                 <?php endif; ?>
     		</div>
     		
-    		<!-- value changes according to the radio button checked -->
+    		<!-- Hidden input to track which Profile Image radio button is selected. -->
     		<input class="form-control" type="hidden" name="hiddenpf" id="hiddenpf" value="epf">
     		
-    		<!-- only display when "npf" radio button is checked -->
+    		<!-- Display only when "npf" radio button is checked. -->
     		<div id="uploadPfButton" style="display: none;">
 				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)"> 
 				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
 			</div>
 				
-			     <!-- Name -->
-				<div class="mb-3">
-					<label class="form-label" for="name">Name</label> 
-					<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
-					<small class="form-text text-muted">30 characters or less(including spaces)</small>
-					<br>
-                    <?php if (!empty($nameError)): ?>
-                    	<span class="help-inline"><?php echo $nameError;?></span>
-                    <?php endif; ?>
-				</div>
+			<!-- Name -->
+			<div class="mb-3">
+				<label class="form-label" for="name">Name</label> 
+				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
+				<small class="form-text text-muted">30 characters or less(including spaces)</small>
+				<br>
+                <?php if (!empty($nameError)): ?>
+                    <span class="help-inline"><?php echo $nameError;?></span>
+                <?php endif; ?>
+			</div>
 				
+				<!-- Gender and DOB -->
 				<div class="row mb-3">
 				
 				    <!-- Gender -->
@@ -572,7 +608,8 @@ DBConnection::disconnect();
 					
 				    <!-- DOB -->
 					<div class="col">
-						<label class="form-label" for="dob">DOB</label> <input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
+						<label class="form-label" for="dob">DOB</label>
+						<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
 					</div>
 				</div>
 
@@ -617,7 +654,8 @@ DBConnection::disconnect();
                     	<span class="help-inline"><?php echo $addressError;?></span>
                     <?php endif;?>
 				</div>
-
+				
+				<!-- Bank Company and Bank Account Number -->
 				<div class="row mb-3">
 				    <!-- Bank Company -->
 					<div class="col">
@@ -652,6 +690,7 @@ DBConnection::disconnect();
 				</div>
 			</div>
 
+			<!-- Designation and Department -->
 			<div class="row mb-3">
 
 				<!-- Designation -->
@@ -698,6 +737,7 @@ DBConnection::disconnect();
             	</select>
 			</div>
 
+			<!-- Onboard Date and Offboard Date -->
 			<div class="row mb-3">
 
 				<!-- Onboard Date -->
@@ -724,18 +764,26 @@ DBConnection::disconnect();
 			<!-- Contract -->		
 			<div class="mb-3">	
 				<label class="form-label">Contract</label>
+				
+				<!-- Radio buttons for Contract selection -->
+				
+				<!-- Existing Contract -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="c_radio" id="ec" onchange="toggleCButton()" checked>
       				<label class="form-check-label" for="ec">
         				Existing Contract
       				</label>
     			</div>
+    			
+    			<!-- New Contract -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="c_radio" id="nc" onchange="toggleCButton()">
       				<label class="form-check-label" for="nc">
         				New Contract
       				</label>
     			</div>
+    			
+    			<!-- Delete Contract -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="c_radio" id="dc" onchange="toggleCButton()">
       				<label class="form-check-label" for="dc">
@@ -747,46 +795,54 @@ DBConnection::disconnect();
                 <?php endif; ?>
     		</div>
     		
-    		<!-- value changes according to the radio button checked -->
+    		<!-- Hidden input to track which Contract radio button is selected.  -->
     		<input class="form-control" type="hidden" name="hiddenc" id="hiddenc" value="ec">
     		
-    		<!-- only display when "nc" radio button is checked -->
+    		<!-- Display only when the "nc" radio button is checked. -->
     		<div id="uploadCButton" style="display: none;">
 				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf"> 
 				<small class="form-text text-muted">Please upload a PDF file.</small>
 			</div>
 			
-			
-			<!-- Resume -->		
-			<div class="mb-3">	
+			<!-- Resume -->
+			<div class="mb-3">
 				<label class="form-label">Resume</label>
+				
+				<!-- Radio buttons for Resume selection -->
+				
+				<!-- Existing Resume -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="r_radio" id="er" onchange="toggleRButton()" checked>
       				<label class="form-check-label" for="er">
         				Existing Resume
       				</label>
     			</div>
+    			
+    			<!-- New Resume -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="r_radio" id="nr" onchange="toggleRButton()">
       				<label class="form-check-label" for="nr">
         				New Resume
       				</label>
     			</div>
+    			
+    			<!-- Delete Resume -->
     			<div class="form-check">
       				<input class="form-check-input" type="radio" name="r_radio" id="dr" onchange="toggleRButton()">
       				<label class="form-check-label" for="dr">
         				Delete Resume
       				</label>
     			</div>
+    			
     			<?php if (!empty($rfiletypeError)): ?>
                 	<span class="help-inline"><?php echo $rfiletypeError;?></span>
                 <?php endif; ?>
     		</div>
     		
-    		<!-- value changes according to the radio button checked -->
+    		<!-- Hidden input to track which Resume radio button is selected. -->
     		<input class="form-control" type="hidden" name="hiddenr" id="hiddenr" value="er">
     		
-    		<!-- only display when "nr" radio button is checked -->
+    		<!-- Display only when the "nr" radio button is checked. -->
     		<div id="uploadRButton" style="display: none;">
 				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf"> 
 				<small class="form-text text-muted">Please upload a PDF file.</small>
