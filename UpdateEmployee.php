@@ -46,21 +46,21 @@ else {
 //Retrieve employee's information from the database.
 try {
     $sqlRetrieve = 'SELECT
-            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
-            employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
-            bank.Bank_Name,
-            sensitive_info.Bank_Account, sensitive_info.IC_Number,
-            department.Department_Name,
-            designation.Designation, designation.Salary,
-            role.Role_Name
+                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
+                    employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
+                    bank.Bank_Name,
+                    sensitive_info.Bank_Account, sensitive_info.IC_Number,
+                    department.Department_Name,
+                    designation.Designation, designation.Salary,
+                    role.Role_Name
             
-                FROM employee
-                INNER JOIN role ON employee.Role_ID = role.Role_ID
-                INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
-                INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
-                INNER JOIN department ON designation.Department_ID = department.Department_ID
-                INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-                WHERE employee.Employee_ID = ?';
+                        FROM employee
+                        INNER JOIN role ON employee.Role_ID = role.Role_ID
+                        INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+                        INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
+                        INNER JOIN department ON designation.Department_ID = department.Department_ID
+                        INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
+                        WHERE employee.Employee_ID = ?';
     $q = $pdo->prepare($sqlRetrieve);
     $q->execute(array(
         $id

@@ -1,27 +1,31 @@
 <?php
+//establish connection to database
 require 'DBConnection.php';
+$pdo = DBConnection::connectToDB();
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-/*
- * Verify if the user had login
- * If the user had login and a session had been created,
- * get the Employee_ID from the session token and assign it to the variable $id
- * else, direct the user to idnex.php and ask them to login first.
- */
 $id = null;
 
 session_start();
 
+/*
+ * Check if the user is logged in;
+ * if not, redirect to index.php and prompt them to log in first.
+ */
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
     header("Location: index.php");
 }
 else {
+    
+    /*
+     * If the user is logged in,
+     * retrieve the Employee_ID from the session and assign it to $id.
+     */
     $id = $_SESSION['Employee_ID'];
 }
 
-//establish connection to database
-$pdo = DBConnection::connectToDB();
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 //Retrieve employee's information from database
 try{
     $sql = 'SELECT
@@ -44,10 +48,14 @@ try{
     $q->execute(array(
         $id
     ));
+    
     $data = $q->fetch(PDO::FETCH_ASSOC);
+    
 }catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
 }
+
+//Assign retrieved data to variables
 $pf = $data['Profile_Pic'];
 $name = $data['Name'];
 $gender = $data['Gender'];
@@ -82,9 +90,13 @@ DBConnection::disconnect();
 </head>
 
 <body>
-
+	
+	<!-- Side Navigation Bar -->
 	<?php include('SideNav.php')?>
+	
 	<div class="container-fluid mt-4">
+	
+		<!-- Breadcrumb -->
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
 				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
@@ -93,13 +105,16 @@ DBConnection::disconnect();
 		</nav>
 	</div>
 	
+	
 	<div class="container row" id="profile">
 		<div class="text-center col">
 			<h1>Profile</h1>
-			<!-- Display user's Profile Image -->
+			
+			<!-- Display the user's Profile Image -->
 			<img class="img-fluid" id="pf" src="<?php echo !empty($pf)?$pf:'';?>" alt="The user's profile image.">
 		</div>
-			<!-- Display user's details -->
+		
+		<!-- Display user's details -->
 		<div class="col">
 			<p><strong class="pf">Name: </strong><?php echo !empty($name)?$name:'';?></p>
 			<p><strong class="pf">Gender: </strong><?php echo !empty($gender)?$gender:'';?></p>
@@ -117,10 +132,7 @@ DBConnection::disconnect();
 			<p><strong class="pf">Offboard Date: </strong><?php echo !empty($offdate)?$offdate:'';?></p>
 			<p><strong class="pf">Salary: </strong>$<?php echo !empty($salary)?$salary:'';?></p>
 			
-			<!-- Resume and Contract
-			If there's resume or contract available, there will be button which allows user to download it.
-			Else, it will display "No contract available" or "No resume available"
-			-->
+			<!-- Download button for contract and resume -->
 			<?php if (!empty($contract)): ?>
     			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
     		<?php else: ?>
