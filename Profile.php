@@ -13,8 +13,10 @@ session_start();
  * if not, redirect to index.php and prompt them to log in first.
  */
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
-    echo "<script>alert('Please login first.')</script>";
-    header("Location: index.php");
+    echo "<script>
+            alert('Please login first.');
+            window.location.href='Index.php';
+          </script>";
 }
 else {
     
@@ -28,23 +30,23 @@ else {
 
 //Retrieve employee's information from database
 try{
-    $sql = 'SELECT
-            employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
-            employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
-            bank.Bank_Name,
-            sensitive_info.Bank_Account, sensitive_info.IC_Number,
-            department.Department_Name,
-            designation.Designation, designation.Salary,
-            role.Role_Name
+    $sqlRetrieve = 'SELECT
+                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
+                    employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
+                    bank.Bank_Name,
+                    sensitive_info.Bank_Account, sensitive_info.IC_Number,
+                    department.Department_Name,
+                    designation.Designation, designation.Salary,
+                    role.Role_Name
 
-                FROM employee
-                INNER JOIN role ON employee.Role_ID = role.Role_ID
-                INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
-                INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
-                INNER JOIN department ON designation.Department_ID = department.Department_ID
-                INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
-                WHERE employee.Employee_ID = ?';
-    $q = $pdo->prepare($sql);
+                    FROM employee
+                    INNER JOIN role ON employee.Role_ID = role.Role_ID
+                    INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+                    INNER JOIN bank ON employee.Bank_ID = bank.Bank_ID
+                    INNER JOIN department ON designation.Department_ID = department.Department_ID
+                    INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
+                    WHERE employee.Employee_ID = ?';
+    $q = $pdo->prepare($sqlRetrieve);
     $q->execute(array(
         $id
     ));

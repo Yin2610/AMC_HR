@@ -539,323 +539,323 @@ DBConnection::disconnect();
 			
 			<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post" enctype="multipart/form-data">
 				
-			<!-- Profile Image -->
-			<div class="mb-3">
-				<label class="form-label">Profile Image</label>
-				
-				<!-- Radio buttons for Profile Image selection -->
-				
-				<!-- Existing Profile Image -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="pf_radio" id="epf" onchange="togglePfButton()" checked>
-      				<label class="form-check-label" for="epf">
-        				Existing Profile Image
-      				</label>
+    			<!-- Profile Image -->
+    			<div class="mb-3">
+    				<label class="form-label">Profile Image</label>
+    				
+    				<!-- Radio buttons for Profile Image selection -->
+    				
+    				<!-- Existing Profile Image -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="pf_radio" id="epf" onchange="togglePfButton()" checked>
+          				<label class="form-check-label" for="epf">
+            				Existing Profile Image
+          				</label>
+        			</div>
+        			
+        			<!-- New Profile Image -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="pf_radio" id="npf" onchange="togglePfButton()">
+          				<label class="form-check-label" for="npf">
+            				New Profile Image
+          				</label>
+        			</div>
+        			
+        			<!-- Default Profile Image -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="pf_radio" id="dpf" onchange="togglePfButton()">
+          				<label class="form-check-label" for="dpf">
+            				Default Profile Image
+          				</label>
+        			</div>
+        			
+                    <?php if (!empty($pffiletypeError)): ?>
+                    	<span class="help-inline"><?php echo $pffiletypeError;?></span>
+                    <?php endif; ?>
+        		</div>
+        		
+        		<!-- Hidden input to track which Profile Image radio button is selected. -->
+        		<input class="form-control" type="hidden" name="hiddenpf" id="hiddenpf" value="epf">
+        		
+        		<!-- Display only when "npf" radio button is checked. -->
+        		<div id="uploadPfButton" style="display: none;">
+    				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)">
+    				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
     			</div>
-    			
-    			<!-- New Profile Image -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="pf_radio" id="npf" onchange="togglePfButton()">
-      				<label class="form-check-label" for="npf">
-        				New Profile Image
-      				</label>
+    				
+    			<!-- Name -->
+    			<div class="mb-3">
+    				<label class="form-label" for="name">Name</label>
+    				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
+    				<small class="form-text text-muted">30 characters or less(including spaces)</small>
+    				<br>
+                    <?php if (!empty($nameError)): ?>
+                        <span class="help-inline"><?php echo $nameError;?></span>
+                    <?php endif; ?>
     			</div>
-    			
-    			<!-- Default Profile Image -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="pf_radio" id="dpf" onchange="togglePfButton()">
-      				<label class="form-check-label" for="dpf">
-        				Default Profile Image
-      				</label>
+    				
+    			<!-- Gender and DOB -->
+    			<div class="row mb-3">
+    				
+                    <!-- Gender -->
+    				<div class="col">
+    					<label class="form-label" for="gender">Gender</label>
+    					<select class="form-select" name="gender" id="gender">
+    						<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
+    						<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
+    						<option value="Other" <?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
+    					</select>
+    				</div>
+    					
+    			    <!-- DOB -->
+    				<div class="col">
+    					<label class="form-label" for="dob">DOB</label>
+    					<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
+    				</div>
     			</div>
-    			
-                <?php if (!empty($pffiletypeError)): ?>
-                	<span class="help-inline"><?php echo $pffiletypeError;?></span>
-                <?php endif; ?>
-    		</div>
-    		
-    		<!-- Hidden input to track which Profile Image radio button is selected. -->
-    		<input class="form-control" type="hidden" name="hiddenpf" id="hiddenpf" value="epf">
-    		
-    		<!-- Display only when "npf" radio button is checked. -->
-    		<div id="uploadPfButton" style="display: none;">
-				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)">
-				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
-			</div>
-				
-			<!-- Name -->
-			<div class="mb-3">
-				<label class="form-label" for="name">Name</label>
-				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
-				<small class="form-text text-muted">30 characters or less(including spaces)</small>
-				<br>
-                <?php if (!empty($nameError)): ?>
-                    <span class="help-inline"><?php echo $nameError;?></span>
-                <?php endif; ?>
-			</div>
-				
-			<!-- Gender and DOB -->
-			<div class="row mb-3">
-				
-                <!-- Gender -->
-				<div class="col">
-					<label class="form-label" for="gender">Gender</label>
-					<select class="form-select" name="gender" id="gender">
-						<option value="Male" <?php echo ($gender === 'Male') ? 'selected' : ''; ?>>Male</option>
-						<option value="Female" <?php echo ($gender === 'Female') ? 'selected' : ''; ?>>Female</option>
-						<option value="Other" <?php echo ($gender === 'Other') ? 'selected' : ''; ?>>Other</option>
-					</select>
-				</div>
-					
-			    <!-- DOB -->
-				<div class="col">
-					<label class="form-label" for="dob">DOB</label>
-					<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
-				</div>
-			</div>
-
-			<!-- NRIC Number -->
-			<div class="mb-3">
-				<label class="form-label" for="nric">NRIC</label>
-				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on">
-                <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
-				<br>
-				<?php if (!empty($nricError)): ?>
-                	<span class="help-inline"><?php echo $nricError;?></span>
-                <?php endif;?>
-			</div>
-
-			<!-- Mobile Number -->
-			<div class="mb-3">
-				<label class="form-label" for="mobile">Mobile Number</label>
-				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
-				<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
-				<br>
-                <?php if (!empty($mobileError)): ?>
-                    <span class="help-inline"><?php echo $mobileError;?></span>
-                <?php endif;?>
-			</div>
-
-			<!-- Email -->
-			<div class="mb-3">
-				<label class="form-label" for="email">Email Address</label>
-				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
-                <?php if (!empty($emailError)): ?>
-                    <span class="help-inline"><?php echo $emailError;?></span>
-                <?php endif;?>
-			</div>
-
-			<!-- Address -->
-			<div class="mb-3">
-				<label class="form-label" for="address">Address</label>
-				<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
-                <small class="form-text text-muted">50 characters or less(including spaces)</small>
-                <br>
-                <?php if (!empty($addressError)): ?>
-                	<span class="help-inline"><?php echo $addressError;?></span>
-                <?php endif;?>
-			</div>
-				
-			<!-- Bank Company and Bank Account Number -->
-			<div class="row mb-3">
-				<!-- Bank Company -->
-				<div class="col">
-					<label class="form-label" for="bank">Bank Company</label>
-					<select class="form-select" name="bank" id="bank" required>
-            			<?php
-                            $pdo = DBConnection::connectToDB();
-                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                            $selectBankSQL = "SELECT * FROM bank";
-                            $query = $pdo->prepare($selectBankSQL, array(
-                                PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
-                            ));
-                            $query->execute();
-                            $data = $query->fetchAll();
-                            foreach ($data as $row) {
-                                $selected = (!empty($bank) && $bank == $row['Bank_Name']) ? 'selected' : '';
-                                echo "<option value=".$row['Bank_ID']." $selected>".$row['Bank_Name']."</option>";
-                            }
-                         ?>
-            		</select>
-				</div>
-
-				<!-- Bank Account Number -->
-				<div class="col">
-					<label class="form-label" for="bankacc">Bank Account Number</label>
-					<input class="form-control" name="bankacc" id="bankacc" type="text" maxlength="12" placeholder="Bank Account Number" value="<?php echo !empty($bankacc)?$bankacc:'';?>" autocomplete="on" required>
-                    <small class="form-text text-muted">Number only!</small>
-                    <br>
-                    <?php if (!empty($bankaccError)): ?>
-                    	<span class="help-inline"><?php echo $bankaccError;?></span>
+    
+    			<!-- NRIC Number -->
+    			<div class="mb-3">
+    				<label class="form-label" for="nric">NRIC</label>
+    				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on">
+                    <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
+    				<br>
+    				<?php if (!empty($nricError)): ?>
+                    	<span class="help-inline"><?php echo $nricError;?></span>
                     <?php endif;?>
-				</div>
-			</div>
-
-			<!-- Designation and Department -->
-			<div class="row mb-3">
-
-				<!-- Designation -->
-				<div class="col">
-    				<label class="form-label" for="designation">Designation</label>
-    				<select class="form-select" name="designation" id="designation" required>
-                        <?php
-                            $selectDesignationSQL = "SELECT * FROM Designation";
-                            $query = $pdo->prepare($selectDesignationSQL, array(
-                                PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
-                            ));
+    			</div>
+    
+    			<!-- Mobile Number -->
+    			<div class="mb-3">
+    				<label class="form-label" for="mobile">Mobile Number</label>
+    				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
+    				<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
+    				<br>
+                    <?php if (!empty($mobileError)): ?>
+                        <span class="help-inline"><?php echo $mobileError;?></span>
+                    <?php endif;?>
+    			</div>
+    
+    			<!-- Email -->
+    			<div class="mb-3">
+    				<label class="form-label" for="email">Email Address</label>
+    				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+                    <?php if (!empty($emailError)): ?>
+                        <span class="help-inline"><?php echo $emailError;?></span>
+                    <?php endif;?>
+    			</div>
+    
+    			<!-- Address -->
+    			<div class="mb-3">
+    				<label class="form-label" for="address">Address</label>
+    				<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
+                    <small class="form-text text-muted">50 characters or less(including spaces)</small>
+                    <br>
+                    <?php if (!empty($addressError)): ?>
+                    	<span class="help-inline"><?php echo $addressError;?></span>
+                    <?php endif;?>
+    			</div>
+    				
+    			<!-- Bank Company and Bank Account Number -->
+    			<div class="row mb-3">
+    				<!-- Bank Company -->
+    				<div class="col">
+    					<label class="form-label" for="bank">Bank Company</label>
+    					<select class="form-select" name="bank" id="bank" required>
+                			<?php
+                                $pdo = DBConnection::connectToDB();
+                                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                                $selectBankSQL = "SELECT * FROM bank";
+                                $query = $pdo->prepare($selectBankSQL, array(
+                                    PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
+                                ));
+                                $query->execute();
+                                $data = $query->fetchAll();
+                                foreach ($data as $row) {
+                                    $selected = (!empty($bank) && $bank == $row['Bank_Name']) ? 'selected' : '';
+                                    echo "<option value=".$row['Bank_ID']." $selected>".$row['Bank_Name']."</option>";
+                                }
+                             ?>
+                		</select>
+    				</div>
+    
+    				<!-- Bank Account Number -->
+    				<div class="col">
+    					<label class="form-label" for="bankacc">Bank Account Number</label>
+    					<input class="form-control" name="bankacc" id="bankacc" type="text" maxlength="12" placeholder="Bank Account Number" value="<?php echo !empty($bankacc)?$bankacc:'';?>" autocomplete="on" required>
+                        <small class="form-text text-muted">Number only!</small>
+                        <br>
+                        <?php if (!empty($bankaccError)): ?>
+                        	<span class="help-inline"><?php echo $bankaccError;?></span>
+                        <?php endif;?>
+    				</div>
+    			</div>
+    
+    			<!-- Designation and Department -->
+    			<div class="row mb-3">
+    
+    				<!-- Designation -->
+    				<div class="col">
+        				<label class="form-label" for="designation">Designation</label>
+        				<select class="form-select" name="designation" id="designation" required>
+                            <?php
+                                $selectDesignationSQL = "SELECT * FROM Designation";
+                                $query = $pdo->prepare($selectDesignationSQL, array(
+                                    PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
+                                ));
+                                $query->execute();
+                                $data = $query->fetchAll();
+                                foreach ($data as $row) {
+                                    $selected = (!empty($designation) && $designation == $row['Designation']) ? 'selected' : '';
+                                    echo "<option value=".$row['Designation_ID']." $selected>".$row['Designation']."</option>";
+                                }
+                            ?>
+                        </select>
+    				</div>
+    
+    				<!-- Department -->
+    				<div class="col">
+    					<label class="form-label" for="department">Department</label>
+    					<input class="form-control" name="department" id="department" type="text" placeholder="Department" value="<?php echo !empty($department)?$department:'';?>" readonly>
+    				</div>
+    
+    			</div>
+    			
+    			<!-- Role -->
+    			<div class="mb-3">
+    				<label class="form-label" for="role">Role</label>
+    				<select class="form-select" name="role" id="role" required>
+                		<?php
+                            $selectRoleSQL = "SELECT * FROM Role";
+                            $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
                             $query->execute();
                             $data = $query->fetchAll();
                             foreach ($data as $row) {
-                                $selected = (!empty($designation) && $designation == $row['Designation']) ? 'selected' : '';
-                                echo "<option value=".$row['Designation_ID']." $selected>".$row['Designation']."</option>";
+                                $selected = (!empty($role) && $role == $row['Role_Name']) ? 'selected' : '';
+                                echo "<option value=".$row['Role_ID']." $selected>".$row['Role_Name']."</option>";
                             }
                         ?>
-                    </select>
-				</div>
-
-				<!-- Department -->
-				<div class="col">
-					<label class="form-label" for="department">Department</label>
-					<input class="form-control" name="department" id="department" type="text" placeholder="Department" value="<?php echo !empty($department)?$department:'';?>" readonly>
-				</div>
-
-			</div>
-			
-			<!-- Role -->
-			<div class="mb-3">
-				<label class="form-label" for="role">Role</label>
-				<select class="form-select" name="role" id="role" required>
-            		<?php
-                        $selectRoleSQL = "SELECT * FROM Role";
-                        $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
-                        $query->execute();
-                        $data = $query->fetchAll();
-                        foreach ($data as $row) {
-                            $selected = (!empty($role) && $role == $row['Role_Name']) ? 'selected' : '';
-                            echo "<option value=".$row['Role_ID']." $selected>".$row['Role_Name']."</option>";
-                        }
-                    ?>
-            	</select>
-			</div>
-
-			<!-- Onboard Date and Offboard Date -->
-			<div class="row mb-3">
-
-				<!-- Onboard Date -->
-				<div class="col">
-					<label class="form-label" for="ondate">Onboard Date</label>
-					<input class="form-control" name="ondate" id="ondate" type="date" placeholder="Onboard Date" value="<?php echo !empty($ondate)?$ondate:'';?>" required>
-				</div>
-
-				<!-- Offboard Date -->
-				<div class="col">
-					<label class="form-label" for="offdate">Offboard Date</label> 
-					<input class="form-control" name="offdate" id="offdate" type="date" placeholder="Offboard Date" value="<?php echo !empty($offdate)?$offdate:'';?>">
-				</div>
-			</div>
-
-			<!-- Salary -->
-			<div class="mb-3">
-				<label class="form-label" for="salary">Salary</label>
-				<div class="input-group">
-					<span class="input-group-text">$</span> <input class="form-control" name="salary" id="salary" type="text" value="<?php echo !empty($salary)?$salary:'';?>" readonly>
-				</div>
-			</div>
-			
-			<!-- Contract -->
-			<div class="mb-3">
-				<label class="form-label">Contract</label>
-				
-				<!-- Radio buttons for Contract selection -->
-				
-				<!-- Existing Contract -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="c_radio" id="ec" onchange="toggleCButton()" checked>
-      				<label class="form-check-label" for="ec">
-        				Existing Contract
-      				</label>
+                	</select>
+    			</div>
+    
+    			<!-- Onboard Date and Offboard Date -->
+    			<div class="row mb-3">
+    
+    				<!-- Onboard Date -->
+    				<div class="col">
+    					<label class="form-label" for="ondate">Onboard Date</label>
+    					<input class="form-control" name="ondate" id="ondate" type="date" placeholder="Onboard Date" value="<?php echo !empty($ondate)?$ondate:'';?>" required>
+    				</div>
+    
+    				<!-- Offboard Date -->
+    				<div class="col">
+    					<label class="form-label" for="offdate">Offboard Date</label> 
+    					<input class="form-control" name="offdate" id="offdate" type="date" placeholder="Offboard Date" value="<?php echo !empty($offdate)?$offdate:'';?>">
+    				</div>
+    			</div>
+    
+    			<!-- Salary -->
+    			<div class="mb-3">
+    				<label class="form-label" for="salary">Salary</label>
+    				<div class="input-group">
+    					<span class="input-group-text">$</span> <input class="form-control" name="salary" id="salary" type="text" value="<?php echo !empty($salary)?$salary:'';?>" readonly>
+    				</div>
     			</div>
     			
-    			<!-- New Contract -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="c_radio" id="nc" onchange="toggleCButton()">
-      				<label class="form-check-label" for="nc">
-        				New Contract
-      				</label>
+    			<!-- Contract -->
+    			<div class="mb-3">
+    				<label class="form-label">Contract</label>
+    				
+    				<!-- Radio buttons for Contract selection -->
+    				
+    				<!-- Existing Contract -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="c_radio" id="ec" onchange="toggleCButton()" checked>
+          				<label class="form-check-label" for="ec">
+            				Existing Contract
+          				</label>
+        			</div>
+        			
+        			<!-- New Contract -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="c_radio" id="nc" onchange="toggleCButton()">
+          				<label class="form-check-label" for="nc">
+            				New Contract
+          				</label>
+        			</div>
+        			
+        			<!-- Delete Contract -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="c_radio" id="dc" onchange="toggleCButton()">
+          				<label class="form-check-label" for="dc">
+            				Delete Contract
+          				</label>
+        			</div>
+                    <?php if (!empty($cfiletypeError)): ?>
+                    	<span class="help-inline"><?php echo $cfiletypeError;?></span>
+                    <?php endif; ?>
+        		</div>
+        		
+        		<!-- Hidden input to track which Contract radio button is selected.  -->
+        		<input class="form-control" type="hidden" name="hiddenc" id="hiddenc" value="ec">
+        		
+        		<!-- Display only when the "nc" radio button is checked. -->
+        		<div id="uploadCButton" style="display: none;">
+    				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf">
+    				<small class="form-text text-muted">Please upload a PDF file.</small>
     			</div>
     			
-    			<!-- Delete Contract -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="c_radio" id="dc" onchange="toggleCButton()">
-      				<label class="form-check-label" for="dc">
-        				Delete Contract
-      				</label>
+    			<!-- Resume -->
+    			<div class="mb-3">
+    				<label class="form-label">Resume</label>
+    				
+    				<!-- Radio buttons for Resume selection -->
+    				
+    				<!-- Existing Resume -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="r_radio" id="er" onchange="toggleRButton()" checked>
+          				<label class="form-check-label" for="er">
+            				Existing Resume
+          				</label>
+        			</div>
+        			
+        			<!-- New Resume -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="r_radio" id="nr" onchange="toggleRButton()">
+          				<label class="form-check-label" for="nr">
+            				New Resume
+          				</label>
+        			</div>
+        			
+        			<!-- Delete Resume -->
+        			<div class="form-check">
+          				<input class="form-check-input" type="radio" name="r_radio" id="dr" onchange="toggleRButton()">
+          				<label class="form-check-label" for="dr">
+            				Delete Resume
+          				</label>
+        			</div>
+        			
+        			<?php if (!empty($rfiletypeError)): ?>
+                    	<span class="help-inline"><?php echo $rfiletypeError;?></span>
+                    <?php endif; ?>
+        		</div>
+        		
+        		<!-- Hidden input to track which Resume radio button is selected. -->
+        		<input class="form-control" type="hidden" name="hiddenr" id="hiddenr" value="er">
+        		
+        		<!-- Display only when the "nr" radio button is checked. -->
+        		<div id="uploadRButton" style="display: none;">
+    				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf">
+    				<small class="form-text text-muted">Please upload a PDF file.</small>
     			</div>
-                <?php if (!empty($cfiletypeError)): ?>
-                	<span class="help-inline"><?php echo $cfiletypeError;?></span>
-                <?php endif; ?>
-    		</div>
-    		
-    		<!-- Hidden input to track which Contract radio button is selected.  -->
-    		<input class="form-control" type="hidden" name="hiddenc" id="hiddenc" value="ec">
-    		
-    		<!-- Display only when the "nc" radio button is checked. -->
-    		<div id="uploadCButton" style="display: none;">
-				<input class="form-control" name="contract" id="contract" type="file" accept=".pdf">
-				<small class="form-text text-muted">Please upload a PDF file.</small>
-			</div>
-			
-			<!-- Resume -->
-			<div class="mb-3">
-				<label class="form-label">Resume</label>
-				
-				<!-- Radio buttons for Resume selection -->
-				
-				<!-- Existing Resume -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="r_radio" id="er" onchange="toggleRButton()" checked>
-      				<label class="form-check-label" for="er">
-        				Existing Resume
-      				</label>
+    
+    			<!-- Submit and Back button -->
+    			<div class="form-actions">
+    				<button type="submit" class="btn btn-success">Update</button>
+    				<a class='btn' href='RetrieveEmployee.php'>Back</a>
     			</div>
-    			
-    			<!-- New Resume -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="r_radio" id="nr" onchange="toggleRButton()">
-      				<label class="form-check-label" for="nr">
-        				New Resume
-      				</label>
-    			</div>
-    			
-    			<!-- Delete Resume -->
-    			<div class="form-check">
-      				<input class="form-check-input" type="radio" name="r_radio" id="dr" onchange="toggleRButton()">
-      				<label class="form-check-label" for="dr">
-        				Delete Resume
-      				</label>
-    			</div>
-    			
-    			<?php if (!empty($rfiletypeError)): ?>
-                	<span class="help-inline"><?php echo $rfiletypeError;?></span>
-                <?php endif; ?>
-    		</div>
-    		
-    		<!-- Hidden input to track which Resume radio button is selected. -->
-    		<input class="form-control" type="hidden" name="hiddenr" id="hiddenr" value="er">
-    		
-    		<!-- Display only when the "nr" radio button is checked. -->
-    		<div id="uploadRButton" style="display: none;">
-				<input class="form-control" name="resume" id="resume" type="file" accept=".pdf">
-				<small class="form-text text-muted">Please upload a PDF file.</small>
-			</div>
-
-			<!-- Submit and Back button -->
-			<div class="form-actions">
-				<button type="submit" class="btn btn-success">Update</button>
-				<a class='btn' href='RetrieveEmployee.php'>Back</a>
-			</div>
-		</form>
-	</div>
+			</form>
+		</div>
 	</div>
 </body>
 </html>
