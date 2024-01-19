@@ -46,7 +46,8 @@ else {
 //Retrieve employee's information from the database.
 try {
     $sqlRetrieve = 'SELECT
-                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
+                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth,
+                    employee.Phone_Num, employee.Email,
                     employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
                     bank.Bank_Name,
                     sensitive_info.Bank_Account, sensitive_info.IC_Number,
@@ -280,7 +281,7 @@ if (! empty($_POST)) {
     if (empty($nric)){
         $nricError = 'Please enter NRIC';
         $valid = false;
-    }elseif(! preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $nric)) {
+    }elseif(! preg_match('/^[A-Z]\d{7}[A-Z]$/', $nric)) {
         $nricError = 'NRIC format is invalid';
         $valid = false;
     }
@@ -295,7 +296,7 @@ if (! empty($_POST)) {
     if (empty($mobile)){
         $mobileError = 'Please enter Mobile Number';
         $valid = false;
-    }elseif (! preg_match('/^[0-9]{8}$/', $mobile)) {
+    }elseif (! preg_match('/^\d{8}$/', $mobile)) {
         $mobileError = 'Mobile Number should be 8 numeric characters';
         $valid = false;
     }
@@ -396,123 +397,123 @@ DBConnection::disconnect();
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="css/form.css" rel="css stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<title>Update Employee</title>
-<script>
-		
-		//Preview uploaded file
-		var loadFile = function(input) {
-    		var output = document.getElementById('pf');
-    		output.src = URL.createObjectURL(input.target.files[0]);
-    		output.onload = function() {
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/form.css" rel="css stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
     		
-    			//Release the object URL to free up memory once the image has loaded.
-      			URL.revokeObjectURL(output.src);
-    		};
+    		//Preview uploaded file
+    		var loadFile = function(input) {
+        		var output = document.getElementById('pf');
+        		output.src = URL.createObjectURL(input.target.files[0]);
+        		output.onload = function() {
+        		
+        			//Release the object URL to free up memory once the image has loaded.
+          			URL.revokeObjectURL(output.src);
+        		};
+        		
+        		//Store the uploaded file in the variable "uploadedFile".
+        		uploadedFile = input.target.files[0];
+      		};
     		
-    		//Store the uploaded file in the variable "uploadedFile".
-    		uploadedFile = input.target.files[0];
-  		};
-		
-		/*
-		- Show and hide upload button based on the radio button selected.
-		- Set the value for hiddenpf, hiddenc, and hiddenr based on the radio button selected.
-		- Display existing image, uploaded file, and default image accordingly
-		when the respective radio button is selected.
-		*/
-		
-		//Profile Image Radio Button
-        function togglePfButton() {
-            var uploadPfButton = document.getElementById("uploadPfButton");
-            var profile_pic = document.getElementById("profile_pic");
-            var epfRadio = document.getElementById("epf");
-            var npfRadio = document.getElementById("npf");
-            var dpfRadio = document.getElementById("dpf");
-            var hiddenpf = document.getElementById("hiddenpf");
-            var outputpf = document.getElementById('pf');
-
-            if (npfRadio.checked) {
-            	uploadPfButton.style.display = "block";
-            	profile_pic.setAttribute("required", "");
-            	hiddenpf.value = "npf";
-            	
-            	
-            	if (uploadedFile) {
-            		loadFile({ target: { files: [uploadedFile] } });
-        		}
+    		/*
+    		- Show and hide upload button based on the radio button selected.
+    		- Set the value for hiddenpf, hiddenc, and hiddenr based on the radio button selected.
+    		- Display existing image, uploaded file, and default image accordingly
+    		when the respective radio button is selected.
+    		*/
+    		
+    		//Profile Image Radio Button
+            function togglePfButton() {
+                var uploadPfButton = document.getElementById("uploadPfButton");
+                var profile_pic = document.getElementById("profile_pic");
+                var epfRadio = document.getElementById("epf");
+                var npfRadio = document.getElementById("npf");
+                var dpfRadio = document.getElementById("dpf");
+                var hiddenpf = document.getElementById("hiddenpf");
+                var outputpf = document.getElementById('pf');
+    
+                if (npfRadio.checked) {
+                	uploadPfButton.style.display = "block";
+                	profile_pic.setAttribute("required", "");
+                	hiddenpf.value = "npf";
+                	
+                	
+                	if (uploadedFile) {
+                		loadFile({ target: { files: [uploadedFile] } });
+            		}
+                }
+            	else {
+                	uploadPfButton.style.display = "none";
+                	profile_pic.required = false;
+                	if (epfRadio.checked){
+            			hiddenpf.value = "epf";
+            			
+            			outputpf.src = "<?php echo !empty($pf)?$pf:'';?>";
+            			
+            		}
+            		else {
+            			hiddenpf.value = "dpf";
+            			
+            			outputpf.src = "Employee_Info/Profile_Pics/Default_Image.jpg";
+            		}
+            	}
             }
-        	else {
-            	uploadPfButton.style.display = "none";
-            	profile_pic.required = false;
-            	if (epfRadio.checked){
-        			hiddenpf.value = "epf";
-        			
-        			outputpf.src = "<?php echo !empty($pf)?$pf:'';?>";
-        			
-        		}
-        		else {
-        			hiddenpf.value = "dpf";
-        			
-        			outputpf.src = "Employee_Info/Profile_Pics/Default_Image.jpg";
-        		}
-        	}
-        }
-        
-        //Contract Radio Button
-        function toggleCButton() {
-            var uploadCButton = document.getElementById("uploadCButton");
-            var contract = document.getElementById("contract");
-            var ecRadio = document.getElementById("ec");
-            var ncRadio = document.getElementById("nc");
-            var dcRadio = document.getElementById("dc");
-            var hiddenc = document.getElementById("hiddenc");
-
-            if (ncRadio.checked) {
-            	uploadCButton.style.display = "block";
-            	contract.setAttribute("required", "");
-            	hiddenc.value = "nc";
+            
+            //Contract Radio Button
+            function toggleCButton() {
+                var uploadCButton = document.getElementById("uploadCButton");
+                var contract = document.getElementById("contract");
+                var ecRadio = document.getElementById("ec");
+                var ncRadio = document.getElementById("nc");
+                var dcRadio = document.getElementById("dc");
+                var hiddenc = document.getElementById("hiddenc");
+    
+                if (ncRadio.checked) {
+                	uploadCButton.style.display = "block";
+                	contract.setAttribute("required", "");
+                	hiddenc.value = "nc";
+                }
+            	else {
+                	uploadCButton.style.display = "none";
+                	contract.required = false;
+                	if (ecRadio.checked){
+            			hiddenc.value = "ec";
+            		}
+            		else {
+            			hiddenc.value = "dc";
+            		}
+            	}
             }
-        	else {
-            	uploadCButton.style.display = "none";
-            	contract.required = false;
-            	if (ecRadio.checked){
-        			hiddenc.value = "ec";
-        		}
-        		else {
-        			hiddenc.value = "dc";
-        		}
-        	}
-        }
-        
-        //Resume Radio Button
-        function toggleRButton() {
-            var uploadRButton = document.getElementById("uploadRButton");
-            var resume = document.getElementById("resume");
-            var erRadio = document.getElementById("er");
-            var nrRadio = document.getElementById("nr");
-            var drRadio = document.getElementById("dr");
-            var hiddenr = document.getElementById("hiddenr");
-
-            if (nrRadio.checked) {
-            	uploadRButton.style.display = "block";
-            	resume.setAttribute("required", "");
-            	hiddenr.value = "nr";
+            
+            //Resume Radio Button
+            function toggleRButton() {
+                var uploadRButton = document.getElementById("uploadRButton");
+                var resume = document.getElementById("resume");
+                var erRadio = document.getElementById("er");
+                var nrRadio = document.getElementById("nr");
+                var drRadio = document.getElementById("dr");
+                var hiddenr = document.getElementById("hiddenr");
+    
+                if (nrRadio.checked) {
+                	uploadRButton.style.display = "block";
+                	resume.setAttribute("required", "");
+                	hiddenr.value = "nr";
+                }
+            	else {
+                	uploadRButton.style.display = "none";
+                	resume.required = false;
+                	if (erRadio.checked){
+            			hiddenc.value = "er";
+            		}
+            		else {
+            			hiddenr.value = "dr";
+            		}
+            	}
             }
-        	else {
-            	uploadRButton.style.display = "none";
-            	resume.required = false;
-            	if (erRadio.checked){
-        			hiddenc.value = "er";
-        		}
-        		else {
-        			hiddenr.value = "dr";
-        		}
-        	}
-        }
-</script>
+    </script>
+    <title>Update Employee</title>
 </head>
 <body class="bg-light">
 
@@ -534,7 +535,7 @@ DBConnection::disconnect();
 		<div id="form">
 			<div class="text-center">
 				<h1>Update <?php echo !empty($name)?$name:'';?> Details</h1>
-				<img width="200px" height="200px" id="pf" src="<?php echo !empty($pf)?$pf:'';?>">
+				<img width="200px" height="200px" id="pf" src="<?php echo !empty($pf)?$pf:'';?>" alt="Preview profile image">
 			</div>
 			
 			<form action="UpdateEmployee.php?id=<?php echo $id?>" method="post" enctype="multipart/form-data">
@@ -579,14 +580,16 @@ DBConnection::disconnect();
         		
         		<!-- Display only when "npf" radio button is checked. -->
         		<div id="uploadPfButton" style="display: none;">
-    				<input class="form-control" name="profile_pic" id="profile_pic" type="file" accept="image/*" onchange="loadFile(event)">
+    				<input class="form-control" name="profile_pic" id="profile_pic"
+    				type="file" accept="image/*" onchange="loadFile(event)">
     				<small class="form-text text-muted">Please upload a PNG/JPEG file.</small>
     			</div>
     				
     			<!-- Name -->
     			<div class="mb-3">
     				<label class="form-label" for="name">Name</label>
-    				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30" value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
+    				<input class="form-control" name="name" id="name" type="text" placeholder="Name" maxlength="30"
+    				value="<?php echo !empty($name)?$name:'';?>" autocomplete="on" required>
     				<small class="form-text text-muted">30 characters or less(including spaces)</small>
     				<br>
                     <?php if (!empty($nameError)): ?>
@@ -610,14 +613,16 @@ DBConnection::disconnect();
     			    <!-- DOB -->
     				<div class="col">
     					<label class="form-label" for="dob">DOB</label>
-    					<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required value="<?php echo !empty($dob)?$dob:'';?>">
+    					<input class="form-control" name="dob" id="dob" type="date" placeholder="DOB" required
+    					value="<?php echo !empty($dob)?$dob:'';?>">
     				</div>
     			</div>
     
     			<!-- NRIC Number -->
     			<div class="mb-3">
     				<label class="form-label" for="nric">NRIC</label>
-    				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9" value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on">
+    				<input class="form-control" name="nric" id="nric" type="text" placeholder="NRIC Number" required maxlength="9"
+    				value="<?php echo !empty($nric)?$nric:'';?>" autocomplete="on">
                     <small class="form-text text-muted">Input in CAPITAL LETTER!</small>
     				<br>
     				<?php if (!empty($nricError)): ?>
@@ -628,8 +633,11 @@ DBConnection::disconnect();
     			<!-- Mobile Number -->
     			<div class="mb-3">
     				<label class="form-label" for="mobile">Mobile Number</label>
-    				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number" required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
-    				<small class="form-text text-muted">Please enter your phone number without spacing and country code. SG number only!</small>
+    				<input class="form-control" name="mobile" id="mobile" type="text" placeholder="Mobile Number"
+    				required maxlength="8" value="<?php echo !empty($mobile)?$mobile:'';?>" autocomplete="on">
+    				<small class="form-text text-muted">
+    					Please enter your phone number without spacing and country code. SG number only!
+    				</small>
     				<br>
                     <?php if (!empty($mobileError)): ?>
                         <span class="help-inline"><?php echo $mobileError;?></span>
@@ -639,7 +647,8 @@ DBConnection::disconnect();
     			<!-- Email -->
     			<div class="mb-3">
     				<label class="form-label" for="email">Email Address</label>
-    				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
+    				<input class="form-control" name="email" id="email" type="text" placeholder="Email Address" required
+    				maxlength="30" value="<?php echo !empty($email)?$email:'';?>" autocomplete="on">
                     <?php if (!empty($emailError)): ?>
                         <span class="help-inline"><?php echo $emailError;?></span>
                     <?php endif;?>
@@ -648,7 +657,9 @@ DBConnection::disconnect();
     			<!-- Address -->
     			<div class="mb-3">
     				<label class="form-label" for="address">Address</label>
-    				<input class="form-control" name="address" id="address" type="text" placeholder="Address" required maxlength="50" value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
+    				<input class="form-control" name="address" id="address" type="text"
+    				placeholder="Address" required maxlength="50"
+    				value="<?php echo !empty($address)?$address:'';?>" autocomplete="on">
                     <small class="form-text text-muted">50 characters or less(including spaces)</small>
                     <br>
                     <?php if (!empty($addressError)): ?>
@@ -682,7 +693,9 @@ DBConnection::disconnect();
     				<!-- Bank Account Number -->
     				<div class="col">
     					<label class="form-label" for="bankacc">Bank Account Number</label>
-    					<input class="form-control" name="bankacc" id="bankacc" type="text" maxlength="12" placeholder="Bank Account Number" value="<?php echo !empty($bankacc)?$bankacc:'';?>" autocomplete="on" required>
+    					<input class="form-control" name="bankacc" id="bankacc" type="text" maxlength="12"
+    					placeholder="Bank Account Number" value="<?php echo !empty($bankacc)?$bankacc:'';?>"
+    					autocomplete="on" required>
                         <small class="form-text text-muted">Number only!</small>
                         <br>
                         <?php if (!empty($bankaccError)): ?>
@@ -707,7 +720,9 @@ DBConnection::disconnect();
                                 $data = $query->fetchAll();
                                 foreach ($data as $row) {
                                     $selected = (!empty($designation) && $designation == $row['Designation']) ? 'selected' : '';
-                                    echo "<option value=".$row['Designation_ID']." $selected>".$row['Designation']."</option>";
+                                    echo "<option
+                                    value=".$row['Designation_ID']." $selected>".$row['Designation']."
+                                    </option>";
                                 }
                             ?>
                         </select>
@@ -716,7 +731,8 @@ DBConnection::disconnect();
     				<!-- Department -->
     				<div class="col">
     					<label class="form-label" for="department">Department</label>
-    					<input class="form-control" name="department" id="department" type="text" placeholder="Department" value="<?php echo !empty($department)?$department:'';?>" readonly>
+    					<input class="form-control" name="department" id="department" type="text" placeholder="Department"
+    					value="<?php echo !empty($department)?$department:'';?>" readonly>
     				</div>
     
     			</div>
@@ -744,13 +760,15 @@ DBConnection::disconnect();
     				<!-- Onboard Date -->
     				<div class="col">
     					<label class="form-label" for="ondate">Onboard Date</label>
-    					<input class="form-control" name="ondate" id="ondate" type="date" placeholder="Onboard Date" value="<?php echo !empty($ondate)?$ondate:'';?>" required>
+    					<input class="form-control" name="ondate" id="ondate" type="date" placeholder="Onboard Date"
+    					value="<?php echo !empty($ondate)?$ondate:'';?>" required>
     				</div>
     
     				<!-- Offboard Date -->
     				<div class="col">
-    					<label class="form-label" for="offdate">Offboard Date</label> 
-    					<input class="form-control" name="offdate" id="offdate" type="date" placeholder="Offboard Date" value="<?php echo !empty($offdate)?$offdate:'';?>">
+    					<label class="form-label" for="offdate">Offboard Date</label>
+    					<input class="form-control" name="offdate" id="offdate" type="date" placeholder="Offboard Date"
+    					value="<?php echo !empty($offdate)?$offdate:'';?>">
     				</div>
     			</div>
     
@@ -758,7 +776,9 @@ DBConnection::disconnect();
     			<div class="mb-3">
     				<label class="form-label" for="salary">Salary</label>
     				<div class="input-group">
-    					<span class="input-group-text">$</span> <input class="form-control" name="salary" id="salary" type="text" value="<?php echo !empty($salary)?$salary:'';?>" readonly>
+    					<span class="input-group-text">$</span>
+    					<input class="form-control" name="salary" id="salary" type="text"
+    					value="<?php echo !empty($salary)?$salary:'';?>" readonly>
     				</div>
     			</div>
     			
