@@ -1,5 +1,5 @@
 <?php
-//establish connection to database
+//Establish connection to database
 require 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

@@ -18,15 +18,31 @@ $name = null;
 
 session_start();
 
+/*
+ * Check if the user is logged in;
+ * if not, redirect to index.php and prompt them to log in first.
+ */
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
-    echo "<script>alert('Please login first.')</script>";
-    header("Location: index.php");
+    echo "<script>
+            alert('Please login first.');
+            window.location.href='Index.php';
+          </script>";
 }
 else {
+    
+    /*
+     * If the user is logged in but role is neither "Department Head" nor "Administrator",
+     * inform them that they does not have permission to view this page and exit the script.
+     */
     if($_SESSION['Role_Name'] != 'Department Head' && $_SESSION['Role_Name'] != 'Administrator') {
-        echo "You don't have permission to view this page.";
-        exit();
+        exit("You don't have permission to view this page.");
     }
+    
+    /*
+     * If the user is logged in and role is "Department Head" or "Administrator",
+     * attempt to retrieve the Employee_ID and Name from the URL and assign it to $id and $name.
+     * If there is no Employee_ID or Name in the URL, redirect the user to RetrieveEmployee.php.
+     */
     if (! empty($_GET['id'])) {
         $id = $_REQUEST['id'];
     }
@@ -42,13 +58,13 @@ else {
     }
 }
 
-//Verify if there's data submitted throught the POST method
+//Check if the user has submitted any data through the HTTP POST method
 if (! empty($_POST)) {
 
     /*
      * Initialise "Error Message".
      * If its empty, it means that there is no error,
-     * else it means that some error occurred and it will prompt user on what is the error.
+     * else it means that some error occurred and it will prompt user on what teh error is.
      */
     $passwordError = null;
     $cpasswordError = null;
@@ -57,17 +73,17 @@ if (! empty($_POST)) {
     $password = $_POST['password'];
     $cpassword = $_POST['cpassword'];
 
-    /*Check if the password meet the requirement.
-     * i.e.
-     * At least one lowercase letter
-     * At least one uppercase letter
-     * At least one digit
-     * At least one special character (@$!%*#?&).
-     * 12 characters or more
-     * No spaces
-     * Else, 
-     *  If both password inputs are the same, encrypt the password and update the database with the encrypted password.
-     *  Else, prompt the user to enter same password.
+    /*Password validation and Database Update:
+     * Check if the password meets the specified requirements:
+     * - At least one lowercase letter
+     * - At least one uppercase letter
+     * - At least one digit
+     * - At least one special character (@$!%*#?&).
+     * - 12 characters or more
+     * - No spaces
+     * If the password passes validation:
+     * - If both password inputs match, encrypt the password and update the database with the encrypted password.
+     * - If passwords do not match, prompt the user to enter the same password.
      */
     if (strpos($password, ' ') !== false || !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/', $password)) { 
         $passwordError = 'Password must be 12 characters and more, consisting of uppercase letter, 
@@ -114,7 +130,7 @@ if (! empty($_POST)) {
 
 <body>
 	<!-- Side Navigation Bar -->
-    <?php include('SideNav.php')?>
+    <?php include 'SideNav.php'?>
     
     <div class="container-fluid mt-4">
     
@@ -127,14 +143,14 @@ if (! empty($_POST)) {
     		</ol>
     	</nav>
     	
-    	
+    	<!-- Change Password Form -->
 		<div id="form">
 			<div class="text-center">
 				<h1>Change <?php echo !empty($name)?$name:'';?> Password</h1>
 			</div>
 			
+			<!-- Password Requirement -->
 			<div class="row mb-3">
-				<!-- Password Requirement -->
 				<div class="col-3 mt-4">
     				<strong>Please ensure that your password meet the following requirement:</strong>
             		<ul>
@@ -147,7 +163,6 @@ if (! empty($_POST)) {
             		</ul>
         		</div>
         		
-        		<!-- Form -->
     			<form class="col-9" action="UpdatePassword.php?id=<?php echo $id?>&name=<?php echo $name?>" method="post">
     			
     				<!-- New Password -->
@@ -172,8 +187,9 @@ if (! empty($_POST)) {
                     	<?php if (!empty($cpasswordError)): ?>
                     		<span class="help-inline"><?php echo $cpasswordError;?></span>
                     	<?php endif;?>
-                	</div>	
-                	<!-- Submit button -->
+                	</div>
+                	
+                	<!-- Submit and Back button -->
                 	<br>
     				<div class="form-actions">
     					<button type="submit" class="btn btn-success">Change</button>

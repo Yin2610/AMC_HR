@@ -1,5 +1,5 @@
 <?php
-//establish connection to database
+//Establish connection to database
 require 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -131,7 +131,7 @@ DBConnection::disconnect();
 			</ol>
 		</nav>
 		
-		<!-- Form -->
+		<!-- Create Payroll Form -->
 		<div id="form">
 			<div class="text-center">
 				<h3>New Payroll</h3>

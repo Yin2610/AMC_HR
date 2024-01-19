@@ -1,5 +1,5 @@
 <?php
-//establish connection to database
+//Establish connection to database
 require 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -530,7 +530,7 @@ DBConnection::disconnect();
     		</ol>
     	</nav>
     	
-    	<!-- Form -->
+    	<!-- Update Employee Form -->
 		<div id="form">
 			<div class="text-center">
 				<h1>Update <?php echo !empty($name)?$name:'';?> Details</h1>
