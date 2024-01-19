@@ -1,18 +1,6 @@
 <?php
 require 'DBConnection.php';
 
-/*
- * Verify if the user had login.
- * If the user had not login, direct them to index.php and ask them to login first.
- *
- * If the user had login but role is neither "Department Head" nor "Administrator",
- * tell them that they does not have permission to view this page and exit the script.
- *
- * If the user had login and is "Department Head" or "Administrator,
- * get the Employee_ID and Name of the selected employee and assign it to $id and $name
- *
- * If no Employee_ID or Name available, direct the user to RetrieveEmployee.php
- */ 
 $id = null;
 $name = null;
 
@@ -85,8 +73,9 @@ if (! empty($_POST)) {
      * - If both password inputs match, encrypt the password and update the database with the encrypted password.
      * - If passwords do not match, prompt the user to enter the same password.
      */
-    if (strpos($password, ' ') !== false || !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*#?&]{12,}$/', $password)) { 
-        $passwordError = 'Password must be 12 characters and more, consisting of uppercase letter, 
+    if (strpos($password, ' ') !== false ||
+    !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[a-zA-Z0-9@#$!%*?&]{12,}$/', $password)) {
+        $passwordError = 'Password must be 12 characters and more, consisting of uppercase letter,
         lowercase letter, number, special character(@$!%*#?&) and should not contains spaces';
     } else {
         if ($password === $cpassword) {
@@ -122,10 +111,11 @@ if (! empty($_POST)) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<link href="css/form.css" rel="css stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <meta charset="utf-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/form.css" rel="css stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Change Password</title>
 </head>
 
 <body>
@@ -167,7 +157,7 @@ if (! empty($_POST)) {
     			
     				<!-- New Password -->
     				<div class="mb-3">
-        				<label class="form-label" for="password">Password</label> 
+        				<label class="form-label" for="password">Password</label>
         				<input
         				class="form-control" name="password" type="password"
         				placeholder="Password" id="password"
