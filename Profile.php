@@ -31,7 +31,8 @@ else {
 //Retrieve employee's information from database
 try{
     $sqlRetrieve = 'SELECT
-                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth, employee.Phone_Num, employee.Email,
+                    employee.Profile_Pic, employee.Name, employee.Gender, employee.Date_Of_Birth,
+                    employee.Phone_Num, employee.Email,
                     employee.Address, employee.Onboard_Date, employee.Offboard_Date, employee.Contract, employee.Resume,
                     bank.Bank_Name,
                     sensitive_info.Bank_Account, sensitive_info.IC_Number,
@@ -89,12 +90,13 @@ DBConnection::disconnect();
 	rel="stylesheet">
 <link href="css/pf.css" rel="css stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<title>Profile</title>
 </head>
 
 <body>
 	
 	<!-- Side Navigation Bar -->
-	<?php include('SideNav.php')?>
+	<?php include 'SideNav.php'?>
 	
 	<div class="container-fluid mt-4">
 	
@@ -136,15 +138,23 @@ DBConnection::disconnect();
 			
 			<!-- Download button for contract and resume -->
 			<?php if (!empty($contract)): ?>
-    			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Contract</a>
+    			<a href="<?php echo $contract; ?>" class='btn' style="border:solid;" target="_blank">
+    				<i class='fa-solid fa-download'></i>
+    			 Contract</a>
     		<?php else: ?>
-    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No contact available</a>
+    			<a class='btn' style="border:solid;" target="_blank" >
+    				<i class='fa-solid fa-download'></i>
+    			No contact available</a>
 			<?php endif; ?>
 			
 			<?php if (!empty($resume)): ?>
-    			<a href="<?php echo $resume; ?>" class='btn' style="border:solid;" target="_blank"><i class='fa-solid fa-download'></i> Resume</a>
+    			<a href="<?php echo $resume; ?>" class='btn' style="border:solid;" target="_blank">
+    				<i class='fa-solid fa-download'></i>
+    			 Resume</a>
     		<?php else: ?>
-    			<a class='btn' style="border:solid;" target="_blank" ><i class='fa-solid fa-download'></i> No resume available</a>
+    			<a class='btn' style="border:solid;" target="_blank" >
+    				<i class='fa-solid fa-download'></i>
+    			No resume available</a>
 			<?php endif; ?>
 		</div>
 	</div>
