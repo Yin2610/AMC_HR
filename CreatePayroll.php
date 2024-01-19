@@ -60,7 +60,7 @@ if (! empty($_POST)) {
     
     /*Check if the file type of the uploaded file is pdf.
     * if incorrect filetype, prompt the user to upload file with correct file type.
-    * else, move the uploaded file to "Employee_Info/Payslips/" and ensure the file path is 50 characters or less 
+    * else, move the uploaded file to "Employee_Info/Payslips/" and ensure the file path is 50 characters or less
     * and
     * insert the data to the database
     */
@@ -110,9 +110,10 @@ DBConnection::disconnect();
 <head>
     <meta charset="utf-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link 	href="css/form.css" 
+    <link 	href="css/form.css"
     		rel="css stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<title>Profile</title>
 </head>
 
 <body class='bg-light'>
@@ -153,7 +154,8 @@ DBConnection::disconnect();
                         //Retrieve Department_ID of the creator.
                         $creatorDepartmentSQL = "SELECT designation.Department_ID
                                                  FROM employee
-                                                 INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID
+                                                 INNER JOIN designation
+                                                 ON employee.Designation_ID = designation.Designation_ID
                                                  WHERE employee.Employee_ID = ?";
                         $q = $pdo->prepare($creatorDepartmentSQL);
                         $q->execute(array(
@@ -163,9 +165,10 @@ DBConnection::disconnect();
                         $creatorDepartment = $data['Department_ID'];
                         
                         //Retrieve Employee_ID and Name of employee under the same department as the creator.
-                        $selectEmployeeSQL = "SELECT employee.Employee_ID, employee.Name 
-                                              FROM employee 
-                                              INNER JOIN designation ON employee.Designation_ID = designation.Designation_ID 
+                        $selectEmployeeSQL = "SELECT employee.Employee_ID, employee.Name
+                                              FROM employee
+                                              INNER JOIN designation
+                                              ON employee.Designation_ID = designation.Designation_ID
                                               WHERE Department_ID = ?";
                         $query = $pdo->prepare($selectEmployeeSQL, array(
                             PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL
@@ -183,7 +186,8 @@ DBConnection::disconnect();
 
 				<!-- Pay Day -->
 				<label class="form-label" for="pdate">Date</label>
-				<input class="form-control" name="pdate" id="pdate" type="date" placeholder="Date" value="<?php echo !empty($date)?$date:'';?>" required>
+				<input class="form-control" name="pdate" id="pdate" type="date" placeholder="Date"
+				value="<?php echo !empty($date)?$date:'';?>" required>
 				
 				<!-- Payslip -->
 				<label class="form-label" for="payslip">Upload Payslip</label>
