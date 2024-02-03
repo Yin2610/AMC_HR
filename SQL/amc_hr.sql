@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2024 at 01:27 PM
+-- Generation Time: Jan 16, 2024 at 04:01 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -104,7 +104,7 @@ CREATE TABLE `employee` (
   `Email` varchar(30) NOT NULL,
   `Address` varchar(50) NOT NULL,
   `Onboard_Date` date NOT NULL,
-  `Offboard_Date` date NOT NULL,
+  `Offboard_Date` date DEFAULT NULL,
   `Profile_Pic` varchar(50) DEFAULT NULL,
   `Resume` varchar(50) DEFAULT NULL,
   `Contract` varchar(50) DEFAULT NULL,
@@ -163,7 +163,7 @@ INSERT INTO `leave` (`Leave_ID`, `Leave_Category`, `Submission_Date`, `From_Date
 CREATE TABLE `payroll` (
   `Payroll_ID` int(11) NOT NULL,
   `Date` date NOT NULL,
-  `Payslip` varchar(50) DEFAULT NULL,
+  `Payslip` varchar(50) NOT NULL,
   `Employee_ID` int(11) NOT NULL,
   `Designation_ID` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -366,7 +366,7 @@ ALTER TABLE `leave`
 --
 ALTER TABLE `payroll`
   ADD CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`Employee_ID`) REFERENCES `employee` (`Employee_ID`),
-  ADD CONSTRAINT `payroll_ibfk_2` FOREIGN KEY (`designation_id`) REFERENCES `designation` (`Designation_ID`),
+  ADD CONSTRAINT `payroll_ibfk_2` FOREIGN KEY (`Designation_ID`) REFERENCES `designation` (`Designation_ID`),
   ADD CONSTRAINT `payroll_ibfk_3` FOREIGN KEY (`Designation_ID`) REFERENCES `designation` (`Designation_ID`);
 
 --
