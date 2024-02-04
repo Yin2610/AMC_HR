@@ -17,7 +17,7 @@ else {
     $employee_ID = $_SESSION['Employee_ID'];
 }
 
-include ('DBConnection.php');
+include 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -55,19 +55,30 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Update Leave Status page (Supervisor view) of AMC HR system">
+<title>UpdateLeaveSupervisor page</title>
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
 	rel="stylesheet">
-<script src="js/bootstrap.min.js"></script>
 <style>
 #downloadLink:hover {
 	color: white !important;
 }
+.profilePicContainer {
+    height: 60px;
+    width: 60px;
+}
+.profilePic {
+    width: 100%;
+    object-fit: contain;
+    aspect-ratio: 1;
+}
 </style>
 </head>
 
-<body class="bg-light">
-	<?php include('SideNav.php')?>
+<body>
+	<?php include 'SideNav.php'?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
@@ -92,15 +103,19 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
             $selectLeaveStmt->execute();
             $data = $selectLeaveStmt->fetchAll();
             foreach ($data as $row) {
+                $name = $row['Name'];
+                $designation = $row['Designation'];
+                $departmentName = $row['Department_Name'];
                 echo "<form action='UpdateLeaveSupervisor.php' method='POST'><div class='row'>
             <div class='col-md-1'></div>
 			<div class='col-md-10'>
 				<div class='row'>";
-                echo "<div class='col-md-1'><img src='" . $row['Profile_Pic'] . "' width='60px' height='60px' class='rounded-circle'></div>";
+                echo "<div class='col-md-1'><div class='profilePicContainer'><img src='" . $row['Profile_Pic'] . "' alt='Profile picture' class='rounded-circle profilePic'></div></div>";
 
-                echo "<div class='col-md-6'><span class='h5'>" . $row['Name'] . "</span><br><span>" . $row['Designation'] . " (" . $row['Department_Name'] . ")</span></div>";
+                echo "<div class='col-md-6'><span class='h5'>" . $name . "</span><br>";
+                echo "<span>" . $designation . " (" . $departmentName . ")</span></div>";
 
-                echo "<div class='col-md-5'><div class='d-flex justify-content-end'><input type='submit' name='btnApprove' value='Approve' class='btn btn-outline-info mx-4'><input type='submit' name='btnReject' class='btn btn-outline-secondary' value='Reject'></div></div>";
+                echo "<div class='col-md-5'><div class='d-flex justify-content-end'><input type='submit' name='btnApprove' value='Approve' class='btn btn-info mx-4'><input type='submit' name='btnReject' class='btn btn-secondary' value='Reject'></div></div>";
                 echo "</div>
 			</div>
 		</div>";
@@ -116,10 +131,12 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
                 echo "<span class='mx-5'>To: " . $row['Until_Date'] . "</span></div>";
                 echo "<button class='btn btn-outline-secondary mt-3'><a id='downloadLink' href='" . $row['Supporting_Doc'] . "' download style='text-decoration: none' class='text-dark'>Download supporting document</a></button></div>";
 
-                echo "<div class='col-md-6'>Note: <br><br><textarea class='col-md-10' style='resize:none' disabled rows='5'>" . $row['Notes'] . "</textarea></div></form>";
+                echo "<div class='col-md-6'><label for='Note'>Note:</label><br><br><textarea id='Note' class='col-md-10' style='resize:none' disabled rows='5'>" . $row['Notes'] . "</textarea></div></form>";
             }
         }
         ?>	
         	
 	</div>
+<!-- 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
+</html>
