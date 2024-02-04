@@ -85,12 +85,31 @@ DBConnection::disconnect();
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <link
-    	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    	rel="stylesheet">
-    <link href="css/pf.css" rel="css stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This page display the user's information.">
     <title>Profile</title>
+    <style>
+        body{
+        	background-color: lightblue;
+        }
+        
+        .pf{
+        	font-size: 20px;
+        }
+        
+        #pf{
+        	border-radius: 50%;
+        	border: 2px solid Black;
+        	width: 200px;
+        	height: 200px;
+        }
+        
+        #profile{
+        	background-color: white;
+        	margin: auto;
+        	max-width: 90%;
+        }
+    </style>
 </head>
 
 <body>

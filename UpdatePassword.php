@@ -99,7 +99,10 @@ if (! empty($_POST)) {
 
             DBConnection::disconnect();
 
-            header("Location: RetrieveEmployee.php");
+            echo "<script>
+                    alert('You have successfully changed the employee\\'s password!');
+                    window.location.href='RetrieveEmployee.php';
+                 </script>";
         } else {
             $cpasswordError = "Password does not match!";
         }
@@ -112,6 +115,8 @@ if (! empty($_POST)) {
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="This page allows user to change password for themselves or their employees.">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="css/form.css" rel="css stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -165,7 +170,7 @@ if (! empty($_POST)) {
                         <?php if (!empty($passwordError)): ?>
                         	<span class="help-inline"><?php echo $passwordError;?></span>
                         <?php endif;?>
-                    <div>
+                    </div>
     				
     
     				<!-- Confirm New Password -->
