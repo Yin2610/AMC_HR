@@ -1,14 +1,16 @@
 <?php
-session_start();
 /*
  * Establish database connection
  */
-require 'DBConnection.php';
-
+//include_once 'DBConnection.php';
+include "dbConnection.php";
+session_start();
 /*
  * Retrieve 'id' from URL
  * If id is not present in the URL, directs user to index.php.
- * When user click on update button in employee.php, it will pass the employee_id to the URL and direct the user to UpdateEmployee.php
+ * When user click on update button in employee.php,
+ * it will pass the employee_id to the URL and direct
+ *  the user to UpdateEmployee.php
  */
 $id = null;
 
@@ -24,36 +26,32 @@ if (null == $id) {
  * If the user clicked "Submit" button
  */
 
-// Retrieve data from database
+//Retrieve data from database so that when the use is edit the value will still be there
+
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-$sql = 'SELECT employee.Name, payroll.Payroll_ID,payroll.Date,payroll.Payslip,employee.Name,designation.Designation FROM `payroll` 
+// SQL query to retrieve payroll information based on the provided ID
+$sql = 'SELECT payroll.Payroll_ID,payroll.Date,payroll.Payslip FROM `payroll` 
         INNER JOIN employee on payroll.Employee_ID = employee.Employee_ID 
-        INNER Join designation on payroll.Designation_ID = designation.Designation_ID
+        INNER Join designation on payroll.Designation_ID = designation.Designation_ID 
         WHERE payroll.Payroll_ID = ?  ';
 $q = $pdo->prepare($sql);
 $q->execute(array(
     $id
 ));
+// Fetch the data and store it in variables
 $data = $q->fetch(PDO::FETCH_ASSOC);
-$employee_name = $data['Name'];
 $date = $data['Date'];
-$payslip = $data['Payslip'];
-$designation = $data['Designation'];
+$payslipPath = $data['Payslip'];
 
 
-DBConnection::disconnect();
 
 if (! empty($_POST)) { // check if there's any data submitted in the html form
 
    
     $dateError = null;
-    $payslipError = null;
-    $designationError = null;
     
     $date = $_POST['date'];
-   
-    $designation = $_POST['designation'];
     
 
     // validate input (if input is empty) (only need if the field is editable/ cannot be empty)
@@ -62,23 +60,13 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
         $dateError = 'Please enter date payslip ';
         $valid = false;
     }
-    if (empty($payslip)) {
-        $payslipError = 'Please enter payslip number ';
-        $valid = false;
-    }
-    if (empty($designation)) {
-        $designationError = 'Please enter the designation number ';
-        $valid = false;
-    }
 
-    // upload contract file
-    if(!empty($_FILES['payslip']['name'])) {
-        $payslip = $_FILES['payslip']['name'];
-        $temppayslip = $_FILES['payslip']['tmp_name'];
-        $payslipPath = "Employee_Info/Payslips/" . $payslip;
-        
-        if(!move_uploaded_file($temppayslip, $payslipPath)) {
-            echo "<script>alert('Failed uploading payslip.')</script>";
+    if(isset($_FILES['payslip']['name'])) {
+        $payslipName = $_FILES['payslip']['name'];
+        $TemppayslipName = $_FILES['payslip']['tmp_name'];
+        $payslipPath = "Employee_Info/Payslips/" . $payslipName;
+        if(!move_uploaded_file($TemppayslipName, $payslipPath)) {
+            echo "<script>alert('Failed uploading profile pic.')</script>";
         }
     }
     
@@ -86,29 +74,26 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 
     // if the input data is correct, update the database
     if ($valid) {
-        $pdo = DBConnection::connectToDB();
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // SQL query to update the payroll information in the database
         $sql = "UPDATE payroll
                 INNER JOIN employee ON payroll.Employee_ID = employee.Employee_ID
                 INNER JOIN designation ON payroll.Designation_ID = designation.Designation_ID
-                SET 
+                SET
                 payroll.Payslip = ?,
-                payroll.Date = ?,
-                payroll.Designation_ID =?
+                payroll.Date = ?
                 WHERE payroll.Payroll_ID = ?;";
         $q = $pdo->prepare($sql);
         $q->execute(array(
             
-            $payslip,
+            $payslipPath,
             $date,
-            $designation,
             $id
             
         ));
         
         
         
-
+//close the db connection
         DBConnection::disconnect();
 
         // Direct user back to employee.php after they have successfully submitted the form
@@ -121,43 +106,43 @@ if (! empty($_POST)) { // check if there's any data submitted in the html form
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<link href="css/bootstrap.min.css" rel="stylesheet">
 <script src="js/bootstrap.min.js"></script>
-<script src="js/jquery-2.1.4.min.js"></script>
+<script src="js/jquery-2.1.4.min.js"></script>-->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<meta name="description" content="AMC website">
+<title>Update Payrol</title>
 </head>
 
-<body class="bg-light">
-<?php
+<body class='bg-light'>
 
-include ('SideNav.php');
-?>
-	<div class="container mt-4">
-	 <nav aria-label="breadcrumb">
-    		<ol class="breadcrumb mb-4">
-    			<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
-    			<li class="breadcrumb-item"><a href="RetrievePayroll.php">View Payroll</a></li>
-    			<li class="breadcrumb-item active" aria-current="page">Update Payroll</li>
-    		</ol>
-    	</nav>
+	<?php
+
+	include_once 'SideNav.php';?>
+   
+
+	<div class="container">
+	
+    <nav aria-label="breadcrumb">
+			<ol class="breadcrumb mb-4">
+				<li class="breadcrumb-item"><a href="Home.php">Home</a></li>
+				<li class="breadcrumb-item"><a href="RetrievePayroll.php">Payroll</a></li>
+				<li class="breadcrumb-item active" aria-current="page">Update Payroll</li>
+			</ol>
+	</nav>
 
 		<div class="span10 offset1">
-			<div class="row">
+			<div class="col-md-5 mx-auto">
 				<h3>Update Information</h3>
 			</div>
 
-			<form class="form-horizontal"
+			<form class="col-md-5 mx-auto"
 				action="updatepayroll.php?id=<?php echo $id?>" method="post"
 				enctype="multipart/form-data">
 
-				<!-- Employee name -->
-				<div class="control-group">
-					<label class="control-label">Employee name</label>
-					<div class="controls">
-						<input name="name" type="text"
-							value="<?php echo !empty($employee_name)?$employee_name:'';?>" disabled>
-                    </div>
-				</div>
-			
                 <!-- Date -->
 				<div class="control-group">
 					<label class="control-label">Date</label>
@@ -171,19 +156,18 @@ include ('SideNav.php');
 				</div>
 				<!-- payslip -->
 				<div class="control-group">
-					<label class="control-label">Payslip</label>
-					<div class="controls">
-						<input name="payslip" type="file" placeholder="Payslip">
-                            <?php if (!empty($payslipError)): ?>
-                                <span class="help-inline"><?php echo $payslipError;?></span>
-                            <?php endif; ?>
-					</div>
+					<label class="control-label">Payslip
+						<div class="controls">
+							<input name="payslip" type="file" required>
+						</div>
+					</label>
 				</div>
 				
 				
 				<!-- Submit button -->
-				<div class="form-actions">
-					<button type="submit" class="btn btn-success">Update</button>
+				<div class="text-left mb-2">
+				<br>
+					<button type="submit" class="btn btn-outline-info">Update</button>
 					<a class="btn" href="RetrievePayroll.php">Back</a>
 				</div>
 
@@ -196,5 +180,3 @@ include ('SideNav.php');
 	<!-- /container -->
 </body>
 </html>
-
-
