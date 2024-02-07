@@ -7,7 +7,7 @@ session_start();
 // if there is no session, redirect to login page.
 if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
     echo "<script>alert('Please login first.')</script>";
-    header("Location: index.php");
+//     header("Location: index.php");
 }
 else {
     // if the user is not department head, they shouldn't be able to view payroll.

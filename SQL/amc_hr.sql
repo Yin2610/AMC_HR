@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 16, 2024 at 04:01 PM
+-- Generation Time: Jan 19, 2024 at 09:40 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -118,12 +118,9 @@ CREATE TABLE `employee` (
 --
 
 INSERT INTO `employee` (`Employee_ID`, `Name`, `Gender`, `Date_Of_Birth`, `Phone_Num`, `Email`, `Address`, `Onboard_Date`, `Offboard_Date`, `Profile_Pic`, `Resume`, `Contract`, `Role_ID`, `Designation_ID`, `Bank_ID`) VALUES
-(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', '', 1, 7, 1),
+(1, 'Michael', 'Male', '1992-05-12', '52981408', 'michael@gmail.com', '371 Alexandra Rd #08-03A Singapore, 159963', '2020-09-11', '0000-00-00', 'Employee_Info/Profile_Pics/Michael_profile.jpg', 'Employee_Info/Resume/Michael_resume.pdf', '', 1, 2, 1),
 (2, 'Sofia', 'Female', '2000-11-05', '90238547', 'sofia@gmail.com', '828 Tampines Street 81 #01-228 Singapore, 520828', '2020-06-15', '0000-00-00', 'Employee_Info/Profile_Pics/Sofia_profile.jpg', 'Employee_Info/Resume/Sofia_resume.pdf', '', 2, 1, 1),
-(10, 'Amy', 'Female', '2000-02-01', '82340983', 'amy@gmail.com', '3026 Ubi Road 1 03-170 Singapore', '2023-12-06', '0000-00-00', 'Employee_Info/Profile_Pics/Amy.jpg', NULL, NULL, 2, 1, 1),
-(11, 'Alyssa', 'Female', '1996-06-01', '98452332', 'alyssa@gmail.com', '122 Middle Road, ,06-09 Midlink Plaza, Singapore', '2023-11-27', '0000-00-00', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', NULL, NULL, 3, 5, 3),
-(14, 'Simon', 'Male', '1984-10-31', '39587034', 'simon@gmail.com', 'Tuas Link', '2014-11-11', '0000-00-00', 'Employee_Info/Profile_Pics/Simon_Profile.jpg', NULL, NULL, 3, 6, 1),
-(16, 'Lily', 'Female', '1985-12-11', '84573950', 'lily@gmail.com', 'Tampines', '2023-12-05', '0000-00-00', 'Employee_Info/Profile_Pics/Lily_Profile.jpg', 'Employee_Info/Resumes/Lily_resume.pdf', 'Employee_Info/Contracts/Lily_contract.pdf', 3, 6, 1);
+(10, 'Amy', 'Other', '2000-02-02', '82340982', 'amytan@gmail.com', '302 Ubi Road 1 03-170 Singapore', '2023-12-09', '2024-01-09', 'Employee_Info/Profile_Pics/Alyssa_profile.jpg', NULL, NULL, 3, 3, 3);
 
 -- --------------------------------------------------------
 
@@ -150,8 +147,6 @@ CREATE TABLE `leave` (
 --
 
 INSERT INTO `leave` (`Leave_ID`, `Leave_Category`, `Submission_Date`, `From_Date`, `Until_Date`, `Notes`, `Supporting_Doc`, `Status`, `Approval_Date`, `Approved_By`, `Submitted_By`) VALUES
-(1, 'Family Matter', '2023-12-01', '2023-12-02', '2023-12-02', 'I have to attend my grandma\'s funeral.', NULL, 'Approved', '2023-12-09', 2, 11),
-(6, 'Vacation', '2023-12-08', '2023-12-08', '2023-12-12', 'Vacation to Japan', NULL, 'Rejected', '2024-01-15', 2, 14),
 (7, 'FamilyMatter', '2024-01-15', '2024-01-18', '2024-01-18', 'sdfdfdsds', NULL, 'Pending', NULL, NULL, 2);
 
 -- --------------------------------------------------------
@@ -173,9 +168,11 @@ CREATE TABLE `payroll` (
 --
 
 INSERT INTO `payroll` (`Payroll_ID`, `Date`, `Payslip`, `Employee_ID`, `Designation_ID`) VALUES
-(4, '2023-11-15', 'Employee_Info/Payslips/alyssa_payslip.pdf', 11, 5),
 (5, '2023-09-28', 'Employee_Info/Payslips/sofia_payslip.pdf', 2, 4),
-(6, '2024-01-25', 'Employee_Info/Payslips/Lily_contract.pdf', 10, 1);
+(6, '2024-01-25', 'Employee_Info/Payslips/Lily_contract.pdf', 10, 1),
+(7, '2024-01-11', 'Employee_Info/Payslips/Amy_payslip.pdf', 10, 1),
+(8, '2024-01-12', 'Employee_Info/Payslips/Amy_payslip.pdf', 1, 2),
+(9, '2024-01-12', 'Employee_Info/Payslips/Amy_payslip.pdf', 10, 3);
 
 -- --------------------------------------------------------
 
@@ -216,12 +213,9 @@ CREATE TABLE `sensitive_info` (
 --
 
 INSERT INTO `sensitive_info` (`Sensitive_Info_ID`, `Password`, `Bank_Account`, `IC_Number`, `Employee_ID`) VALUES
-(1, '$2y$10$ubjGNaGSKt57FYtuyuiPjOPdDjlv4oDbgyoYahroe0Momo2JRn7T.', '1530917846', 'S9238498E', 1),
-(2, '$2y$10$WBlyMIolK8pN2fxEUNrwr.rv.Y8WbUis1DblRzW1aj2aU6HpUr5ru', '6598034012', 'T0032580A', 2),
-(10, '$2y$10$qkIeF5XwRNU6D0K.N4nyEuoZezia6IaT/MVyD37k0ISMvGp00/gU2', '8309840320', 'S9026172Z', 10),
-(11, '$2y$10$m9/Dk2TCMNXKHoeT6xrfdOIUDeWiOOKLpbuYv/ENBSabXOhbGfr3W', '4892843240', 'S9681367H', 11),
-(14, '$2y$10$cH4kuoUvhnnndSRtz8J3N.NoGal/6hwK9IcOu.qWulwpx0lrf2kwK', '8543870583', 'I8457837B', 14),
-(16, '$2y$10$Hs8vRE3zWbK6hatVd9cXj.pyUIzXUlA175KxWpcWajzAkcF1yQpOC', '8475324083', 'T3432343I', 16);
+(1, '$2y$10$z06pU6TNHexmcvN6m0Zk4O.XpBybBWW7Ae5BsHvqvLIuGFpJFkyVu', '1530917846', 'S9238498E', 1),
+(2, '$2y$10$LVyT7jQYaDSty.S/EV4lk.3n/1rmx3YSJxqHTvFdnf/Coh6kJw616', '6598034012', 'T0032580A', 2),
+(10, '$2y$10$veF/YNUtsrYgHeqjvv9UmeIyb38jLjfElbaJDuosBAtnVWOpDU9AC', '8309840322', 'S9026172B', 10);
 
 --
 -- Indexes for dumped tables
@@ -322,7 +316,7 @@ ALTER TABLE `leave`
 -- AUTO_INCREMENT for table `payroll`
 --
 ALTER TABLE `payroll`
-  MODIFY `Payroll_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `Payroll_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `role`
