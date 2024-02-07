@@ -17,7 +17,7 @@ else {
     $employee_ID = $_SESSION['Employee_ID'];
 }
 
-include 'DBConnection.php';
+include_once 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -38,7 +38,9 @@ if (isset($_POST['btnReject'])) {
 if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
     $leave_id = $_POST['txtLeaveID'];
     $approval_date = date("Y-m-d");
-    $updateLeaveSQL = "UPDATE `leave` SET Status=:status, Approval_Date=:approval_date, Approved_By=:approved_by WHERE Leave_ID=:leave_id";
+    $updateLeaveSQL = "UPDATE `leave` SET
+                        Status=:status, Approval_Date=:approval_date, Approved_By=:approved_by
+                        WHERE Leave_ID=:leave_id";
     $updateLeaveStmt = $pdo->prepare($updateLeaveSQL);
     $updateLeaveStmt->bindParam(':status', $status);
     $updateLeaveStmt->bindParam(':leave_id', $leave_id);
@@ -78,7 +80,7 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
 </head>
 
 <body>
-	<?php include 'SideNav.php'?>
+	<?php include_once 'SideNav.php'?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
@@ -92,12 +94,12 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
         	
         	//select relevant information about employee and his/her leave request to display on this page
         if (isset($_GET['id'])) {
-            $selectLeaveSQL = "SELECT e.Name, e.Profile_Pic, 
-                                dp.Department_Name, ds.Designation, 
+            $selectLeaveSQL = "SELECT e.Name, e.Profile_Pic,
+                                dp.Department_Name, ds.Designation,
                                 l.* FROM Employee as e, Department as dp, Designation as ds, `Leave` as l
-                                WHERE l.Leave_ID = $leave_id 
-                                AND l.Submitted_By = e.Employee_ID 
-                                AND e.Designation_ID = ds.Designation_ID 
+                                WHERE l.Leave_ID = $leave_id
+                                AND l.Submitted_By = e.Employee_ID
+                                AND e.Designation_ID = ds.Designation_ID
                                 AND ds.Department_ID = dp.Department_ID";
             $selectLeaveStmt = $pdo->prepare($selectLeaveSQL);
             $selectLeaveStmt->execute();
@@ -110,12 +112,23 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
             <div class='col-md-1'></div>
 			<div class='col-md-10'>
 				<div class='row'>";
-                echo "<div class='col-md-1'><div class='profilePicContainer'><img src='" . $row['Profile_Pic'] . "' alt='Profile picture' class='rounded-circle profilePic'></div></div>";
+                echo "<div class='col-md-1'>
+                        <div class='profilePicContainer'>
+                            <img src='" .
+                            $row['Profile_Pic']
+                            . "' alt='Profile picture' class='rounded-circle profilePic'>
+                        </div>
+                        </div>";
 
                 echo "<div class='col-md-6'><span class='h5'>" . $name . "</span><br>";
                 echo "<span>" . $designation . " (" . $departmentName . ")</span></div>";
 
-                echo "<div class='col-md-5'><div class='d-flex justify-content-end'><input type='submit' name='btnApprove' value='Approve' class='btn btn-info mx-4'><input type='submit' name='btnReject' class='btn btn-secondary' value='Reject'></div></div>";
+                echo "<div class='col-md-5'>
+                        <div class='d-flex justify-content-end'>
+                            <input type='submit' name='btnApprove' value='Approve' class='btn btn-info mx-4'>
+                            <input type='submit' name='btnReject' class='btn btn-secondary' value='Reject'>
+                        </div>
+                       </div>";
                 echo "</div>
 			</div>
 		</div>";
@@ -129,14 +142,27 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
                 echo "<div class='mt-3'>Leave status: " . $row['Status'] . "</div>";
                 echo "<div class='mt-3'><span>From: " . $row['From_Date'] . "</span>";
                 echo "<span class='mx-5'>To: " . $row['Until_Date'] . "</span></div>";
-                echo "<button class='btn btn-outline-secondary mt-3'><a id='downloadLink' href='" . $row['Supporting_Doc'] . "' download style='text-decoration: none' class='text-dark'>Download supporting document</a></button></div>";
+                echo "<button class='btn btn-outline-secondary mt-3'>
+                        <a id='downloadLink' href='" .
+                        $row['Supporting_Doc']
+                        . "' download style='text-decoration: none' class='text-dark'>
+                            Download supporting document
+                        </a>
+                        </button>
+                        </div>";
 
-                echo "<div class='col-md-6'><label for='Note'>Note:</label><br><br><textarea id='Note' class='col-md-10' style='resize:none' disabled rows='5'>" . $row['Notes'] . "</textarea></div></form>";
+                echo "<div class='col-md-6'>
+                        <label for='Note'>Note:</label>
+                        <br><br>
+                        <textarea id='Note' class='col-md-10' style='resize:none' disabled rows='5'>" .
+                        $row['Notes']
+                        . "</textarea>
+                        </div>
+                        </form>";
             }
         }
-        ?>	
+        ?>
         	
 	</div>
-<!-- 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>

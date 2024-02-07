@@ -1,6 +1,6 @@
 <?php
 
-include('DBConnection.php');
+include_once 'DBConnection.php';
 
 session_start();
 
@@ -32,10 +32,10 @@ $selectPayrollSQL = "SELECT e.Name, ds.Designation, ds.Salary, dp.Department_Nam
 if($designation == "Purchasing director") {
     $selectPayrollSQL .= " WHERE dp.Department_Name = 'Purchasing Department'";
 }
-else if($designation == "Sales director") {
+elseif($designation == "Sales director") {
     $selectPayrollSQL .= " WHERE dp.Department_Name = 'Sales Department'";
 }
-else if($designation == "HR director") {
+elseif($designation == "HR director") {
     $selectPayrollSQL .= " WHERE dp.Department_Name = 'HR Department'";
 }
     
@@ -53,15 +53,15 @@ $data = $selectPayrollStmt->fetchAll();
     <title>RetrievePayroll page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">	
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
 <style>
-     caption { 
-         display: none; 
-     } 
+     caption {
+         display: none;
+     }
 </style>
 <body>
-	<?php include('SideNav.php')?>	
+	<?php include_once 'SideNav.php'?>
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-3">
@@ -69,7 +69,10 @@ $data = $selectPayrollStmt->fetchAll();
             <li class="breadcrumb-item active" aria-current="page">View Payrolls</li>
           </ol>
         </nav>
-        <a href="CreatePayroll.php" style="text-decoration: none; float: right" class="text-dark btn btn-outline-info mb-5">Create Payroll</a>
+        <a href="CreatePayroll.php" style="text-decoration: none;
+        float: right" class="text-dark btn btn-outline-info mb-5">
+        Create Payroll
+        </a>
 		<table id="payrollTable" class="display hover" style="width: 100%">
 		<caption>Table for displaying payroll of employees</caption>
 			<thead>
@@ -84,7 +87,7 @@ $data = $selectPayrollStmt->fetchAll();
     			</tr>
 			</thead>
 			<tbody>
-    			<?php 
+    			<?php
         			foreach ($data as $row) {
         			    echo "<tr>";
         			    echo "<td>".$row['Date']."</td>";
@@ -96,10 +99,17 @@ $data = $selectPayrollStmt->fetchAll();
         			        echo "<td>No payslip</td>";
         			    }
         			    else {
-        			        echo "<td><button><a href='".$row['Payslip']."' download style='text-decoration: none' class='text-dark'>View payslip</a></button></td>";
+        			        echo "<td>
+                                    <button>
+                                    <a href='".$row['Payslip']."' download
+                                        style='text-decoration: none' class='text-dark'>
+                                        View payslip
+                                    </a>
+                                    </button>
+                                    </td>";
         			    }
         			    echo "<td>
-                            <a class='btn btn-info' href='UpdatePayroll.php?id=". $row['Payroll_ID'] . "'>Edit</a>              
+                            <a class='btn btn-info' href='UpdatePayroll.php?id=". $row['Payroll_ID'] . "'>Edit</a>
                             <a class='btn btn-danger' href='DeletePayroll.php?id=". $row['Payroll_ID'] . "'>Delete</a>
                             </td>";
         			    echo "</tr>";
