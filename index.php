@@ -38,7 +38,8 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
          $query->bindParam(':uname', $uname, PDO::PARAM_STR);
          $query->execute();
          $data = $query->fetch(PDO::FETCH_ASSOC);
-    
+        
+         
          if ($data && password_verify($pass, $data['Password'])&& $data['Role_ID'] ==  $role) {
             
              //Password is correct
