@@ -34,13 +34,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$retrieveEmployeeMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Employees</h2>
-<<<<<<< HEAD
-                                	<a class='card-text text-dark stretched-link' aria-label='Click here to manage employee records.' href='RetrieveEmployee.php'>
-=======
                                 	<a class='card-text text-dark stretched-link'
                                         aria-label='Click here to manage employee records.'
                                         href='RetrieveEmployee.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage employee records.</a>
 	                           </div>
 	                       </div>";
@@ -48,13 +44,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$profileMenu = "<div class='card w-100 h-100 p-3'>
                 	   <div class='card-body text-center'>
                 	       <h2 class='card-title'>View Profile</h2>
-<<<<<<< HEAD
-                        	<a class='card-text text-dark stretched-link' aria-label='Click here to view your profile.' href='Profile.php'>
-=======
                         	<a class='card-text text-dark stretched-link'
                                 aria-label='Click here to view your profile.'
                                 href='Profile.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                             Click here to view your profile.</a>
                        </div>
                    </div>";
@@ -62,13 +54,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$createLeaveMenu = "<div class='card w-100 h-100 p-3'>
                     	   <div class='card-body text-center'>
                     	       <h2 class='card-title'>Request Leave</h2>
-<<<<<<< HEAD
-                            	<a class='card-text text-dark stretched-link' aria-label='Click here to request leave.' href='CreateLeave.php'>
-=======
                             	<a class='card-text text-dark stretched-link'
                                     aria-label='Click here to request leave.'
                                     href='CreateLeave.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                 Click here to request leave.</a>
                            </div>
                         </div>";
@@ -76,13 +64,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$retrievePayrollMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Payroll</h2>
-<<<<<<< HEAD
-                                	<a class='card-text text-dark stretched-link' aria-label='Click here to manage payroll.' href='RetrievePayroll.php'>
-=======
                                 	<a class='card-text text-dark stretched-link'
                                         aria-label='Click here to manage payroll.'
                                         href='RetrievePayroll.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage payroll.</a>
                                </div>
                            </div>";
@@ -90,13 +74,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$retrieveLeaveMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Leave Requests</h2>
-<<<<<<< HEAD
-                                	<a class='card-text text-dark stretched-link' aria-label='Click here to manage leave requests.' href='RetrieveLeaveSupervisor.php'>
-=======
                                 	<a class='card-text text-dark stretched-link'
                                         aria-label='Click here to manage leave requests.'
                                         href='RetrieveLeaveSupervisor.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage leave requests.</a>
                                </div>
                            </div>";
@@ -104,13 +84,9 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$viewOwnLeave = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>View Own Leave Requests</h2>
-<<<<<<< HEAD
-                                	<a class='card-text text-dark stretched-link' aria-label='Click here to view your leave requests.' href='RetrieveLeaveEmployee.php'>
-=======
                                 	<a class='card-text text-dark stretched-link'
                                         aria-label='Click here to view your leave requests.'
                                         href='RetrieveLeaveEmployee.php'>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to view your leave requests.</a>
                                </div>
                            </div>";
