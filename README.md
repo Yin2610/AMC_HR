@@ -3,14 +3,17 @@
 ## Installation
 1. Install XAMPP.
 2. Start Apache and MySQL services in XAMPP. 
+3. Download this repository in your local machine.
+4. Place this whole project folder under this directory xampp/htdocs/.
 
 ## Database
-1. In the phpMyAdmin, import the amc_hr.sql found under SQL folder.
+1. After starting MySQL in XAMPP, go to https://localhost/phpmyadmin/index.php in your browser.
+2. In the phpMyAdmin, import the amc_hr.sql found under SQL folder downloaded.
 (Take note that the database name is amc_hr, user is root and password is blank to connect to phpMyAdmin.)
-2. Check if there are 8 tables inserted with data.
+2. Check if there are 8 tables inserted with data. If it is, the database is succcessfully imported.
 
-## Login
-1. If the database is succcessfully imported, go to this link http://localhost/AMC_HR_system/index.php in your browser to see the login page.
+## Login to Web App
+1. After starting Apache in XAMPP, go to this link http://localhost/AMC_HR/index.php in your browser to see the login page.
 2. For login, please note that passwords for Michael (administrator) is michael, Sofia (purchasing director/department head) is sofia, Hailey (purchasing assistant/employee) is H@1ley123.
 
 ## Functions accessible for each role after login
