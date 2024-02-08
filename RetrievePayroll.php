@@ -53,12 +53,6 @@ $data = $selectPayrollStmt->fetchAll();
     <title>RetrievePayroll page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css" rel="stylesheet">
-<<<<<<< HEAD
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">	
-</head>
-<body>
-	<?php include('SideNav.php')?>	
-=======
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
 </head>
 <style>
@@ -68,7 +62,6 @@ $data = $selectPayrollStmt->fetchAll();
 </style>
 <body>
 	<?php include_once 'SideNav.php'?>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-3">
