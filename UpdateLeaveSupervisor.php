@@ -80,11 +80,7 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
 </head>
 
 <body>
-<<<<<<< HEAD
-	<?php include('SideNav.php')?>
-=======
 	<?php include_once 'SideNav.php'?>
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
 	<div class="container-fluid mt-4">
 		<nav aria-label="breadcrumb">
 			<ol class="breadcrumb mb-5">
@@ -116,13 +112,6 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
             <div class='col-md-1'></div>
 			<div class='col-md-10'>
 				<div class='row'>";
-<<<<<<< HEAD
-                echo "<div class='col-md-1'><div class='profilePicContainer'><img src='" . $row['Profile_Pic'] . "' alt='Profile picture' class='rounded-circle profilePic'></div></div>";
-
-                echo "<div class='col-md-6'><span class='h5'>" . $name . "</span><br><span>" . $designation . " (" . $departmentName . ")</span></div>";
-
-                echo "<div class='col-md-5'><div class='d-flex justify-content-end'><input type='submit' name='btnApprove' value='Approve' class='btn btn-info mx-4'><input type='submit' name='btnReject' class='btn btn-secondary' value='Reject'></div></div>";
-=======
                 echo "<div class='col-md-1'>
                         <div class='profilePicContainer'>
                             <img src='" .
@@ -140,7 +129,6 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
                             <input type='submit' name='btnReject' class='btn btn-secondary' value='Reject'>
                         </div>
                        </div>";
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                 echo "</div>
 			</div>
 		</div>";
@@ -163,9 +151,6 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
                         </button>
                         </div>";
 
-<<<<<<< HEAD
-                echo "<div class='col-md-6'><label for='Note'>Note:</label><br><br><textarea id='Note' class='col-md-10' style='resize:none' disabled rows='5'>" . $row['Notes'] . "</textarea></div></form>";
-=======
                 echo "<div class='col-md-6'>
                         <label for='Note'>Note:</label>
                         <br><br>
@@ -174,12 +159,10 @@ if (isset($_POST['btnApprove']) || isset($_POST['btnReject'])) {
                         . "</textarea>
                         </div>
                         </form>";
->>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
             }
         }
         ?>
         	
 	</div>
-<!-- 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
