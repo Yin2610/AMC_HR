@@ -25,16 +25,22 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 </style>
 </head>
 <body class="bg-light">
-<?php include('SideNav.php')?>
+<?php include_once 'SideNav.php'?>
 <div class="container-fluid mt-5">
 	<h1 class="text-center">Welcome to AMC-HRM System, <?php echo $_SESSION['Name']?>.</h1>
 	<p class="text-center mt-3">Here's a quick look at some of the things you can do in this system. Enjoy your day!</p>
 	
-	<?php 
+	<?php
 	$retrieveEmployeeMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Employees</h2>
+<<<<<<< HEAD
                                 	<a class='card-text text-dark stretched-link' aria-label='Click here to manage employee records.' href='RetrieveEmployee.php'>
+=======
+                                	<a class='card-text text-dark stretched-link'
+                                        aria-label='Click here to manage employee records.'
+                                        href='RetrieveEmployee.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage employee records.</a>
 	                           </div>
 	                       </div>";
@@ -42,7 +48,13 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$profileMenu = "<div class='card w-100 h-100 p-3'>
                 	   <div class='card-body text-center'>
                 	       <h2 class='card-title'>View Profile</h2>
+<<<<<<< HEAD
                         	<a class='card-text text-dark stretched-link' aria-label='Click here to view your profile.' href='Profile.php'>
+=======
+                        	<a class='card-text text-dark stretched-link'
+                                aria-label='Click here to view your profile.'
+                                href='Profile.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                             Click here to view your profile.</a>
                        </div>
                    </div>";
@@ -50,7 +62,13 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$createLeaveMenu = "<div class='card w-100 h-100 p-3'>
                     	   <div class='card-body text-center'>
                     	       <h2 class='card-title'>Request Leave</h2>
+<<<<<<< HEAD
                             	<a class='card-text text-dark stretched-link' aria-label='Click here to request leave.' href='CreateLeave.php'>
+=======
+                            	<a class='card-text text-dark stretched-link'
+                                    aria-label='Click here to request leave.'
+                                    href='CreateLeave.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                 Click here to request leave.</a>
                            </div>
                         </div>";
@@ -58,7 +76,13 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$retrievePayrollMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Payroll</h2>
+<<<<<<< HEAD
                                 	<a class='card-text text-dark stretched-link' aria-label='Click here to manage payroll.' href='RetrievePayroll.php'>
+=======
+                                	<a class='card-text text-dark stretched-link'
+                                        aria-label='Click here to manage payroll.'
+                                        href='RetrievePayroll.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage payroll.</a>
                                </div>
                            </div>";
@@ -66,7 +90,13 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$retrieveLeaveMenu = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>Manage Leave Requests</h2>
+<<<<<<< HEAD
                                 	<a class='card-text text-dark stretched-link' aria-label='Click here to manage leave requests.' href='RetrieveLeaveSupervisor.php'>
+=======
+                                	<a class='card-text text-dark stretched-link'
+                                        aria-label='Click here to manage leave requests.'
+                                        href='RetrieveLeaveSupervisor.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to manage leave requests.</a>
                                </div>
                            </div>";
@@ -74,7 +104,13 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
 	$viewOwnLeave = "<div class='card w-100 h-100 p-3'>
                         	   <div class='card-body text-center'>
                         	       <h2 class='card-title'>View Own Leave Requests</h2>
+<<<<<<< HEAD
                                 	<a class='card-text text-dark stretched-link' aria-label='Click here to view your leave requests.' href='RetrieveLeaveEmployee.php'>
+=======
+                                	<a class='card-text text-dark stretched-link'
+                                        aria-label='Click here to view your leave requests.'
+                                        href='RetrieveLeaveEmployee.php'>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                                     Click here to view your leave requests.</a>
                                </div>
                            </div>";
@@ -95,7 +131,7 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
             	</div>";
 			}
 			
-			else if($_SESSION['Role_Name'] == "Department Head") {
+			elseif($_SESSION['Role_Name'] == "Department Head") {
 			    echo "<div class='row mt-5'>
                         <div class='col-md-1'></div>
                     	<div class='col-md-3 mx-auto'>
@@ -124,7 +160,7 @@ if(!isset($_SESSION['Employee_ID']) || $_SESSION['Employee_ID'] == '') {
                 	</div>";
 			}
 			
-			else if($_SESSION['Role_Name'] == "Employee"){
+			elseif($_SESSION['Role_Name'] == "Employee"){
                 echo "<div class='row mt-5'>
                     	<div class='col-md-3'></div>
                     	<div class='col-md-3'>

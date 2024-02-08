@@ -1,8 +1,9 @@
- 
+
 <?php
 session_start();
-//to connect the db_conn file to here 
-include('DBConnection.php');
+//to connect the db_conn file to here
+include "dbConnection.php";
+//include_once 'DBConnection.php';
 $pdo = DBConnection::connectToDB();
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role'])){
@@ -19,7 +20,10 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
     $role = validate($_POST['role']);
     
     //if the username box is empty
-     if (empty($uname)) {
+    if (empty($uname)&& empty($pass)) {
+        header("Location: index.php?error=User name and password is required");
+        exit();
+    }elseif (empty($uname)) {
         header("Location: index.php?error=User name is required");
         exit();
      }elseif (empty($pass)){
@@ -27,7 +31,8 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
          exit();
      }else {
      
-         $sql = "SELECT employee.Employee_ID, employee.Name, sensitive_info.Password, employee.Profile_Pic, employee.Role_ID, designation.Designation, role.Role_Name 
+         $sql = "SELECT employee.Employee_ID, employee.Name, sensitive_info.Password,
+                employee.Profile_Pic, employee.Role_ID, designation.Designation, role.Role_Name
                 FROM employee 
                 INNER JOIN sensitive_info ON employee.Employee_ID = sensitive_info.Employee_ID
                 INNER JOIN role ON employee.Role_ID = role.Role_ID
@@ -65,16 +70,25 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="ISO-8859-1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="AMC website">
 <title>Login</title>
 
 </head>
 <body style="background-color: #DBF9FC; display: flex; justify-content: center; align-items: center;">
 
 	
-	<form action="index.php" method="post" style="width:500px;border:2px solid #ccc;padding: 30px;background: #fff;border-radius:15px;">
+
+	<form action="index.php"
+      method="post"
+      style="width:500px;
+             border:2px solid #ccc;
+             padding:30px;
+             background:#fff;
+             border-radius:15px;">
 	<?php
 	?>
 		 <h1 style="text-align:center;margin-bottom:20px;">Human Resource Management</h1>
@@ -85,15 +99,40 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
 		<?php }
 		    ?>
 		    
-		    <label style="color:#888;font-size:18px;padding:10px">User Name</label>
-			<input type="text" name="uname" placeholder="Username" style="display: block; border:2px solid #ccc;width:95%;padding:10px;margin:10px auto;"><br>
-			<label style="color:#888;font-size:18px;padding:10px">Password</label>
-			<input type="password" name="password" placeholder="Password" style="display: block; border:2px solid #ccc;width:95%;padding:10px;margin:10px auto;"><br>
-			<button type="submit" style="float: right; background: #555;padding:10px 15px; color:#fff;border-radius:5px;margin-right:10px;">Login</button>
-		     <div class="control-group">
-					<label for="Role">role</label>
-					<div class="controls">
+		    <label style="color:#000000;font-size:18px;padding:10px">User Name</label>
 
+			<input type="text"
+      		 name="uname"
+      		placeholder="Username"
+       style="display: block;
+              border: 2px solid #ccc;
+              width: 95%;
+              padding: 10px;
+              margin: 10px auto;">
+<br>
+			<label style="color:#000000;font-size:18px;padding:10px">Password</label>
+			<input type="password"
+       			name="password"
+       			placeholder="Password"
+       			style="display: block;
+                    border: 2px solid #ccc;
+                    width: 95%;
+                    padding: 10px;
+                    margin: 10px auto;">
+<br>
+			<button type="submit"
+        		style="float: right;
+                     background: #555;
+                     padding: 10px 15px;
+                     color: #fff;
+                     border-radius: 5px;
+                     margin-right: 10px;">
+    Login
+</button>
+		     <div class="control-group">
+					
+					<div class="controls">
+						<label for="Role">role
 						<select name="role" required>
 						<?php
                        
@@ -109,6 +148,7 @@ if (isset($_POST['uname'])&& isset($_POST['password']) && isset($_POST['role']))
                         }
                         ?>
             			</select>
+            			</label>
 					</div>
 				</div>
 	</form>

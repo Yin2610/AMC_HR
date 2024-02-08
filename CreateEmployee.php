@@ -1,5 +1,6 @@
-<?php 
-include('DBConnection.php');
+<?php
+
+include_once 'DBConnection.php';
 
 session_start();
 
@@ -43,7 +44,7 @@ if(isset($_POST['btnRegister'])) {
     $valid = true;
     
     // validate phone number 8 digits
-    if(!preg_match('/^[0-9]{8}$/', $phoneNum)) {
+    if(!preg_match('/^\d{8}$/', $phoneNum)) {
         $phoneNumError = 'Phone number should be 8 digits.';
         $valid = false;
     }
@@ -61,7 +62,7 @@ if(isset($_POST['btnRegister'])) {
     }
     
     // validate IC number capital starting alphabet, 7 digits in the middle and capital end alphabet
-    if(!preg_match('/^[A-Z][0-9]{7}[A-Z]$/', $ICNumber)) {
+    if(!preg_match('/^[A-Z]\d{7}[A-Z]$/', $ICNumber)) {
         $ICNumberError = 'Please enter a valid IC number.';
         $valid = false;
     }
@@ -70,12 +71,20 @@ if(isset($_POST['btnRegister'])) {
     $profilePicPath = "Website_Images/Default_pp.png";
     
     // upload profile picture file
-    if(isset($_FILES['fProfilePic']['name'])) {
+    if(!empty($_FILES['fProfilePic']['name'])) {
         $profilePicName = $_FILES['fProfilePic']['name'];
         $tempProfilePicName = $_FILES['fProfilePic']['tmp_name'];
         $profilePicPath = "Employee_Info/Profile_Pics/" . $profilePicName;
-        if(!move_uploaded_file($tempProfilePicName, $profilePicPath)) {
-            echo "<script>alert('Failed uploading profile pic.')</script>";
+        $file_type = mime_content_type($tempProfilePicName);
+        
+        if (!in_array($file_type, ['image/jpeg', 'image/png', 'image/gif', 'image/bmp', 'image/webp'])){
+            $valid = false;
+            $profilePicError = "Invalid file type. Please upload an image (JPEG/PNG/GIF/BMP/WEBP)!";
+        }
+        else{
+            if(!move_uploaded_file($tempProfilePicName, $profilePicPath)) {
+                echo "<script>alert('Failed uploading profile pic.')</script>";
+            }
         }
     }
     
@@ -83,9 +92,17 @@ if(isset($_POST['btnRegister'])) {
     if(!empty($_FILES['fResume']['name'])) {
         $resumeName = $_FILES['fResume']['name'];
         $tempResumeName = $_FILES['fResume']['tmp_name'];
-        $resumePath = "Employee_Info/Resumes/" . $resumeName;
-        if(!move_uploaded_file($tempResumeName, $resumePath)) {
-            echo "<script>alert('Failed uploading resume.')</script>";
+        $resumePath = "Employee_Info/Resume/" . $resumeName;
+        $file_type = mime_content_type($tempResumeName);
+        
+        if ($file_type != 'application/pdf'){
+            $valid = false;
+            $resumeError = "Invalid file type. Please upload a PDF file type!";
+        }
+        else{
+            if(!move_uploaded_file($tempResumeName, $resumePath)) {
+                echo "<script>alert('Failed uploading resume.')</script>";
+            }
         }
     }
     else {
@@ -97,9 +114,16 @@ if(isset($_POST['btnRegister'])) {
         $contractName = $_FILES['fContract']['name'];
         $tempContractName = $_FILES['fContract']['tmp_name'];
         $contractPath = "Employee_Info/Contracts/" . $contractName;
+        $file_type = mime_content_type($tempContractName);
         
-        if(!move_uploaded_file($tempContractName, $contractPath)) {
-            echo "<script>alert('Failed uploading contract.')</script>";
+        if ($file_type != 'application/pdf'){
+            $valid = false;
+            $contractError = "Invalid file type. Please upload a PDF file type!";
+        }
+        else{
+            if(!move_uploaded_file($tempContractName, $contractPath)) {
+                echo "<script>alert('Failed uploading contract.')</script>";
+            }
         }
     }
     else {
@@ -107,8 +131,9 @@ if(isset($_POST['btnRegister'])) {
     }
     
     $password = $_POST['txtPassword'];
-    if(!preg_match('/^[a-zA-Z0-9@#$!%*#?&]{7,}$/', $password)) {
-        $pwError = 'Password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.';
+    if(!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z0-9@$!%*#?&]{7,}$/', $password)) {
+        $pwError = 'Password minimum length is 7, with combination of uppercase,
+ lowercase letters, numbers and symbols.';
         $valid = false;
     }
     
@@ -118,32 +143,49 @@ if(isset($_POST['btnRegister'])) {
     $roleID = $_POST['sRole'];
     $designationID = $_POST['sDesignation'];
     $bankID = $_POST['sBank'];
-
+    
     // insert employee data
     if($valid) {
         try {
-            $insertEmployeeSQL = "INSERT INTO employee (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address, Onboard_Date, Offboard_Date, Profile_Pic, Resume, Contract, Role_ID, Designation_ID, Bank_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $insertEmployeeSQL = "INSERT INTO employee
+                                    (Name, Gender, Date_Of_Birth, Phone_Num, Email, Address,
+                                    Onboard_Date, Offboard_Date,
+                                    Profile_Pic, Resume, Contract, Role_ID, Designation_ID, Bank_ID)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $insertEmployeeStmt = $pdo->prepare($insertEmployeeSQL);
-            $insertEmployeeStmt->execute(array($name, $gender, $dob, $phoneNum, $email, $address, $onboardDate, $offboardDate, $profilePicPath, $resumePath, $contractPath, $roleID, $designationID, $bankID));
+            $insertEmployeeStmt->execute(array($name, $gender, $dob, $phoneNum, $email, $address,
+                                                $onboardDate, $offboardDate, $profilePicPath, $resumePath,
+                                                $contractPath, $roleID, $designationID, $bankID));
             
             $lastInsertedEmployeeID = $pdo->lastInsertId();
             
-            $insertSensitiveInfoSQL = "INSERT INTO sensitive_info (Password, Bank_Account, IC_Number, Employee_ID) VALUES (?, ?, ?, ?)";
+            $insertSensitiveInfoSQL = "INSERT INTO sensitive_info
+                                        (Password, Bank_Account, IC_Number, Employee_ID) VALUES (?, ?, ?, ?)";
             $insertSensitiveInfoStmt = $pdo->prepare($insertSensitiveInfoSQL);
-            $insertSensitiveInfoStmt->execute(array($hashPassword, $bankAcc, $ICNumber, $lastInsertedEmployeeID));
-            
-            echo "<script>alert('Employee registration successful')</script>";
+            $result = $insertSensitiveInfoStmt->execute(array($hashPassword,
+                                                              $bankAcc,
+                                                              $ICNumber,
+                                                              $lastInsertedEmployeeID));
+            if($result) {
+                http_response_code(200);
+                echo "<script>alert('Employee registration successful')</script>";
+            }
+            else {
+                http_response_code(400);
+                echo "<script>alert('Employee registration failed')</script>";
+            }
         }
         catch (PDOException $e) {
-            $pdo->rollBack();
             echo "Error:" .$e->getMessage();
         }
     }
     
     else {
+        http_response_code(400);
         echo "<script>alert('Please check the error messages and enter correct and valid information.')</script>";
     }
 }
+DBConnection::disconnect();
 ?>
 
 <!DOCTYPE html>
@@ -154,7 +196,10 @@ if(isset($_POST['btnRegister'])) {
     <meta name="description" content="Create Employee page of AMC HR system">
     <title>Register Employee page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<<<<<<< HEAD
 <!--     <script src="js/bootstrap.min.js"></script> -->
+=======
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
     <style>
         table td {
             padding-right: 20px;
@@ -164,9 +209,15 @@ if(isset($_POST['btnRegister'])) {
             color: red;
             font-size: 12px;
         }
+<<<<<<< HEAD
          caption { 
              display: none; 
          } 
+=======
+         caption {
+             display: none;
+         }
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
     </style>
     <script>
     	// preview uploaded profile image
@@ -215,9 +266,11 @@ if(isset($_POST['btnRegister'])) {
     		}
     	}
     	
-    	//showing error msg to enforce password strength, password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.
+    	/*showing error msg to enforce password strength, password minimum length is 7,
+    	with combination of uppercase, lowercase letters, numbers and symbols.*/
+    	
     	function strengthenPw(txtPassword) {
-    		let pwRE = /^[a-zA-Z0-9@#$!%*#?&]{7,}$/;
+    		let pwRE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[a-zA-Z0-9@#$!%*#?&]{7,}$/;
     		if(txtPassword.value.match(pwRE)) {
     			document.getElementById("pwError").innerHTML = "";
     		}
@@ -225,11 +278,15 @@ if(isset($_POST['btnRegister'])) {
     			document.getElementById("pwError").innerHTML = "Password minimum length is 7, with combination of uppercase, lowercase letters, numbers and symbols.";
     		}
     	}
-	</script> 
+	</script>
 </head>
 
 <body>
+<<<<<<< HEAD
 	<?php include('SideNav.php')?>
+=======
+	<?php include_once 'SideNav.php';?>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
 	<div class="container-fluid mt-4">
 	
 <!-- 	breadcrumb for navigation  -->
@@ -254,20 +311,39 @@ if(isset($_POST['btnRegister'])) {
         			<caption>Table for Employee Registration form for filling in personal information</caption>
         				<tr>
         				<td></td>
+<<<<<<< HEAD
         					<td><img src="Website_Images/Default_pp.png" alt="Default profile picture" id="imgProfile" width="100px" height="100px" class="border rounded-circle"></td>
+=======
+        					<td>
+        						<img src="Website_Images/Default_pp.png" alt="Default profile picture"
+        						id="imgProfile" width="100px" height="100px" class="border rounded-circle">
+        					</td>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
         				</tr>
         				<tr>
-        					<td><label for="fProfilePic">Profile picture:</label></td>
-        					<td><input name="fProfilePic" id="fProfilePic" class="form-control-sm border rounded" type="file" onchange="readURL(this);" required></td>
+        					<td><label for="fProfilePic">Profile picture (jpeg/png/gif/bmp/webp accepted):</label></td>
+        					<td>
+        					<input name="fProfilePic" id="fProfilePic" class="form-control-sm border rounded"
+        					type="file" onchange="readURL(this);">
+        					<br>
+        					<span class="warning" id="profilePicError">
+        						<?php if(!empty($profilePicError)){ echo $profilePicError; } ?>
+        					</span>
+        					</td>
         				</tr>
         				<tr>
         					<td><label for="txtName">Name: </label></td>
+<<<<<<< HEAD
                     		<td><input name="txtName" id="txtName" class="form-control-sm border rounded" type="text" required>
+=======
+                    		<td>
+                    		<input name="txtName" id="txtName" class="form-control-sm border rounded" type="text" required>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         		
                     		</td>
                         </tr>
                         <tr>
-                        	<td><label for="rdoGender">Gender: </label></td>
+                        	<td>Gender: </td>
                         	<td>
                         		<input name="rdoGender" type="radio" id="rdoMale" value="Male" checked="checked" required>
                         		<label for="rdoMale">Male</label>
@@ -277,28 +353,71 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="dtDOB">Date of birth: </label></td>
+<<<<<<< HEAD
                         	<td><input name="dtDOB" id="dtDOB" class="form-control-sm border rounded" type="date" required></td>
                         </tr>
                         <tr>
                         	<td><label for="txtPhoneNum">Phone number: </label></td>
                         	<td><input name="txtPhoneNum" id="txtPhoneNum" class="form-control-sm border rounded" type="text" maxlength="8" required onkeyup="validatePhoneNo(this);">
                         	<br><span class="warning" id="phoneNoError"><?php if($phoneNumError != null){echo $phoneNumError;} ?></span>
+=======
+                        	<td>
+                        	<input name="dtDOB" id="dtDOB" class="form-control-sm border rounded" type="date" required>
+                        	</td>
+                        </tr>
+                        <tr>
+                        	<td><label for="txtPhoneNum">Phone number: </label></td>
+                        	<td>
+                        	<input name="txtPhoneNum" id="txtPhoneNum" class="form-control-sm border rounded"
+                        	type="text" maxlength="8" required onkeyup="validatePhoneNo(this);">
+                        	<br>
+                        	<span class="warning" id="phoneNoError">
+                        	<?php if(!empty($phoneNumError)){echo $phoneNumError;} ?>
+                        	</span>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                     		</td>
                         </tr>
                         <tr>
                         	<td><label for="txtEmail">Email: </label></td>
+<<<<<<< HEAD
                         	<td><input name="txtEmail" id="txtEmail" class="form-control-sm border rounded" type="email" required>
                          		<br><span class="warning" id="emailError"><?php if($emailError != null){echo $emailError;} ?></span>
+=======
+                        	<td>
+                        	<input name="txtEmail" id="txtEmail"
+                        	class="form-control-sm border rounded" type="email" required>
+                         		<br>
+                         		<span class="warning" id="emailError">
+                         		<?php if(!empty($emailError)){echo $emailError;} ?>
+                         		</span>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                     		</td>
                         </tr>
                         <tr>
                         	<td><label for="txtAddress">Address: </label></td>
+<<<<<<< HEAD
                         	<td><input name="txtAddress" id="txtAddress" class="form-control-sm border rounded" type="text" required></td>
                         </tr>
                         <tr>
                         	<td><label for="txtICNumber">IC number: </label></td>
                          	<td><input name="txtICNumber" id="txtICNumber" class="form-control-sm border rounded" type="text" maxlength="9" required onkeyup="validateICNo(this);">
                          		<br><span class="warning" id="ICnumberError"><?php if($ICNumberError != null){echo $ICNumberError;} ?></span> 
+=======
+                        	<td>
+                        		<input name="txtAddress" id="txtAddress" class="form-control-sm border rounded"
+                        		type="text" required>
+                        	</td>
+                        </tr>
+                        <tr>
+                        	<td><label for="txtICNumber">IC number: </label></td>
+                         	<td>
+                         	<input name="txtICNumber" id="txtICNumber" class="form-control-sm border rounded"
+                         	type="text" maxlength="9" required onkeyup="validateICNo(this);">
+                         		<br>
+                         		<span class="warning" id="ICnumberError">
+                         		<?php if(!empty($ICNumberError)){echo $ICNumberError;} ?>
+                         		</span>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         	</td>
                         </tr>
                     </table>
@@ -313,46 +432,95 @@ if(isset($_POST['btnRegister'])) {
             		<caption>Table for Employee Registration form for filling in job-related information</caption>
             			<tr>
                         	<td><label for="dtOnBoard">Onboarding date: </label></td>
+<<<<<<< HEAD
                         	<td><input name="dtOnBoard" id="dtOnboard" class="form-control-sm border rounded" type="date" placeholder="Onboard date" required></td>
                         </tr>
                         <tr>
                         	<td><label for="dtOffBoard">Offboarding date: </label></td>
                         	<td><input name="dtOffBoard" id="dtOffboard" class="form-control-sm border rounded" type="date" placeholder="Offboard date"></td>
+=======
+                        	<td>
+                        	<input name="dtOnBoard" id="dtOnBoard" class="form-control-sm border rounded"
+                        	type="date" placeholder="Onboard date" required></td>
+                        </tr>
+                        <tr>
+                        	<td><label for="dtOffBoard">Offboarding date: </label></td>
+                        	<td>
+                        	<input name="dtOffBoard" id="dtOffBoard" class="form-control-sm border rounded"
+                        	type="date" placeholder="Offboard date"></td>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         </tr>
             			<tr>
             				<td><label for="sBank">Bank: </label></td>
             				<td><select name="sBank" id="sBank" class="form-control-sm border rounded" required>
             				
-<!--              				select bank SQL to allow admin select a bank from registered banks in the database for the employee --> 
-                        		<?php 
+<!-- select bank SQL to allow admin select a bank from registered banks in the database for the employee -->
+                        		<?php
                                     $selectBankSQL = "SELECT * FROM Bank";
-                                    $query = $pdo->prepare($selectBankSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+                                    $query = $pdo->prepare(
+                                        $selectBankSQL,
+                                        array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL)
+                                        );
                                     $query->execute();
                                     $data = $query->fetchAll();
                                     foreach ($data as $row) {
-                                        echo "<option value=".$row['Bank_ID'].">".$row['Bank_Name']."</option>";
+                                        echo "<option value='".$row['Bank_ID']."'>".$row['Bank_Name']."</option>";
                                     }
                                  ?>
+<<<<<<< HEAD
                                  </select></td> 
              			</tr> 
              			<tr> 
                          	<td><label for="txtBankAcc">Bank account number: </label></td> 
                          	<td><input name="txtBankAcc" id="txtBankAcc" class="form-control-sm border rounded" type="text" maxlength="12" required onkeyup="validateBankAccNo(this)">
                          		<br><span id="bankAccNoError" class="warning"><?php if($bankAccError != null){echo $bankAccError;} ?></span>
+=======
+                                 </select></td>
+             			</tr>
+             			<tr>
+                         	<td><label for="txtBankAcc">Bank account number: </label></td>
+                         	<td>
+                         		<input name="txtBankAcc" id="txtBankAcc" class="form-control-sm border rounded"
+                         		type="text" maxlength="12" required onkeyup="validateBankAccNo(this)">
+                         		<br>
+                         		<span id="bankAccNoError" class="warning">
+                         		<?php if(!empty($bankAccError)){echo $bankAccError;} ?>
+                         		</span>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         	</td>
                         </tr>
                         <tr>
-                        	<td><label for="fResume">Resume: </label></td>
-                        	<td><input name="fResume" id="fResume" class="form-control-sm border rounded" type="file"></td>
+                        	<td><label for="fResume">Resume (pdf accepted): </label></td>
+                        	<td><input name="fResume" id="fResume" class="form-control-sm border rounded" type="file">
+                        	<br>
+                        	<span class="warning" id="resumeError">
+                        	<?php if(!empty($resumeError)){echo $resumeError;} ?>
+                        	</span>
+                        	</td>
                         </tr>
                         <tr>
-                         	<td><label for="fContract">Contract: </label></td> 
-                         	<td><input name="fContract" id="fContract" class="form-control-sm border rounded" type="file"></td> 
+                         	<td><label for="fContract">Contract (pdf accepted): </label></td>
+                         	<td><input name="fContract" id="fContract" class="form-control-sm border rounded" type="file">
+                         	<br>
+                         	<span class="warning" id="contractError">
+                         		<?php if(!empty($contractError)){echo $contractError;} ?>
+                         	</span>
+                         	</td>
                          </tr>
+<<<<<<< HEAD
                          <tr> 
                          	<td><label for="txtPassword">Password: </label></td> 
                        	<td><input name="txtPassword"  autocomplete="new-password" class="form-control-sm border rounded" type="password" placeholder="Password" required onkeyup="strengthenPw(this)">
                          	<br><span class="warning" id="pwError"><?php if($pwError != null){echo $pwError;} ?></span> 
+=======
+                         <tr>
+                         	<td><label for="txtPassword">Password: </label></td>
+                       	<td>
+                       	<input name="txtPassword" id="txtPassword" autocomplete="new-password"
+                       	class="form-control-sm border rounded" type="password" placeholder="Password"
+                       	required onkeyup="strengthenPw(this)">
+                         	<br><span class="warning" id="pwError"><?php if(!empty($pwError)){echo $pwError;} ?></span>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         	</td>
                         </tr>
                         <tr>
@@ -360,10 +528,14 @@ if(isset($_POST['btnRegister'])) {
                         	<td>
                         		<select name="sRole" id="sRole" class="form-control-sm border rounded" required>
                         		
-<!--                         	select role SQL to allow admin select a role from registered roles in the database for the employee -->
-                                <?php 
+<!-- select role SQL to allow admin select a role from registered roles in the database for the employee -->
+                                <?php
+                                    
                                     $selectRoleSQL = "SELECT * from Role";
-                                    $query = $pdo->prepare($selectRoleSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+                                    $query = $pdo->prepare(
+                                        $selectRoleSQL,
+                                        array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL)
+                                        );
                                     $query->execute();
                                     $data = $query->fetchAll();
                                     foreach ($data as $row) {
@@ -375,12 +547,21 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         	<td><label for="sDesignation">Designation: </label></td>
+<<<<<<< HEAD
                         	<td><select name="sDesignation" id="sDesignation" class="form-control-sm border rounded" required>
+=======
+                        	<td>
+                        	<select name="sDesignation" id="sDesignation" class="form-control-sm border rounded" required>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         	
-<!--                        select designation SQL to allow admin select a designation from registered designations in the database for the employee -->                        	
-                            <?php 
+<!-- select designation SQL to allow admin select a designation from registered designations
+ in the database for the employee -->
+                            <?php
                                 $selectDesignationSQL = "SELECT * FROM Designation";
-                                $query = $pdo->prepare($selectDesignationSQL, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL));
+                                $query = $pdo->prepare(
+                                    $selectDesignationSQL,
+                                    array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL)
+                                    );
                                 $query->execute();
                                 $data = $query->fetchAll();
                                 foreach ($data as $row) {
@@ -391,13 +572,17 @@ if(isset($_POST['btnRegister'])) {
                         </tr>
                         <tr>
                         <td></td>
+<<<<<<< HEAD
                         	<td><input name="btnRegister" class="btn btn-info" type="submit" value="Register"></td>
+=======
+                        	<td><button name="btnRegister" class="btn btn-info" type="submit">Register</button></td>
+>>>>>>> 6b7ba8253d8a1802421af134a172f71a0f4fb25b
                         </tr>
             		</table>
             		</div>
             	</div>
         	</div>
         </form>
-        </div> 
+        </div>
 </body>
 </html>
