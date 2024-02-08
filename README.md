@@ -6,6 +6,14 @@
 3. Download this repository in your local machine.
 4. Place this whole project folder under this directory xampp/htdocs/.
 
+## Folder structure
+There are 4 folders.
+1. css folder
+2. Employee_Info folder containing Contracts, Leave_Supporting_Docs, Payslips, Profile_Pics, Resume of employees
+3. SQL folder containing the SQL code to be imported.
+4. Website_Images containing static images used in the website.
+The source codes are in .php extension.
+
 ## Database
 1. After starting MySQL in XAMPP, go to https://localhost/phpmyadmin/index.php in your browser.
 2. In the phpMyAdmin, import the amc_hr.sql found under SQL folder downloaded.
